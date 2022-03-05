@@ -13,7 +13,7 @@ struct LoginField // 登录表单
     QString brokerId; // BrokerID
     QString appId; // 产品名称
     QString authCode; // 授权编码
-    QString account; // 账户
+    QString userId; // 账户
     QString password; // 密码
 };
 struct RspLoginField // 登录响应表单
@@ -45,6 +45,45 @@ struct RspLoginField // 登录响应表单
     ///能源中心时间
     QString INETime;
 };
+struct TradingAccount{ // 账户资金信息
+    double Available;
+    double FrozenCash;
+    double WithdrawQuota;
+};
+struct InvestorPosition{ // 投资者持仓
+    QString InstrumentID;
+    int Position;
+    double PositionProfit;
+};
+struct Order{ // 报单
+    QString OrderSysID;
+    QString InstrumentID;
+    char Direction; // 买0卖1
+    double LimitPrice;
+    int VolumeTotalOriginal;
+    int VolumeTotal;
+//    ///全部成交
+//    #define THOST_FTDC_OST_AllTraded '0'
+//    ///部分成交还在队列中
+//    #define THOST_FTDC_OST_PartTradedQueueing '1'
+//    ///部分成交不在队列中
+//    #define THOST_FTDC_OST_PartTradedNotQueueing '2'
+//    ///未成交还在队列中
+//    #define THOST_FTDC_OST_NoTradeQueueing '3'
+//    ///未成交不在队列中
+//    #define THOST_FTDC_OST_NoTradeNotQueueing '4'
+//    ///撤单
+//    #define THOST_FTDC_OST_Canceled '5'
+//    ///未知
+//    #define THOST_FTDC_OST_Unknown 'a'
+//    ///尚未触发
+//    #define THOST_FTDC_OST_NotTouched 'b'
+//    ///已触发
+//    #define THOST_FTDC_OST_Touched 'c'
+    char OrderStatus;
+    QString InsertTime;
+};
+
 struct InstrumentField // 合约信息
 {
     QString InstrumentID;

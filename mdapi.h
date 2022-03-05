@@ -14,8 +14,8 @@ class MdApi : public QObject,public CThostFtdcMdSpi
     Q_OBJECT
 public:
     explicit MdApi(QObject *parent = nullptr);
+    void release(); // 释放api
     void connect(LoginField); // 设置连接
-    void release(); // 释放连接
     void login(); // 登录（行情登录不做校验）
     void subscribe(QVector<InstrumentField>); // 订阅合约
 

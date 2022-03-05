@@ -18,14 +18,14 @@ void MdApi::connect(LoginField u)
 void MdApi::release()
 {
     if (api!=nullptr) {
-        iDebug<<"释放行情连接";
+        iDebug<<"释放行情api";
         api->Release();
     }
 }
 void MdApi::login()
 {
     CThostFtdcReqUserLoginField t={{0}};
-    api->ReqUserLogin(&t, nRequestID++);
+    api->ReqUserLogin(&t, ++nRequestID);
 }
 void MdApi::subscribe(QVector<InstrumentField>instruments)
 {
@@ -56,7 +56,7 @@ void MdApi::OnFrontDisconnected(int nReason)
 }
 void MdApi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-    rDebug("行情登录响应",pRspInfo);
+    rDebug("行情登录响应",pRspInfo->ErrorMsg);
     if (pRspInfo->ErrorID==0) emit sendRspLogin(RspLoginField{});
     else emit sendError("行情登录失败");
 }

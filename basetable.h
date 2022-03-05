@@ -4,6 +4,8 @@
 #include <QTableView>
 #include <QHeaderView>
 #include <QStandardItemModel>
+#include "global.h"
+#include "util.h"
 
 class BaseTable : public QTableView
 {

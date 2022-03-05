@@ -91,7 +91,7 @@ QTabWidget::pane{
 }
 QHeaderView::section{
     border:none;
-    color:#00DCDC;
+    color:#00BCD4;
     padding: 6px 0;
     background-color: #424242;
 }</string>
@@ -201,14 +201,14 @@ QTabWidget::pane{
            <number>0</number>
           </property>
           <item row="0" column="0">
-           <widget class="EntrustTable" name="tableView_2">
+           <widget class="EntrustTable" name="entrustTable">
             <property name="styleSheet">
              <string notr="true">QTableView{
     border: none;
 }
 QHeaderView::section{
     border:none;
-    color:#00DCDC;
+    color:white;
     padding: 6px 0;
     background-color: #424242;
 }</string>
@@ -234,7 +234,7 @@ QTabWidget::pane{
 </string>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="bottomRightTab_1">
          <attribute name="title">
@@ -254,14 +254,14 @@ QTabWidget::pane{
            <number>0</number>
           </property>
           <item row="0" column="0">
-           <widget class="PosTable" name="tableView_3">
+           <widget class="PosTable" name="posTable">
             <property name="styleSheet">
              <string notr="true">QTableView{
     border: none;
 }
 QHeaderView::section{
     border:none;
-    color:#00DCDC;
+    color:white;
     padding: 6px 0;
     background-color: #424242;
 }</string>
@@ -291,14 +291,14 @@ QHeaderView::section{
            <number>6</number>
           </property>
           <item row="0" column="0">
-           <widget class="FundTable" name="tableView_4">
+           <widget class="FundTable" name="fundTable">
             <property name="styleSheet">
              <string notr="true">QTableView{
     border: none;
 }
 QHeaderView::section{
     border:none;
-    color:#00DCDC;
+    color:white;
     padding: 6px 0;
     background-color: #424242;
 }</string>

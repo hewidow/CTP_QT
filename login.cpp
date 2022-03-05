@@ -27,7 +27,7 @@ void Login::on_loginBtn_clicked()
         ui->brokeIdEdit->text(),
         ui->appIdEdit->text(),
         ui->authCodeEdit->text(),
-        ui->accountEdit->text(),
+        ui->userIdEdit->text(),
         ui->passwordEdit->text()
     });
 }

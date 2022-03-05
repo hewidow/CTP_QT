@@ -108,7 +108,7 @@
        </widget>
       </item>
       <item row="5" column="1">
-       <widget class="QLineEdit" name="accountEdit">
+       <widget class="QLineEdit" name="userIdEdit">
         <property name="text">
          <string>198433</string>
         </property>

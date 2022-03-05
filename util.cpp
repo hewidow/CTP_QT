@@ -41,7 +41,7 @@ QString Util::convertNumberToQString(double v,int prec)
     return QString::number(v);
 }
 
-QString Util::convertQtMsgTypeToQString(QtMsgType type)
+QString Util::convertQtMsgTypeToText(QtMsgType type)
 {
     switch (type) {
     case QtDebugMsg:
@@ -58,3 +58,28 @@ QString Util::convertQtMsgTypeToQString(QtMsgType type)
         return "Unknown";
     }
 }
+
+QString Util::convertDirectionToText(char dir)
+{
+    switch (dir) {
+    case '0':
+        return "买";
+    case '1':
+        return "卖";
+    default:
+        return "未知";
+    }
+}
+
+QString Util::convertOrderStatusToText(char status)
+{
+    switch (status) {
+    case '0':
+        return "全部成交";
+    case '5':
+        return "撤单";
+    default:
+        return "未知";
+    }
+}
+

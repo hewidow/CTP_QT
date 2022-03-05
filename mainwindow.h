@@ -43,7 +43,8 @@ private slots:
     void receiveRspLoginTd(RspLoginField); // td登录成功回调
     void receiveAllInstruments(QVector<InstrumentField>); // 获取所有合约id回调
 
-    void receiveLog(QString);
+    void receiveLog(QString); // 接收日志并显示在界面上
+
     void on_action_triggered();
     void on_action_2_triggered();
 

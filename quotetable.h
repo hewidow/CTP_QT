@@ -4,8 +4,6 @@
 #include "basetable.h"
 #include "api/ThostFtdcUserApiStruct.h"
 #include "debug.h"
-#include "global.h"
-#include "util.h"
 
 class QuoteTable : public BaseTable
 {
