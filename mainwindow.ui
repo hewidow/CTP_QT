@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">color: rgb(255, 255, 255);
+background-color: rgb(0, 0, 0);</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QSplitter" name="splitter_2">
+      <property name="styleSheet">
+       <string notr="true">QSplitter::handle{
+    background-color:black;
+    height:3px;
+}</string>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <widget class="QTabWidget" name="topTab">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QTabBar::tab{
+	color:#9E9E9E;
+    background-color:#212121;
+}
+QTabBar::tab::selected{
+	color:white;
+    background-color:#424242;
+}
+QTabWidget::pane{
+    border: 2px solid #424242;
+}
+</string>
+       </property>
+       <widget class="QWidget" name="topTab_1">
+        <property name="accessibleName">
+         <string/>
+        </property>
+        <property name="styleSheet">
+         <string notr="true"/>
+        </property>
+        <attribute name="title">
+         <string>行情</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_2">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QuoteTable" name="quoteTable">
+           <property name="styleSheet">
+            <string notr="true">QTableView{
+    border: none;
+}
+QHeaderView::section{
+    border:none;
+    color:#00DCDC;
+    padding: 6px 0;
+    background-color: #424242;
+}</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+      <widget class="QSplitter" name="splitter">
+       <property name="styleSheet">
+        <string notr="true">QSplitter::handle{
+    background-color:black;
+    height:3px;
+}</string>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <widget class="QTabWidget" name="bottomLeftTab">
+        <property name="styleSheet">
+         <string notr="true">QTabBar::tab{
+	color:#9E9E9E;
+    background-color:#212121;
+}
+QTabBar::tab::selected{
+	color:white;
+    background-color:#424242;
+}
+QTabWidget::pane{
+    border: 2px solid #424242;
+}
+</string>
+        </property>
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="bottomLeftTab_1">
+         <attribute name="title">
+          <string>日志</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_4">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <property name="horizontalSpacing">
+           <number>6</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="QTextEdit" name="logText">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">border:none;</string>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+       <widget class="QTabWidget" name="bottomCenterTab">
+        <property name="styleSheet">
+         <string notr="true">QTabBar::tab{
+	color:#9E9E9E;
+    background-color:#212121;
+}
+QTabBar::tab::selected{
+	color:white;
+    background-color:#424242;
+}
+QTabWidget::pane{
+    border: 2px solid #424242;
+}
+</string>
+        </property>
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="bottomCenterTab_1">
+         <attribute name="title">
+          <string>委托</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_3">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="EntrustTable" name="tableView_2">
+            <property name="styleSheet">
+             <string notr="true">QTableView{
+    border: none;
+}
+QHeaderView::section{
+    border:none;
+    color:#00DCDC;
+    padding: 6px 0;
+    background-color: #424242;
+}</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+       <widget class="QTabWidget" name="bottomRightTab">
+        <property name="styleSheet">
+         <string notr="true">QTabBar::tab{
+	color:#9E9E9E;
+    background-color:#212121;
+}
+QTabBar::tab::selected{
+	color:white;
+    background-color:#424242;
+}
+QTabWidget::pane{
+    border: 2px solid #424242;
+}
+</string>
+        </property>
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="bottomRightTab_1">
+         <attribute name="title">
+          <string>持仓</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_6">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="PosTable" name="tableView_3">
+            <property name="styleSheet">
+             <string notr="true">QTableView{
+    border: none;
+}
+QHeaderView::section{
+    border:none;
+    color:#00DCDC;
+    padding: 6px 0;
+    background-color: #424242;
+}</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="bottomRightTab_2">
+         <attribute name="title">
+          <string>资金</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_5">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <property name="horizontalSpacing">
+           <number>6</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="FundTable" name="tableView_4">
+            <property name="styleSheet">
+             <string notr="true">QTableView{
+    border: none;
+}
+QHeaderView::section{
+    border:none;
+    color:#00DCDC;
+    padding: 6px 0;
+    background-color: #424242;
+}</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>33</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QMenu::item{
+    background-color:black;
+    color:white;
+    padding: 6px;
+}
+QMenu::item:selected{
+    background-color:#757575;
+}
+QMenuBar::item{
+    padding: 6px;
+}
+QMenuBar::item:selected{
+    background-color:#757575;
+}</string>
+   </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>策略</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="test">
+    <property name="title">
+     <string>测试</string>
+    </property>
+    <addaction name="action"/>
+    <addaction name="action_2"/>
+   </widget>
+   <addaction name="menu"/>
+   <addaction name="test"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar">
+   <property name="styleSheet">
+    <string notr="true">color: rgb(255, 255, 255);
+background-color: rgb(0, 0, 0);</string>
+   </property>
+  </widget>
+  <action name="action">
+   <property name="text">
+    <string>测试1</string>
+   </property>
+  </action>
+  <action name="action_2">
+   <property name="text">
+    <string>测试2</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QuoteTable</class>
+   <extends>QTableView</extends>
+   <header>quotetable.h</header>
+  </customwidget>
+  <customwidget>
+   <class>FundTable</class>
+   <extends>QTableView</extends>
+   <header>fundtable.h</header>
+  </customwidget>
+  <customwidget>
+   <class>PosTable</class>
+   <extends>QTableView</extends>
+   <header>postable.h</header>
+  </customwidget>
+  <customwidget>
+   <class>EntrustTable</class>
+   <extends>QTableView</extends>
+   <header>entrusttable.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
