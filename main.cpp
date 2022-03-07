@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
         iDebug<<"未找到全局样式";
     } // 设置全局样式
 
-    // qInstallMessageHandler(logOutput); // 注册日志输出捕获
+    qInstallMessageHandler(logOutput); // 注册日志输出捕获
 
     w=new MainWindow();
     int code=a.exec();

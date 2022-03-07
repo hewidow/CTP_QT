@@ -24,6 +24,7 @@ SOURCES += \
     basetable.cpp \
     config.cpp \
     debug.cpp \
+    engine.cpp \
     entrusttable.cpp \
     fundtable.cpp \
     ledlabel.cpp \
@@ -34,6 +35,7 @@ SOURCES += \
     postable.cpp \
     quotetable.cpp \
     tdapi.cpp \
+    trade.cpp \
     util.cpp
 
 HEADERS += \
@@ -42,8 +44,10 @@ HEADERS += \
     api/ThostFtdcUserApiDataType.h \
     api/ThostFtdcUserApiStruct.h \
     basetable.h \
+    command.h \
     config.h \
     debug.h \
+    engine.h \
     entrusttable.h \
     fundtable.h \
     global.h \
@@ -54,11 +58,13 @@ HEADERS += \
     postable.h \
     quotetable.h \
     tdapi.h \
+    trade.h \
     util.h
 
 FORMS += \
     login.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    trade.ui
 
 TRANSLATIONS += \
     ProgramTrading_zh_CN.ts

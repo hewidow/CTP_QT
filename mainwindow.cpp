@@ -14,15 +14,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->statusbar->addPermanentWidget(mdStatus);
     ui->statusbar->addPermanentWidget(tdStatus);
 
+
     init();
 
-    showMaximized();
-
+    // showMaximized();
 }
 MainWindow::~MainWindow()
 {
-    mdApi.release();
-    tdApi.release();
+    engine.release();
     delete ui;
 }
 
@@ -33,57 +32,42 @@ void MainWindow::logOutput(const QString &msg)
 void MainWindow::init()
 {
     // 注册自定义类型
-    qRegisterMetaType<RspLoginField>("RspLoginField");
+    qRegisterMetaType<CThostFtdcRspUserLoginField>("CThostFtdcRspUserLoginField");
     qRegisterMetaType<QuoteField>("QuoteField");
     qRegisterMetaType<QVector<InstrumentField>>("QVector<InstrumentField>");
     qRegisterMetaType<TradingAccount>("TradingAccount");
-    qRegisterMetaType<InvestorPosition>("InvestorPosition");
-    qRegisterMetaType<Order>("Order");
+    qRegisterMetaType<QVector<CThostFtdcInvestorPositionField>>("QVector<CThostFtdcInvestorPositionField>");
+    qRegisterMetaType<QVector<CThostFtdcOrderField>>("QVector<CThostFtdcOrderField>");
+    qRegisterMetaType<CThostFtdcOrderField>("CThostFtdcOrderField");
 
     // 信号槽连接
     /* mdApi */
-    connect(&mdApi,&MdApi::sendError,this,&MainWindow::receiveError);
-    connect(&mdApi,&MdApi::sendConnectionStatus,this,&MainWindow::receiveMdConnectionStatus);
-    connect(&mdApi,&MdApi::sendRspLogin,this,&MainWindow::receiveRspLoginMd);
-    connect(&mdApi,&MdApi::sendRtnDepthMarketData,this,&MainWindow::receiveRtnDepthMarketData);
+    connect(&engine.mdApi,&MdApi::sendError,this,&MainWindow::receiveError);
+    connect(&engine.mdApi,&MdApi::sendConnectionStatus,this,&MainWindow::receiveMdConnectionStatus);
+    connect(&engine.mdApi,&MdApi::sendRspLogin,this,&MainWindow::receiveRspLoginMd);
+    connect(&engine.mdApi,&MdApi::sendRtnDepthMarketData,ui->quoteTable,&QuoteTable::receiveRtnDepthMarketData);
 
     /* tdApi */
-    connect(&tdApi,&TdApi::sendError,this,&MainWindow::receiveError);
-    connect(&tdApi,&TdApi::sendConnectionStatus,this,&MainWindow::receiveTdConnectionStatus);
-    connect(&tdApi,&TdApi::sendRspLogin,this,&MainWindow::receiveRspLoginTd);
-    connect(&tdApi,&TdApi::sendAllInstruments,this,&MainWindow::receiveAllInstruments);
-    connect(&tdApi,&TdApi::sendTradingAccount,ui->fundTable,&FundTable::receiveTradingAccount);
-    connect(&tdApi,&TdApi::sendInvestorPosition,ui->posTable,&PosTable::receiveInvestorPosition);
-    connect(&tdApi,&TdApi::sendOrder,ui->entrustTable,&EntrustTable::receiveOrder);
+    connect(&engine.tdApi,&TdApi::sendError,this,&MainWindow::receiveError);
+    connect(&engine.tdApi,&TdApi::sendConnectionStatus,this,&MainWindow::receiveTdConnectionStatus);
+    connect(&engine.tdApi,&TdApi::sendRspLogin,this,&MainWindow::receiveRspLoginTd);
+    connect(&engine.tdApi,&TdApi::sendAllInstruments,&engine,&Engine::receiveAllInstruments);
+    connect(&engine.tdApi,&TdApi::sendTradingAccount,ui->fundTable,&FundTable::receiveTradingAccount);
+    connect(&engine.tdApi,&TdApi::sendInvestorPositions,ui->posTable,&PosTable::receiveInvestorPositions);
+    connect(&engine.tdApi,&TdApi::sendOrders,ui->entrustTable,&EntrustTable::receiveOrders);
 
     /* other */
-    connect(&login,&Login::sendLoginField,this,&MainWindow::receiveLoginField);
     connect(this,&MainWindow::sendLog,this,&MainWindow::receiveLog);
+    connect(&login,&Login::sendLoginField,&engine,&Engine::receiveLoginField);
+    connect(&trade,&Trade::sendReqOrderInsert,&engine,&Engine::receiveReqOrderInsert);
 
     login.show();
+    engine.start(); // 开启子线程
 }
-void MainWindow::loginDone() {
-    login.close();
-    showMaximized();
-    userStatus->setText("当前用户："+userInfo.UserID);
-    iDebug<<"当前用户"<<userInfo.UserID<<"前置编号"<<userInfo.FrontID<<"会话编号"<<userInfo.SessionID;
-    tdApi.reqQryTradingAccount();
-    Sleep(1500);
-    tdApi.reqQryInvestorPosition();
-    Sleep(1500);
-    tdApi.fetchAllInstruments();
-}
-
 void MainWindow::receiveError(QString msg)
 {
     QMessageBox::critical(this,"错误",msg);
 }
-void MainWindow::receiveLoginField(LoginField data)
-{
-    mdApi.connect(data);
-    tdApi.connect(data);
-}
-
 void MainWindow::receiveMdConnectionStatus(bool status)
 {
     mdStatus->setColor(status?"green":"red");
@@ -93,40 +77,41 @@ void MainWindow::receiveTdConnectionStatus(bool status)
 {
     tdStatus->setColor(status?"green":"red");
 }
-
-void MainWindow::receiveRspLoginMd(RspLoginField u)
+void MainWindow::receiveRspLoginMd(CThostFtdcRspUserLoginField u)
 {
     isMdLogin=true;
     if (isMdLogin&&isTdLogin) loginDone();
 }
-void MainWindow::receiveRspLoginTd(RspLoginField u)
+void MainWindow::receiveRspLoginTd(CThostFtdcRspUserLoginField u)
 {
     isTdLogin=true;
     userInfo=u;
     if (isMdLogin&&isTdLogin) loginDone();
 }
-
-void MainWindow::receiveAllInstruments(QVector<InstrumentField>instruments)
-{
-    mdApi.subscribe(instruments);
+void MainWindow::loginDone() {
+    login.close();
+    showMaximized();
+    userStatus->setText("当前用户："+QString(userInfo.UserID));
+    iDebug<<"当前用户"<<userInfo.UserID<<"前置编号"<<userInfo.FrontID<<"会话编号"<<userInfo.SessionID;
+    engine.tradeInit();
+    engine.getAccountDetail();
+    engine.getQuotes();
 }
-
-void MainWindow::receiveRtnDepthMarketData(QuoteField q)
-{
-    ui->quoteTable->updateQuote(q);
-}
-
 void MainWindow::receiveLog(QString msg)
 {
     ui->logText->append(msg);
 }
-
 void MainWindow::on_action_triggered()
 {
-    tdApi.test1();
+    engine.getAccountDetail();
 }
 
 void MainWindow::on_action_2_triggered()
 {
-    tdApi.test2();
+    engine.tdApi.test2();
+}
+
+void MainWindow::on_action_5_triggered()
+{
+    trade.showDialog(userInfo);
 }

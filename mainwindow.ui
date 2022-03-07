@@ -340,8 +340,10 @@ QMenuBar::item:selected{
    </property>
    <widget class="QMenu" name="menu">
     <property name="title">
-     <string>策略</string>
+     <string>功能</string>
     </property>
+    <addaction name="action_5"/>
+    <addaction name="action_6"/>
    </widget>
    <widget class="QMenu" name="test">
     <property name="title">
@@ -369,6 +371,16 @@ background-color: rgb(0, 0, 0);</string>
     <string>测试2</string>
    </property>
   </action>
+  <action name="action_5">
+   <property name="text">
+    <string>交易</string>
+   </property>
+  </action>
+  <action name="action_6">
+   <property name="text">
+    <string>策略</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -392,6 +404,17 @@ background-color: rgb(0, 0, 0);</string>
    <header>entrusttable.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>topTab</tabstop>
+  <tabstop>quoteTable</tabstop>
+  <tabstop>bottomLeftTab</tabstop>
+  <tabstop>logText</tabstop>
+  <tabstop>bottomCenterTab</tabstop>
+  <tabstop>entrustTable</tabstop>
+  <tabstop>bottomRightTab</tabstop>
+  <tabstop>posTable</tabstop>
+  <tabstop>fundTable</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

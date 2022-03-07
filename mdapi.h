@@ -3,10 +3,10 @@
 
 #include <QObject>
 #include <QDir>
-#include "global.h"
 #include "api/ThostFtdcMdApi.h"
 #include "debug.h"
 #include "util.h"
+#include "global.h"
 
 
 class MdApi : public QObject,public CThostFtdcMdSpi
@@ -28,12 +28,12 @@ private:
 private:
     CThostFtdcMdApi *api;
     int nRequestID=0;
-    QMap<QString,QString>instrumentIdToName;
+    QMap<QString,InstrumentField>instrumentsMap;
 
 signals:
     void sendError(QString); // 发送错误信息
     void sendConnectionStatus(bool); // 发送连接状态
-    void sendRspLogin(RspLoginField); // 登录成功响应
+    void sendRspLogin(CThostFtdcRspUserLoginField); // 登录成功响应
     void sendRtnDepthMarketData(QuoteField); // 订阅合约响应
 };
 

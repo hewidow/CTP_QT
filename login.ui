@@ -159,6 +159,16 @@
    </layout>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>mdEdit</tabstop>
+  <tabstop>tdEdit</tabstop>
+  <tabstop>brokeIdEdit</tabstop>
+  <tabstop>appIdEdit</tabstop>
+  <tabstop>authCodeEdit</tabstop>
+  <tabstop>userIdEdit</tabstop>
+  <tabstop>passwordEdit</tabstop>
+  <tabstop>loginBtn</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

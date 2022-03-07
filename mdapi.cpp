@@ -35,7 +35,7 @@ void MdApi::subscribe(QVector<InstrumentField>instruments)
     }); // 按合约id排序
     char **pInstrument=new char *[len];
     for (int i=0;i<len;++i) {
-        instrumentIdToName[instruments[i].InstrumentID]=instruments[i].InstrumentName;
+        instrumentsMap[instruments[i].InstrumentID]=instruments[i];
         pInstrument[i]=Util::convertQStringToCharPoint(instruments[i].InstrumentID);
     }
     int val=api->SubscribeMarketData(pInstrument, len);
@@ -56,16 +56,18 @@ void MdApi::OnFrontDisconnected(int nReason)
 }
 void MdApi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-    rDebug("行情登录响应",pRspInfo->ErrorMsg);
-    if (pRspInfo->ErrorID==0) emit sendRspLogin(RspLoginField{});
+    rDebug("行情登录响应",pRspInfo);
+    if (pRspInfo->ErrorID==0) emit sendRspLogin(CThostFtdcRspUserLoginField{});
     else emit sendError("行情登录失败");
 }
 void MdApi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMarketData)
 {
     // iDebug<<"订阅响应"<<pDepthMarketData->InstrumentID<<pDepthMarketData->LastPrice;
+    InstrumentField tp=instrumentsMap[pDepthMarketData->InstrumentID];
     emit sendRtnDepthMarketData(QuoteField{
+        tp.ExchangeID,
         pDepthMarketData->InstrumentID,
-        instrumentIdToName[pDepthMarketData->InstrumentID],
+        tp.InstrumentName,
         pDepthMarketData->UpdateTime,
         pDepthMarketData->LastPrice,
         DBL_MAX==pDepthMarketData->PreClosePrice?DBL_MAX:pDepthMarketData->LastPrice-pDepthMarketData->PreClosePrice,

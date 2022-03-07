@@ -50,7 +50,7 @@ void TdApi::reqAuthenticate()
 
 void TdApi::OnRspAuthenticate(CThostFtdcRspAuthenticateField *pRspAuthenticateField, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-    rDebug("认证响应",pRspInfo->ErrorMsg);
+    rDebug("认证响应",pRspInfo);
     if (pRspInfo->ErrorID==0) login();
     else emit sendError("交易认证失败");
 }
@@ -66,50 +66,26 @@ void TdApi::login()
 }
 void TdApi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-    rDebug("交易登录响应",pRspInfo->ErrorMsg);
+    rDebug("交易登录响应",pRspInfo);
     if (pRspInfo->ErrorID==0) {
-        emit sendRspLogin(RspLoginField{
-          pRspUserLogin->TradingDay,
-          pRspUserLogin->LoginTime,
-          pRspUserLogin->BrokerID,
-          pRspUserLogin->UserID,
-          pRspUserLogin->SystemName,
-          pRspUserLogin->FrontID,
-          pRspUserLogin->SessionID,
-          pRspUserLogin->MaxOrderRef,
-          pRspUserLogin->SHFETime,
-          pRspUserLogin->DCETime,
-          pRspUserLogin->CZCETime,
-          pRspUserLogin->FFEXTime,
-          pRspUserLogin->INETime
-      });
+        emit sendRspLogin(*pRspUserLogin);
     }
     else emit sendError("交易登录失败");
 }
-
-void TdApi::fetchAllInstruments()
+int TdApi::reqSettlementInfoConfirm()
 {
-    CThostFtdcQryInstrumentField a = {{0}};
-    int code=api->ReqQryInstrument(&a,++nRequestID);
-    iDebug<<"正在查询所有合约"<<Util::convertApiReturnValueToText(code);
+    CThostFtdcSettlementInfoConfirmField Confirm = { {0} };
+    strcpy_s(Confirm.BrokerID, userInfo.brokerId.toStdString().c_str());
+    strcpy_s(Confirm.InvestorID, userInfo.userId.toStdString().c_str());
+    int code=api->ReqSettlementInfoConfirm(&Confirm, nRequestID++);
+    iDebug<<"请求投资者结算结果确认"<<Util::convertApiReturnValueToText(code);
+    return code;
 }
-void TdApi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+void TdApi::OnRspSettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField *pSettlementInfoConfirm, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-    // 只要长度6位且后四位为如下条件的，这样少一点
-    if (strlen(pInstrument->InstrumentID)==6&&strcmp(&(pInstrument->InstrumentID[2]),"2203")==0) {
-        instruments.push_back(InstrumentField{
-            pInstrument->InstrumentID,
-            QString::fromLocal8Bit(pInstrument->InstrumentName)
-        });
-    }
-    if (bIsLast) {
-        if (pRspInfo==nullptr) iDebug<<"查询所有合约响应"<<"未知";
-        else rDebug("查询所有合约响应",pRspInfo->ErrorMsg);
-        emit sendAllInstruments(instruments);
-    }
+    rDebug("投资者结算结果确认响应",pRspInfo);
 }
-
-void TdApi::reqQryTradingAccount()
+int TdApi::reqQryTradingAccount()
 {
     CThostFtdcQryTradingAccountField a = {{0}};
     strcpy_s(a.BrokerID, userInfo.brokerId.toStdString().c_str());
@@ -117,63 +93,117 @@ void TdApi::reqQryTradingAccount()
     strcpy_s(a.CurrencyID, "CNY");
     int code=api->ReqQryTradingAccount(&a,++nRequestID);
     iDebug<<"请求查询资金账户"<<Util::convertApiReturnValueToText(code);
+    return code;
 }
-
 void TdApi::OnRspQryTradingAccount(CThostFtdcTradingAccountField *pTradingAccount, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-    if (pRspInfo==nullptr) iDebug<<"查询资金账户响应"<<"未知";
-    else rDebug("查询资金账户响应",pRspInfo->ErrorMsg); // pRspInfo为nullptr，很奇怪
+    rDebug("查询资金账户响应",pRspInfo); // pRspInfo为nullptr，很奇怪
     emit sendTradingAccount(TradingAccount{
         pTradingAccount->Available,
         pTradingAccount->FrozenCash,
         pTradingAccount->WithdrawQuota
     });
 }
-void TdApi::reqQryInvestorPosition()
+int TdApi::reqQryInvestorPosition()
 {
+    positions.clear(); // 清空持仓记录的容器
     CThostFtdcQryInvestorPositionField a = {{0}};
     strcpy_s(a.BrokerID, userInfo.brokerId.toStdString().c_str());
     strcpy_s(a.InvestorID, userInfo.userId.toStdString().c_str());
     int code=api->ReqQryInvestorPosition(&a, ++nRequestID);
     iDebug<<"请求查询投资者持仓"<<Util::convertApiReturnValueToText(code);
+    return code;
 }
 
 void TdApi::OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pInvestorPosition, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-    if (pInvestorPosition!=nullptr) {
-        emit sendInvestorPosition(InvestorPosition{
-            pInvestorPosition->InstrumentID,
-            pInvestorPosition->Position,
-            pInvestorPosition->PositionProfit
+    if (pInvestorPosition!=nullptr) positions.push_back(*pInvestorPosition);
+    if (bIsLast) {
+        rDebug("查询投资者持仓响应",pRspInfo);
+        iDebug<<"持仓总数"<<positions.size();
+        emit sendInvestorPositions(positions);
+    }
+}
+int TdApi::reqQryOrder()
+{
+    orders.clear(); // 清空报单记录的容器
+    CThostFtdcQryOrderField a = { {0} };
+    strcpy_s(a.BrokerID, userInfo.brokerId.toStdString().c_str());
+    strcpy_s(a.InvestorID, userInfo.userId.toStdString().c_str());
+    int code=api->ReqQryOrder(&a, ++nRequestID);
+    iDebug<<"请求查询报单"<<Util::convertApiReturnValueToText(code);
+    return code;
+}
+
+void TdApi::OnRspQryOrder(CThostFtdcOrderField *pOrder, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+{
+    if (pOrder!=nullptr) orders.push_back(*pOrder);
+    if (bIsLast) {
+        rDebug("查询报单响应",pRspInfo);
+        iDebug<<"报单总数"<<orders.size();
+        emit sendOrders(orders);
+    }
+}
+int TdApi::fetchAllInstruments()
+{
+    instruments.clear(); // 清空合约记录的容器
+    CThostFtdcQryInstrumentField a = {{0}};
+    int code=api->ReqQryInstrument(&a,++nRequestID);
+    iDebug<<"请求查询所有合约"<<Util::convertApiReturnValueToText(code);
+    return code;
+}
+void TdApi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+{
+    // 只要长度6位且后四位为如下条件的，这样少一点
+    if (strlen(pInstrument->InstrumentID)==6&&strcmp(&(pInstrument->InstrumentID[2]),"2203")==0) {
+        instruments.push_back(InstrumentField{
+            pInstrument->InstrumentID,
+            QString::fromLocal8Bit(pInstrument->InstrumentName),
+            pInstrument->ExchangeID
         });
     }
     if (bIsLast) {
-        if (pRspInfo==nullptr) iDebug<<"查询投资者持仓响应"<<"未知";
-        else rDebug("查询投资者持仓响应",pRspInfo->ErrorMsg);
+        rDebug("查询所有合约响应",pRspInfo);
+        emit sendAllInstruments(instruments);
     }
 }
-
-void TdApi::reqOrderInsert()
+void TdApi::reqOrderInsert(CThostFtdcInputOrderField t)
 {
-
+   int code=api->ReqOrderInsert(&t,++nRequestID);
+   iDebug<<"请求报单录入"<<Util::convertApiReturnValueToText(code);
+}
+void TdApi::OnRspOrderInsert(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+{
+    rDebug("OnRspOrderInsert字段填写不对",pRspInfo);
 }
 
+void TdApi::OnErrRtnOrderInsert(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo)
+{
+    rDebug("OnErrRtnOrderInsert字段填写不对",pRspInfo);
+}
+
+void TdApi::OnRtnOrder(CThostFtdcOrderField *pOrder)
+{
+    iDebug<<"OnRtnOrder";
+}
+
+void TdApi::OnRtnTrade(CThostFtdcTradeField *pTrade)
+{
+    iDebug<<"OnRtnTrade成交通知";
+}
 void TdApi::test1(){
-    emit sendInvestorPosition(InvestorPosition{
-      "test"+QString::number(qrand()),
-      1234,
-      1234.56
-  });
+
 }
 void TdApi::test2(){
-    emit sendOrder(Order{
-      "test"+QString::number(qrand()),
-      "Test",
-      char((int)'0'+qrand()%2),
-      1234.56,
-      1234,
-      5678,
-       '0',
-       "12:00:01"
-  });
+
+    CThostFtdcOrderField t={{0}};
+    strcpy_s(t.OrderSysID,QString("test"+QString::number(qrand())).toStdString().c_str());
+    strcpy_s(t.InstrumentID,"Test");
+    t.Direction =  char((int)'0'+qrand()%2);
+    t.LimitPrice = 1234.56;
+    t.VolumeTotalOriginal = 1234;
+    t.VolumeTotal = 5678;
+    t.OrderStatus = '0';
+    strcpy_s(t.InsertTime,"12:00:01");
+    emit sendOrders({t});
 }

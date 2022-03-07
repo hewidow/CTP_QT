@@ -1,13 +1,18 @@
 ﻿#include "quotetable.h"
 
-QuoteTable::QuoteTable(QWidget *parent) : BaseTable(parent,{"序号","代码","名称","时间","最新价","涨跌","涨幅%","买一价","买一量","卖一价","卖一量","成交量","开盘价","最高价","最低价"})
+QuoteTable::QuoteTable(QWidget *parent) : BaseTable(parent,{"序号","交易所代码","代码","名称","时间","最新价","涨跌","涨幅%","买一价","买一量","卖一价","卖一量","成交量","开盘价","最高价","最低价"})
 {
 
+}
+void QuoteTable::receiveRtnDepthMarketData(QuoteField q)
+{
+    updateQuote(q);
 }
 QList<QString> QuoteTable::formatData(int index,QuoteField q)
 {
     return {
         QString::number(index+1),
+        q.ExchangeID,
         q.InstrumentID,
         q.InstrumentName,
         q.UpdateTime,
@@ -38,11 +43,11 @@ void QuoteTable::updateQuote(QuoteField q)
             model->item(index,i)->setTextAlignment(Qt::AlignCenter);
         }
     }
-    if (q.UpDown<0) model->item(index,5)->setForeground(Qt::green);
-    else model->item(index,5)->setForeground(Qt::red);
-
-    if (q.Gain<0) model->item(index,6)->setForeground(Qt::green);
+    if (q.UpDown<0) model->item(index,6)->setForeground(Qt::green);
     else model->item(index,6)->setForeground(Qt::red);
+
+    if (q.Gain<0) model->item(index,7)->setForeground(Qt::green);
+    else model->item(index,7)->setForeground(Qt::red);
 }
 int QuoteTable::findRowIndex(QString instrumentId)
 {

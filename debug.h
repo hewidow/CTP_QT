@@ -7,7 +7,7 @@
 // 默认debug输出
 #define iDebug qDebug().noquote()
 // 输出api接口的错误信息
-#define rDebug(k,m) iDebug<<k<<QString::fromLocal8Bit(m)
+#define rDebug(k,e) iDebug<<k<<(e==nullptr?"nullptr":QString::fromLocal8Bit(e->ErrorMsg))
 
 class Debug
 {

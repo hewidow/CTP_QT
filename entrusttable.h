@@ -8,11 +8,9 @@ class EntrustTable : public BaseTable
 
 public:
     explicit EntrustTable(QWidget *parent = nullptr);
-    QList<QString> formatData(Order);
+    QList<QString> formatData(CThostFtdcOrderField);
 public slots:
-    void receiveOrder(Order);
-private:
-    QMap<QString,int>idToRow; // 映射
+    void receiveOrders(QVector<CThostFtdcOrderField>); // 接收报单信息
 };
 
 #endif // ENTRUSTTABLE_H

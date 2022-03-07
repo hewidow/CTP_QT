@@ -19,3 +19,8 @@ BaseTable::BaseTable(QWidget *parent,QList<QString> _headers) : QTableView(paren
     setShowGrid(false); // 去除格子线
     setEditTriggers(QAbstractItemView::NoEditTriggers); // 禁止编辑
 }
+
+void BaseTable::clearData()
+{
+    model->removeRows(0,model->rowCount());
+}

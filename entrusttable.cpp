@@ -4,10 +4,10 @@ EntrustTable::EntrustTable(QWidget *parent) : BaseTable(parent,{"报单编号","
 {
 
 }
-QList<QString> EntrustTable::formatData(Order o)
+QList<QString> EntrustTable::formatData(CThostFtdcOrderField o)
 {
     return {
-        o.OrderSysID,
+        Util::convertNumberToQString(o.BrokerOrderSeq),
         o.InstrumentID,
         Util::convertDirectionToText(o.Direction),
         Util::convertNumberToQString(o.LimitPrice),
@@ -17,20 +17,18 @@ QList<QString> EntrustTable::formatData(Order o)
         o.InsertTime
     };
 }
-void EntrustTable::receiveOrder(Order t)
+
+void EntrustTable::receiveOrders(QVector<CThostFtdcOrderField> orders)
 {
-    QList<QString>tp=formatData(t);
-    if (idToRow.count(t.OrderSysID)==0) {
-        idToRow[t.OrderSysID]=model->rowCount();
-        int index=model->rowCount();
-        for (int i=0;i<headers.size();++i) {
-            model->setItem(index,i,new QStandardItem(tp[i]));
-            model->item(index,i)->setTextAlignment(Qt::AlignCenter);
-        }
-    } else {
-        int index=idToRow[t.OrderSysID];
-        for (int i=0;i<headers.size();++i) {
-            model->setData(model->index(index,i),tp[i]);
+    clearData();
+    std::sort(orders.begin(),orders.end(),[](const CThostFtdcOrderField &x,const CThostFtdcOrderField &y){
+        return x.BrokerOrderSeq<y.BrokerOrderSeq;
+    });
+    for (int i=0;i<orders.size();++i) {
+        QList<QString>tp=formatData(orders[i]);
+        for (int j=0;j<headers.size();++j) {
+            model->setItem(i,j,new QStandardItem(tp[j]));
+            model->item(i,j)->setTextAlignment(Qt::AlignCenter);
         }
     }
 }
