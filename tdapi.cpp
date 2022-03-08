@@ -41,7 +41,7 @@ void TdApi::OnFrontDisconnected(int nReason)
     emit sendConnectionStatus(false);
 }
 
-void TdApi::reqAuthenticate()
+int TdApi::reqAuthenticate()
 {
     CThostFtdcReqAuthenticateField a = {{0}};
     strcpy_s(a.BrokerID, userInfo.brokerId.toStdString().c_str());
@@ -50,6 +50,7 @@ void TdApi::reqAuthenticate()
     strcpy_s(a.AppID, userInfo.appId.toStdString().c_str());
     int code=api->ReqAuthenticate(&a, ++nRequestID);
     iDebug<<"请求客户端认证"<<Util::convertApiReturnValueToText(code);
+	return code;
 }
 
 void TdApi::OnRspAuthenticate(CThostFtdcRspAuthenticateField *pRspAuthenticateField, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
@@ -59,7 +60,7 @@ void TdApi::OnRspAuthenticate(CThostFtdcRspAuthenticateField *pRspAuthenticateFi
     else emit sendError("交易认证失败");
 }
 
-void TdApi::login()
+int TdApi::login()
 {
     CThostFtdcReqUserLoginField t={{0}};
     strcpy_s(t.BrokerID,userInfo.brokerId.toStdString().c_str());
@@ -67,6 +68,7 @@ void TdApi::login()
     strcpy_s(t.Password,userInfo.password.toStdString().c_str());
     int code=api->ReqUserLogin(&t,++nRequestID);
     iDebug<<"请求登录"<<Util::convertApiReturnValueToText(code);
+	return code;
 }
 void TdApi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
@@ -171,10 +173,11 @@ void TdApi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CThostFtd
         emit sendAllInstruments(instruments);
     }
 }
-void TdApi::reqOrderInsert(CThostFtdcInputOrderField t)
+int TdApi::reqOrderInsert(CThostFtdcInputOrderField t)
 {
    int code=api->ReqOrderInsert(&t,++nRequestID);
    iDebug<<"请求报单录入"<<Util::convertApiReturnValueToText(code);
+   return code;
 }
 void TdApi::OnRspOrderInsert(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {

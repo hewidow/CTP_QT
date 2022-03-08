@@ -64,5 +64,5 @@ void Engine::receiveAllInstruments(QVector<InstrumentField>instruments)
 
 void Engine::receiveReqOrderInsert(CThostFtdcInputOrderField t)
 {
-    tdApi.reqOrderInsert(t);
+	addCommand(std::make_shared<ReqOrderInsertCommand>(t));
 }

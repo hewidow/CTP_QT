@@ -7,6 +7,7 @@
 #include "mdapi.h"
 #include "tdapi.h"
 #include "command.h"
+#include "util.h"
 
 class Engine:public QThread
 {

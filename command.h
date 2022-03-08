@@ -27,7 +27,6 @@ public:
 private:
     LoginField data;
 };
-
 class ReqSettlementInfoConfirmCommand:public Command{
 public:
     ReqSettlementInfoConfirmCommand(){};
@@ -65,5 +64,14 @@ public:
     int execute(TdApi *tdApi) {
         return tdApi->fetchAllInstruments();
     };
+};
+class ReqOrderInsertCommand :public Command {
+public:
+	ReqOrderInsertCommand(CThostFtdcInputOrderField _t) :Command(), t(_t) {};
+	int execute(TdApi *tdApi) {
+		return tdApi->reqOrderInsert(t);
+	};
+private:
+	CThostFtdcInputOrderField t;
 };
 #endif // COMMAND_H

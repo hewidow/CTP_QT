@@ -15,14 +15,14 @@ public:
     explicit TdApi(QObject *parent = nullptr);
     int release(); // 释放api
     int connect(LoginField); // 设置连接
-    void reqAuthenticate(); // 客户端认证
-    void login(); // 登录
+    int reqAuthenticate(); // 客户端认证
+    int login(); // 登录
     int reqSettlementInfoConfirm(); // 投资者结算结果确认，在开始每日交易前都需要先确认上一日结算单，只需要确认一次
     int reqQryTradingAccount(); // 请求查询资金账户
     int reqQryInvestorPosition(); // 请求查询投资者持仓
     int reqQryOrder(); // 请求查询报单
     int fetchAllInstruments(); // 查询正在交易的合约列表
-    void reqOrderInsert(CThostFtdcInputOrderField); // 请求报单录入
+    int reqOrderInsert(CThostFtdcInputOrderField); // 请求报单录入
     void test1();
     void test2();
 
