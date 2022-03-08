@@ -1,7 +1,7 @@
 ﻿#ifndef ENGINE_H
 #define ENGINE_H
 
-#include <QQueue>
+#include <queue>
 #include <mutex>
 #include <QThread>
 #include "mdapi.h"
@@ -15,7 +15,7 @@ public:
     Engine();
     ~Engine();
     void run() override; // 每秒运行一个tdApi
-    void addCommand(Command*); // 添加命令
+    void addCommand(std::shared_ptr<Command>); // 添加命令
     void release(); // 释放api
     void tradeInit(); // 结算结果确认
     void getAccountDetail(); // 依次请求用户资金信息、持仓信息、报单信息
@@ -28,7 +28,7 @@ public:
     MdApi mdApi; // 行情api
     TdApi tdApi; // 交易api
 private:
-    QQueue<Command*>commandQueue;
+    std::queue<std::shared_ptr<Command>>commandQueue;
     std::mutex queueMutex; // 队列锁
     bool working=true; // 通知工作线程
 };

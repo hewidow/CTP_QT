@@ -19,7 +19,9 @@ void MdApi::release()
 {
     if (api!=nullptr) {
         iDebug<<"释放行情api";
+        api->RegisterSpi(NULL);
         api->Release();
+        api=nullptr;
     }
 }
 void MdApi::login()

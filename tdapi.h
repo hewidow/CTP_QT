@@ -13,8 +13,8 @@ class TdApi : public QObject,public CThostFtdcTraderSpi
     Q_OBJECT
 public:
     explicit TdApi(QObject *parent = nullptr);
-    void release(); // 释放api
-    void connect(LoginField); // 设置连接
+    int release(); // 释放api
+    int connect(LoginField); // 设置连接
     void reqAuthenticate(); // 客户端认证
     void login(); // 登录
     int reqSettlementInfoConfirm(); // 投资者结算结果确认，在开始每日交易前都需要先确认上一日结算单，只需要确认一次

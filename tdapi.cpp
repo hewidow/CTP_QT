@@ -4,14 +4,17 @@ TdApi::TdApi(QObject *parent) : QObject(parent)
 {
    api=nullptr;
 }
-void TdApi::release()
+int TdApi::release()
 {
     if (api!=nullptr) {
         iDebug<<"释放交易api";
+        api->RegisterSpi(NULL);
         api->Release();
+        api=nullptr;
     }
+    return 0; // 本地操作，api总是执行成功
 }
-void TdApi::connect(LoginField u)
+int TdApi::connect(LoginField u)
 {
     QDir dir;
     if (!dir.exists(SUBSCRIBE_INFO_PATH)) dir.mkpath(SUBSCRIBE_INFO_PATH);
@@ -24,6 +27,7 @@ void TdApi::connect(LoginField u)
     api->Init(); // 初始化运行环境
     userInfo=u; // 复制登录账户信息
     iDebug<<"交易地址"<<u.tdAddress;
+    return 0; // 本地操作，api总是执行成功
 }
 void TdApi::OnFrontConnected()
 {

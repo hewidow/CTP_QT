@@ -6,48 +6,63 @@
 // 命令模板
 class Command {
 public:
-    Command(TdApi *_tdApi):tdApi(_tdApi){};
-    ~Command(){tdApi=nullptr;};
-    virtual int execute()=0;
-protected:
-    TdApi *tdApi;
+    Command(){};
+    ~Command(){};
+    virtual int execute(TdApi *tdApi)=0;
+};
+// 设置ReleaseCommand和ConnectCommand是为了让所有的tdApi都走commandQueue，省去引入锁
+class ReleaseCommand: public Command {
+public:
+    ReleaseCommand(){};
+    int execute(TdApi *tdApi) {
+        return tdApi->release();
+    };
+};
+class ConnectCommand:public Command{
+public:
+    ConnectCommand(LoginField _data):Command(),data(_data){};
+    int execute(TdApi *tdApi) {
+        return tdApi->connect(data);
+    };
+private:
+    LoginField data;
 };
 
 class ReqSettlementInfoConfirmCommand:public Command{
 public:
-    ReqSettlementInfoConfirmCommand(TdApi *_tdApi):Command(_tdApi){};
-    int execute() {
+    ReqSettlementInfoConfirmCommand(){};
+    int execute(TdApi *tdApi) {
         return tdApi->reqSettlementInfoConfirm();
     };
 };
 
 class ReqQryTradingAccountCommand:public Command{
 public:
-    ReqQryTradingAccountCommand(TdApi *_tdApi):Command(_tdApi){};
-    int execute() {
+    ReqQryTradingAccountCommand(){};
+    int execute(TdApi *tdApi) {
         return tdApi->reqQryTradingAccount();
     };
 };
 
 class ReqQryInvestorPositionCommand:public Command{
 public:
-    ReqQryInvestorPositionCommand(TdApi *_tdApi):Command(_tdApi){};
-    int execute() {
+    ReqQryInvestorPositionCommand(){};
+    int execute(TdApi *tdApi) {
         return tdApi->reqQryInvestorPosition();
     };
 };
 
 class ReqQryOrderCommand:public Command{
 public:
-    ReqQryOrderCommand(TdApi *_tdApi):Command(_tdApi){};
-    int execute() {
+    ReqQryOrderCommand(){};
+    int execute(TdApi *tdApi) {
         return tdApi->reqQryOrder();
     };
 };
 class FetchAllInstrumentsCommand:public Command{
 public:
-    FetchAllInstrumentsCommand(TdApi *_tdApi):Command(_tdApi){};
-    int execute() {
+    FetchAllInstrumentsCommand(){};
+    int execute(TdApi *tdApi) {
         return tdApi->fetchAllInstruments();
     };
 };

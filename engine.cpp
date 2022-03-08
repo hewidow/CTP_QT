@@ -17,44 +17,44 @@ void Engine::run(){
             int result = INT_MAX;
             {
                 std::lock_guard<std::mutex>lock(queueMutex);
-                Command *command = commandQueue.first();
-                result = command->execute();
-                if (result==0) commandQueue.pop_front();
+                std::shared_ptr<Command>command = commandQueue.front();
+                result = command->execute(&tdApi);
+                if (result==0) commandQueue.pop();
             }
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
     }
 }
-void Engine::addCommand(Command *c)
+void Engine::addCommand(std::shared_ptr<Command> newCommand)
 {
     std::lock_guard<std::mutex>lock(queueMutex);
-    commandQueue.enqueue(c);
+    commandQueue.push(newCommand);
 }
 void Engine::release()
 {
     mdApi.release();
-    tdApi.release();
+    addCommand(std::make_shared<ReleaseCommand>());
 }
 void Engine::receiveLoginField(LoginField data)
 {
     mdApi.connect(data);
-    tdApi.connect(data);
+    addCommand(std::make_shared<ConnectCommand>(data));
 }
 void Engine::tradeInit()
 {
-    addCommand(new ReqSettlementInfoConfirmCommand(&tdApi));
+    addCommand(std::make_shared<ReqSettlementInfoConfirmCommand>());
 }
 
 void Engine::getAccountDetail()
 {
-    addCommand(new ReqQryTradingAccountCommand(&tdApi));
-    addCommand(new ReqQryInvestorPositionCommand(&tdApi));
-    addCommand(new ReqQryOrderCommand(&tdApi));
+    addCommand(std::make_shared<ReqQryTradingAccountCommand>());
+    addCommand(std::make_shared<ReqQryInvestorPositionCommand>());
+    addCommand(std::make_shared<ReqQryOrderCommand>());
 }
 
 void Engine::getQuotes()
 {
-    addCommand(new FetchAllInstrumentsCommand(&tdApi));
+    addCommand(std::make_shared<FetchAllInstrumentsCommand>());
 }
 
 void Engine::receiveAllInstruments(QVector<InstrumentField>instruments)
