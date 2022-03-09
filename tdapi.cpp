@@ -30,13 +30,13 @@ int TdApi::connect(LoginField u)
 }
 void TdApi::OnFrontConnected()
 {
-    iDebug<<"交易连接成功";
+    iDebug<<"交易连接响应"<<"→"<<"成功";
     emit sendConnectionStatus(true);
 	emit sendReqAuthenticateCommand();
 }
 void TdApi::OnFrontDisconnected(int nReason)
 {
-    iDebug<<"交易连接断开"<<QString::number(nReason,16);
+    iDebug<<"交易连接断开"<<"错误码:"<<QString::number(nReason,16);
     emit sendConnectionStatus(false);
 }
 

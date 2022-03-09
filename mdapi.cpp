@@ -17,7 +17,7 @@ void MdApi::connect(LoginField u)
 }
 void MdApi::release()
 {
-	iDebug << "释放行情api";
+	iDebug << "释放行情API";
     if (api!=nullptr) {
         api->RegisterSpi(NULL);
         api->Release();
@@ -41,8 +41,8 @@ void MdApi::subscribe(QVector<InstrumentField>instruments)
         pInstrument[i]=Util::convertQStringToCharPoint(instruments[i].InstrumentID);
     }
     int val=api->SubscribeMarketData(pInstrument, len);
-    iDebug<<"订阅合约数"<<len;
-    iDebug<<"订阅请求"<<Util::convertApiReturnValueToText(val);
+    iDebug<<"订阅合约总数"<<len;
+    iDebug<<"请求订阅合约"<<Util::convertApiReturnValueToText(val);
 }
 
 void MdApi::OnFrontConnected()
@@ -53,7 +53,7 @@ void MdApi::OnFrontConnected()
 }
 void MdApi::OnFrontDisconnected(int nReason)
 {
-    iDebug<<"行情连接断开"<<QString::number(nReason,16);
+    iDebug<<"行情连接断开"<<"错误码:"<<QString::number(nReason,16);
     emit sendConnectionStatus(false);
 }
 void MdApi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
@@ -64,7 +64,7 @@ void MdApi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtd
 }
 void MdApi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMarketData)
 {
-    // iDebug<<"订阅响应"<<pDepthMarketData->InstrumentID<<pDepthMarketData->LastPrice;
+    // iDebug<<"订阅合约响应"<<pDepthMarketData->InstrumentID<<pDepthMarketData->LastPrice;
     InstrumentField tp=instrumentsMap[pDepthMarketData->InstrumentID];
     emit sendRtnDepthMarketData(QuoteField{
         tp.ExchangeID,

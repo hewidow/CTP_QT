@@ -23,7 +23,7 @@ public:
 class ConnectCommand :public Command {
 public:
 	ConnectCommand(LoginField _data) :Command(), data(_data) {};
-	QString name() { return "请求连接交易"; };
+	QString name() { return "请求交易连接"; };
 	int execute(TdApi *tdApi) {
 		return tdApi->connect(data);
 	};
