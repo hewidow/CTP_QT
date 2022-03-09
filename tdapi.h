@@ -21,7 +21,7 @@ public:
     int reqQryTradingAccount(); // 请求查询资金账户
     int reqQryInvestorPosition(); // 请求查询投资者持仓
     int reqQryOrder(); // 请求查询报单
-    int fetchAllInstruments(); // 查询正在交易的合约列表
+    int reqAllInstruments(); // 查询正在交易的合约列表
     int reqOrderInsert(CThostFtdcInputOrderField); // 请求报单录入
     void test1();
     void test2();
@@ -52,6 +52,8 @@ private:
 signals:
     void sendError(QString); // 发送错误信息
     void sendConnectionStatus(bool); // 发送连接状态
+	void sendReqAuthenticateCommand(); // 发送认证信号
+	void sendLoginCommand(); // 发送登录命令信号
     void sendRspLogin(CThostFtdcRspUserLoginField); // 登录成功响应
     void sendAllInstruments(QVector<InstrumentField>); // 所有合约收集完成信号
     void sendTradingAccount(TradingAccount); // 发送账户资金信息

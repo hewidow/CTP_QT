@@ -17,8 +17,8 @@ void MdApi::connect(LoginField u)
 }
 void MdApi::release()
 {
+	iDebug << "释放行情api";
     if (api!=nullptr) {
-        iDebug<<"释放行情api";
         api->RegisterSpi(NULL);
         api->Release();
         api=nullptr;

@@ -50,6 +50,8 @@ void MainWindow::init()
     /* tdApi */
     connect(&engine.tdApi,&TdApi::sendError,this,&MainWindow::receiveError);
     connect(&engine.tdApi,&TdApi::sendConnectionStatus,this,&MainWindow::receiveTdConnectionStatus);
+	connect(&engine.tdApi,&TdApi::sendReqAuthenticateCommand, &engine, &Engine::receiveReqAuthenticateCommand);
+	connect(&engine.tdApi,&TdApi::sendLoginCommand, &engine, &Engine::receiveLoginCommand);
     connect(&engine.tdApi,&TdApi::sendRspLogin,this,&MainWindow::receiveRspLoginTd);
     connect(&engine.tdApi,&TdApi::sendAllInstruments,&engine,&Engine::receiveAllInstruments);
     connect(&engine.tdApi,&TdApi::sendTradingAccount,ui->fundTable,&FundTable::receiveTradingAccount);
@@ -62,7 +64,7 @@ void MainWindow::init()
     connect(&trade,&Trade::sendReqOrderInsert,&engine,&Engine::receiveReqOrderInsert);
 
     login.show();
-    engine.start(); // 开启子线程
+    // engine.start(); // 开启子线程
 }
 void MainWindow::receiveError(QString msg)
 {

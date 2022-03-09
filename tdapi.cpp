@@ -7,7 +7,6 @@ TdApi::TdApi(QObject *parent) : QObject(parent)
 int TdApi::release()
 {
     if (api!=nullptr) {
-        iDebug<<"释放交易api";
         api->RegisterSpi(NULL);
         api->Release();
         api=nullptr;
@@ -33,7 +32,7 @@ void TdApi::OnFrontConnected()
 {
     iDebug<<"交易连接成功";
     emit sendConnectionStatus(true);
-    reqAuthenticate();
+	emit sendReqAuthenticateCommand();
 }
 void TdApi::OnFrontDisconnected(int nReason)
 {
@@ -48,15 +47,13 @@ int TdApi::reqAuthenticate()
     strcpy_s(a.UserID, userInfo.userId.toStdString().c_str());
     strcpy_s(a.AuthCode, userInfo.authCode.toStdString().c_str());
     strcpy_s(a.AppID, userInfo.appId.toStdString().c_str());
-    int code=api->ReqAuthenticate(&a, ++nRequestID);
-    iDebug<<"请求客户端认证"<<Util::convertApiReturnValueToText(code);
-	return code;
+    return api->ReqAuthenticate(&a, ++nRequestID);
 }
 
 void TdApi::OnRspAuthenticate(CThostFtdcRspAuthenticateField *pRspAuthenticateField, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-    rDebug("认证响应",pRspInfo);
-    if (pRspInfo->ErrorID==0) login();
+    rDebug("客户端认证响应",pRspInfo);
+    if (pRspInfo->ErrorID==0) emit sendLoginCommand();
     else emit sendError("交易认证失败");
 }
 
@@ -66,9 +63,7 @@ int TdApi::login()
     strcpy_s(t.BrokerID,userInfo.brokerId.toStdString().c_str());
     strcpy_s(t.UserID,userInfo.userId.toStdString().c_str());
     strcpy_s(t.Password,userInfo.password.toStdString().c_str());
-    int code=api->ReqUserLogin(&t,++nRequestID);
-    iDebug<<"请求登录"<<Util::convertApiReturnValueToText(code);
-	return code;
+	return api->ReqUserLogin(&t, ++nRequestID);
 }
 void TdApi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
@@ -83,9 +78,7 @@ int TdApi::reqSettlementInfoConfirm()
     CThostFtdcSettlementInfoConfirmField Confirm = { {0} };
     strcpy_s(Confirm.BrokerID, userInfo.brokerId.toStdString().c_str());
     strcpy_s(Confirm.InvestorID, userInfo.userId.toStdString().c_str());
-    int code=api->ReqSettlementInfoConfirm(&Confirm, nRequestID++);
-    iDebug<<"请求投资者结算结果确认"<<Util::convertApiReturnValueToText(code);
-    return code;
+    return api->ReqSettlementInfoConfirm(&Confirm, nRequestID++);
 }
 void TdApi::OnRspSettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField *pSettlementInfoConfirm, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
@@ -97,9 +90,7 @@ int TdApi::reqQryTradingAccount()
     strcpy_s(a.BrokerID, userInfo.brokerId.toStdString().c_str());
     strcpy_s(a.InvestorID, userInfo.userId.toStdString().c_str());
     strcpy_s(a.CurrencyID, "CNY");
-    int code=api->ReqQryTradingAccount(&a,++nRequestID);
-    iDebug<<"请求查询资金账户"<<Util::convertApiReturnValueToText(code);
-    return code;
+    return api->ReqQryTradingAccount(&a, ++nRequestID);
 }
 void TdApi::OnRspQryTradingAccount(CThostFtdcTradingAccountField *pTradingAccount, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
@@ -116,9 +107,7 @@ int TdApi::reqQryInvestorPosition()
     CThostFtdcQryInvestorPositionField a = {{0}};
     strcpy_s(a.BrokerID, userInfo.brokerId.toStdString().c_str());
     strcpy_s(a.InvestorID, userInfo.userId.toStdString().c_str());
-    int code=api->ReqQryInvestorPosition(&a, ++nRequestID);
-    iDebug<<"请求查询投资者持仓"<<Util::convertApiReturnValueToText(code);
-    return code;
+    return api->ReqQryInvestorPosition(&a, ++nRequestID);
 }
 
 void TdApi::OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pInvestorPosition, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
@@ -136,9 +125,7 @@ int TdApi::reqQryOrder()
     CThostFtdcQryOrderField a = { {0} };
     strcpy_s(a.BrokerID, userInfo.brokerId.toStdString().c_str());
     strcpy_s(a.InvestorID, userInfo.userId.toStdString().c_str());
-    int code=api->ReqQryOrder(&a, ++nRequestID);
-    iDebug<<"请求查询报单"<<Util::convertApiReturnValueToText(code);
-    return code;
+    return api->ReqQryOrder(&a, ++nRequestID);
 }
 
 void TdApi::OnRspQryOrder(CThostFtdcOrderField *pOrder, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
@@ -150,13 +137,11 @@ void TdApi::OnRspQryOrder(CThostFtdcOrderField *pOrder, CThostFtdcRspInfoField *
         emit sendOrders(orders);
     }
 }
-int TdApi::fetchAllInstruments()
+int TdApi::reqAllInstruments()
 {
     instruments.clear(); // 清空合约记录的容器
     CThostFtdcQryInstrumentField a = {{0}};
-    int code=api->ReqQryInstrument(&a,++nRequestID);
-    iDebug<<"请求查询所有合约"<<Util::convertApiReturnValueToText(code);
-    return code;
+    return api->ReqQryInstrument(&a, ++nRequestID);
 }
 void TdApi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
@@ -175,9 +160,7 @@ void TdApi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CThostFtd
 }
 int TdApi::reqOrderInsert(CThostFtdcInputOrderField t)
 {
-   int code=api->ReqOrderInsert(&t,++nRequestID);
-   iDebug<<"请求报单录入"<<Util::convertApiReturnValueToText(code);
-   return code;
+   return api->ReqOrderInsert(&t, ++nRequestID);
 }
 void TdApi::OnRspOrderInsert(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
