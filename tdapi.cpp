@@ -42,7 +42,7 @@ void TdApi::OnFrontDisconnected(int nReason)
 
 int TdApi::reqAuthenticate()
 {
-    CThostFtdcReqAuthenticateField a = {{0}};
+    CThostFtdcReqAuthenticateField a = { 0 };
     strcpy_s(a.BrokerID, userInfo.brokerId.toStdString().c_str());
     strcpy_s(a.UserID, userInfo.userId.toStdString().c_str());
     strcpy_s(a.AuthCode, userInfo.authCode.toStdString().c_str());
@@ -59,7 +59,7 @@ void TdApi::OnRspAuthenticate(CThostFtdcRspAuthenticateField *pRspAuthenticateFi
 
 int TdApi::login()
 {
-    CThostFtdcReqUserLoginField t={{0}};
+    CThostFtdcReqUserLoginField t={ 0 };
     strcpy_s(t.BrokerID,userInfo.brokerId.toStdString().c_str());
     strcpy_s(t.UserID,userInfo.userId.toStdString().c_str());
     strcpy_s(t.Password,userInfo.password.toStdString().c_str());
@@ -75,7 +75,7 @@ void TdApi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtd
 }
 int TdApi::reqSettlementInfoConfirm()
 {
-    CThostFtdcSettlementInfoConfirmField Confirm = { {0} };
+    CThostFtdcSettlementInfoConfirmField Confirm = { 0 };
     strcpy_s(Confirm.BrokerID, userInfo.brokerId.toStdString().c_str());
     strcpy_s(Confirm.InvestorID, userInfo.userId.toStdString().c_str());
     return api->ReqSettlementInfoConfirm(&Confirm, nRequestID++);
@@ -86,7 +86,7 @@ void TdApi::OnRspSettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField *pSe
 }
 int TdApi::reqQryTradingAccount()
 {
-    CThostFtdcQryTradingAccountField a = {{0}};
+    CThostFtdcQryTradingAccountField a = { 0 };
     strcpy_s(a.BrokerID, userInfo.brokerId.toStdString().c_str());
     strcpy_s(a.InvestorID, userInfo.userId.toStdString().c_str());
     strcpy_s(a.CurrencyID, "CNY");
@@ -104,7 +104,7 @@ void TdApi::OnRspQryTradingAccount(CThostFtdcTradingAccountField *pTradingAccoun
 int TdApi::reqQryInvestorPosition()
 {
     positions.clear(); // 清空持仓记录的容器
-    CThostFtdcQryInvestorPositionField a = {{0}};
+    CThostFtdcQryInvestorPositionField a = { 0 };
     strcpy_s(a.BrokerID, userInfo.brokerId.toStdString().c_str());
     strcpy_s(a.InvestorID, userInfo.userId.toStdString().c_str());
     return api->ReqQryInvestorPosition(&a, ++nRequestID);
@@ -122,7 +122,7 @@ void TdApi::OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pInvestorP
 int TdApi::reqQryOrder()
 {
     orders.clear(); // 清空报单记录的容器
-    CThostFtdcQryOrderField a = { {0} };
+    CThostFtdcQryOrderField a = { 0 };
     strcpy_s(a.BrokerID, userInfo.brokerId.toStdString().c_str());
     strcpy_s(a.InvestorID, userInfo.userId.toStdString().c_str());
     return api->ReqQryOrder(&a, ++nRequestID);
@@ -140,7 +140,7 @@ void TdApi::OnRspQryOrder(CThostFtdcOrderField *pOrder, CThostFtdcRspInfoField *
 int TdApi::reqAllInstruments()
 {
     instruments.clear(); // 清空合约记录的容器
-    CThostFtdcQryInstrumentField a = {{0}};
+    CThostFtdcQryInstrumentField a = { 0 };
     return api->ReqQryInstrument(&a, ++nRequestID);
 }
 void TdApi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
@@ -160,40 +160,47 @@ void TdApi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CThostFtd
 }
 int TdApi::reqOrderInsert(CThostFtdcInputOrderField t)
 {
-   return api->ReqOrderInsert(&t, ++nRequestID);
+    return api->ReqOrderInsert(&t, ++nRequestID);
 }
 void TdApi::OnRspOrderInsert(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-    rDebug("OnRspOrderInsert字段填写不对",pRspInfo);
+    rDebug("报单录入响应",pRspInfo);
 }
 
 void TdApi::OnErrRtnOrderInsert(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo)
 {
-    rDebug("OnErrRtnOrderInsert字段填写不对",pRspInfo);
+    // 一个用户多连接的情况下，当前连接会通过此接口收到其他连接的报单录入错误回报
+    // rDebug("报单录入错误回报",pRspInfo);
 }
-
 void TdApi::OnRtnOrder(CThostFtdcOrderField *pOrder)
 {
-    iDebug<<"OnRtnOrder";
+    CThostFtdcRspInfoField *pRspInfo=nullptr;
+    rDebug("报单录入响应",pRspInfo);
+    emit sendOrderChange();
 }
 
 void TdApi::OnRtnTrade(CThostFtdcTradeField *pTrade)
 {
-    iDebug<<"OnRtnTrade成交通知";
+    iDebug<<"报单成交通知";
+    emit sendOrderChange();
 }
+int TdApi::reqOrderAction(CThostFtdcInputOrderActionField t)
+{
+    return api->ReqOrderAction(&t, ++nRequestID);
+}
+void TdApi::OnRspOrderAction(CThostFtdcInputOrderActionField* pInputOrderAction, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast)
+{
+    rDebug("报单操作响应", pRspInfo);
+}
+void TdApi::OnErrRtnOrderAction(CThostFtdcOrderActionField* pOrderAction, CThostFtdcRspInfoField* pRspInfo)
+{
+    // 一个用户多连接的情况下，当前连接会通过此接口收到其他连接的报单操作错误回报
+    // rDebug("报单操作错误回报",pRspInfo);
+}
+
 void TdApi::test1(){
 
 }
 void TdApi::test2(){
 
-    CThostFtdcOrderField t={{0}};
-    strcpy_s(t.OrderSysID,QString("test"+QString::number(qrand())).toStdString().c_str());
-    strcpy_s(t.InstrumentID,"Test");
-    t.Direction =  char((int)'0'+qrand()%2);
-    t.LimitPrice = 1234.56;
-    t.VolumeTotalOriginal = 1234;
-    t.VolumeTotal = 5678;
-    t.OrderStatus = '0';
-    strcpy_s(t.InsertTime,"12:00:01");
-    emit sendOrders({t});
 }

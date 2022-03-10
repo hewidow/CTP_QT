@@ -8,9 +8,8 @@
 class LedLabel : public QWidget
 {
 public:
-    explicit LedLabel(QWidget *parent = nullptr,QString text="");
-    void setColor(QString color="red");
-    void setText(QString text);
+    explicit LedLabel(QWidget *parent = nullptr, QString color = "red",QString text="");
+    void setStatus(QString color="red", QString text="");
 private:
     QLabel *led;
     QLabel *label;

@@ -16,6 +16,20 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QFormLayout" name="formLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>交易所代码</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="ExchangeID">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
      <item row="1" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
@@ -23,35 +37,15 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>买卖方向</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>价格</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>数量</string>
-       </property>
-      </widget>
-     </item>
      <item row="1" column="1">
       <widget class="QLineEdit" name="InstrumentID"/>
      </item>
-     <item row="3" column="1">
-      <widget class="QLineEdit" name="LimitPrice"/>
-     </item>
-     <item row="4" column="1">
-      <widget class="QLineEdit" name="VolumeTotalOriginal"/>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>买卖方向（添加生效）</string>
+       </property>
+      </widget>
      </item>
      <item row="2" column="1">
       <widget class="QComboBox" name="Direction">
@@ -67,28 +61,55 @@
        </item>
       </widget>
      </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_5">
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_3">
        <property name="text">
-        <string>交易所代码</string>
+        <string>价格（添加生效）</string>
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="ExchangeID">
+     <item row="3" column="1">
+      <widget class="QLineEdit" name="LimitPrice"/>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_4">
        <property name="text">
-        <string/>
+        <string>数量（添加生效）</string>
        </property>
       </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QLineEdit" name="VolumeTotalOriginal"/>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>报单编号（删除生效）</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QLineEdit" name="OrderSysID"/>
      </item>
     </layout>
    </item>
    <item>
-    <widget class="QPushButton" name="pushButton">
-     <property name="text">
-      <string>委托</string>
-     </property>
-    </widget>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QPushButton" name="add">
+       <property name="text">
+        <string>添加</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="del">
+       <property name="text">
+        <string>删除</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
@@ -98,7 +119,6 @@
   <tabstop>Direction</tabstop>
   <tabstop>LimitPrice</tabstop>
   <tabstop>VolumeTotalOriginal</tabstop>
-  <tabstop>pushButton</tabstop>
  </tabstops>
  <resources/>
  <connections/>

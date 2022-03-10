@@ -234,7 +234,7 @@ QTabWidget::pane{
 </string>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="bottomRightTab_1">
          <attribute name="title">
@@ -342,15 +342,15 @@ QMenuBar::item:selected{
     <property name="title">
      <string>功能</string>
     </property>
-    <addaction name="action_5"/>
-    <addaction name="action_6"/>
+    <addaction name="trade"/>
+    <addaction name="strategy"/>
    </widget>
    <widget class="QMenu" name="test">
     <property name="title">
      <string>测试</string>
     </property>
-    <addaction name="action"/>
-    <addaction name="action_2"/>
+    <addaction name="test1"/>
+    <addaction name="test2"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="test"/>
@@ -361,22 +361,22 @@ QMenuBar::item:selected{
 background-color: rgb(0, 0, 0);</string>
    </property>
   </widget>
-  <action name="action">
+  <action name="test1">
    <property name="text">
     <string>测试1</string>
    </property>
   </action>
-  <action name="action_2">
+  <action name="test2">
    <property name="text">
     <string>测试2</string>
    </property>
   </action>
-  <action name="action_5">
+  <action name="trade">
    <property name="text">
     <string>交易</string>
    </property>
   </action>
-  <action name="action_6">
+  <action name="strategy">
    <property name="text">
     <string>策略</string>
    </property>

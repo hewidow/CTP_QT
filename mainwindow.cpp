@@ -6,10 +6,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
-    userStatus=new QLabel("当前用户：未登录",this);
-    mdStatus=new LedLabel(this,"行情连接");
-    tdStatus=new LedLabel(this,"交易连接");
+    userStatus=new QLabel("当前用户：未登录 ",this);
+    mdStatus=new LedLabel(this, "red", "行情未连接");
+    tdStatus=new LedLabel(this, "red", "交易未连接");
     ui->statusbar->addPermanentWidget(userStatus);
     ui->statusbar->addPermanentWidget(mdStatus);
     ui->statusbar->addPermanentWidget(tdStatus);
@@ -39,6 +38,8 @@ void MainWindow::init()
     qRegisterMetaType<QVector<CThostFtdcInvestorPositionField>>("QVector<CThostFtdcInvestorPositionField>");
     qRegisterMetaType<QVector<CThostFtdcOrderField>>("QVector<CThostFtdcOrderField>");
     qRegisterMetaType<CThostFtdcOrderField>("CThostFtdcOrderField");
+    qRegisterMetaType<CThostFtdcInputOrderField>("CThostFtdcInputOrderField");
+    qRegisterMetaType<CThostFtdcInputOrderActionField>("CThostFtdcInputOrderActionField");
 
     // 信号槽连接
     /* mdApi */
@@ -57,14 +58,15 @@ void MainWindow::init()
     connect(&engine.tdApi,&TdApi::sendTradingAccount,ui->fundTable,&FundTable::receiveTradingAccount);
     connect(&engine.tdApi,&TdApi::sendInvestorPositions,ui->posTable,&PosTable::receiveInvestorPositions);
     connect(&engine.tdApi,&TdApi::sendOrders,ui->entrustTable,&EntrustTable::receiveOrders);
+    connect(&engine.tdApi,&TdApi::sendOrderChange,&engine,&Engine::receiveOrderChange);
 
     /* other */
     connect(this,&MainWindow::sendLog,this,&MainWindow::receiveLog);
     connect(&login,&Login::sendLoginField,&engine,&Engine::receiveLoginField);
     connect(&trade,&Trade::sendReqOrderInsert,&engine,&Engine::receiveReqOrderInsert);
+    connect(&trade,&Trade::sendReqOrderAction,&engine,&Engine::receiveReqOrderAction);
 
     login.show();
-    // engine.start(); // 开启子线程
 }
 void MainWindow::receiveError(QString msg)
 {
@@ -72,12 +74,14 @@ void MainWindow::receiveError(QString msg)
 }
 void MainWindow::receiveMdConnectionStatus(bool status)
 {
-    mdStatus->setColor(status?"green":"red");
+    if (status) mdStatus->setStatus("green", "行情已连接");
+    else mdStatus->setStatus("red", "行情未连接");
 }
 
 void MainWindow::receiveTdConnectionStatus(bool status)
 {
-    tdStatus->setColor(status?"green":"red");
+    if (status) tdStatus->setStatus("green", "交易已连接");
+    else tdStatus->setStatus("red", "交易未连接");
 }
 void MainWindow::receiveRspLoginMd(CThostFtdcRspUserLoginField u)
 {
@@ -93,7 +97,7 @@ void MainWindow::receiveRspLoginTd(CThostFtdcRspUserLoginField u)
 void MainWindow::loginDone() {
     login.close();
     showMaximized();
-    userStatus->setText("当前用户："+QString(userInfo.UserID));
+    userStatus->setText("当前用户："+QString(userInfo.UserID)+" ");
     iDebug<<"当前用户"<<userInfo.UserID<<"前置编号"<<userInfo.FrontID<<"会话编号"<<userInfo.SessionID;
     engine.tradeInit();
     engine.getAccountDetail();
@@ -103,17 +107,21 @@ void MainWindow::receiveLog(QString msg)
 {
     ui->logText->append(msg);
 }
-void MainWindow::on_action_triggered()
-{
-    engine.getAccountDetail();
-}
 
-void MainWindow::on_action_2_triggered()
-{
-    engine.tdApi.test2();
-}
-
-void MainWindow::on_action_5_triggered()
+void MainWindow::on_trade_triggered()
 {
     trade.showDialog(userInfo);
+}
+void MainWindow::on_strategy_triggered()
+{
+    
+}
+void MainWindow::on_test1_triggered()
+{
+
+}
+
+void MainWindow::on_test2_triggered()
+{
+
 }

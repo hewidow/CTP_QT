@@ -28,6 +28,8 @@ public slots:
 	void receiveLoginCommand(); // 添加登录命令的信号
     void receiveAllInstruments(QVector<InstrumentField>); // 获取所有合约id回调
     void receiveReqOrderInsert(CThostFtdcInputOrderField); // 新建报单
+    void receiveReqOrderAction(CThostFtdcInputOrderActionField); // 操作报单
+    void receiveOrderChange(); // 报单变更事件
 public:
     MdApi mdApi; // 行情api
     TdApi tdApi; // 交易api

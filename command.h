@@ -99,4 +99,15 @@ public:
 private:
 	CThostFtdcInputOrderField t;
 };
+
+class ReqOrderActionCommand :public Command {
+public:
+    ReqOrderActionCommand(CThostFtdcInputOrderActionField _t) :Command(), t(_t) {};
+    QString name() { return "请求报单操作"; };
+    int execute(TdApi *tdApi) {
+        return tdApi->reqOrderAction(t);
+    };
+private:
+    CThostFtdcInputOrderActionField t;
+};
 #endif // COMMAND_H

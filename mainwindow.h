@@ -38,10 +38,11 @@ private slots:
 
     void receiveLog(QString); // 接收日志并显示在界面上
 
-    void on_action_triggered();
-    void on_action_2_triggered();
+    void on_trade_triggered();
+    void on_strategy_triggered();
 
-    void on_action_5_triggered();
+    void on_test1_triggered();
+    void on_test2_triggered();
 
 private:
     Ui::MainWindow *ui;

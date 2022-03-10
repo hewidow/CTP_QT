@@ -16,11 +16,11 @@ Trade::~Trade()
 void Trade::showDialog(CThostFtdcRspUserLoginField u)
 {
     userInfo=u;
-    exec();
+    show();
 }
-void Trade::on_pushButton_clicked()
+void Trade::on_add_clicked()
 {
-    CThostFtdcInputOrderField ord = { {0} };
+    CThostFtdcInputOrderField ord = { 0 };
 
     strcpy_s(ord.ExchangeID, ui->ExchangeID->text().toStdString().c_str());
     strcpy_s(ord.InstrumentID, ui->InstrumentID->text().toStdString().c_str());
@@ -43,5 +43,18 @@ void Trade::on_pushButton_clicked()
     ord.ForceCloseReason = THOST_FTDC_FCC_NotForceClose; // 强平原因
     ord.IsAutoSuspend = 0; // 自动挂起标志
 
-    sendReqOrderInsert(ord);
+    emit sendReqOrderInsert(ord);
+}
+void Trade::on_del_clicked()
+{
+    CThostFtdcInputOrderActionField a = { 0 };
+    strcpy_s(a.BrokerID, userInfo.BrokerID);
+    strcpy_s(a.InvestorID, userInfo.UserID);
+    strcpy_s(a.UserID, userInfo.UserID);
+    strcpy_s(a.OrderSysID,("        " + ui->OrderSysID->text()).toStdString().c_str());  //对应要撤报单的OrderSysID，有8个空格的前缀
+    strcpy_s(a.ExchangeID, ui->ExchangeID->text().toStdString().c_str());
+    strcpy_s(a.InstrumentID, ui->InstrumentID->text().toStdString().c_str());
+    a.ActionFlag = THOST_FTDC_AF_Delete;
+
+    emit sendReqOrderAction(a);
 }

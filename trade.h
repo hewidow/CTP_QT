@@ -18,9 +18,11 @@ public:
     ~Trade();
     void showDialog(CThostFtdcRspUserLoginField);
 private slots:
-    void on_pushButton_clicked();
+    void on_add_clicked();
+    void on_del_clicked();
 signals:
     void sendReqOrderInsert(CThostFtdcInputOrderField);
+    void sendReqOrderAction(CThostFtdcInputOrderActionField);
 
 private:
     Ui::Trade *ui;

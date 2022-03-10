@@ -9,7 +9,7 @@ QString Util::convertApiReturnValueToText(int val)
 {
     switch (val) {
     case 0:
-        return "发送请求成功";
+        return "成功";
     case -1:
         return "网络连接失败";
     case -2:
@@ -71,15 +71,29 @@ QString Util::convertDirectionToText(char dir)
     }
 }
 
-QString Util::convertOrderStatusToText(char status)
+QString Util::convertOrderStatusToText(TThostFtdcOrderStatusType status)
 {
     switch (status) {
-    case '0':
+    case THOST_FTDC_OST_AllTraded:
         return "全部成交";
-    case '5':
+    case THOST_FTDC_OST_PartTradedQueueing:
+        return "部分成交还在队列中";
+    case THOST_FTDC_OST_PartTradedNotQueueing:
+        return "部分成交不在队列中";
+    case THOST_FTDC_OST_NoTradeQueueing:
+        return "未成交还在队列中";
+    case THOST_FTDC_OST_NoTradeNotQueueing:
+        return "未成交不在队列中";
+    case THOST_FTDC_OST_Canceled:
         return "撤单";
-    default:
+    case THOST_FTDC_OST_Unknown:
         return "未知";
+    case THOST_FTDC_OST_NotTouched:
+        return "尚未触发";
+    case THOST_FTDC_OST_Touched:
+        return "已触发";
+    default:
+        return "未定义";
     }
 }
 

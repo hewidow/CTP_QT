@@ -2,12 +2,12 @@
 
 EntrustTable::EntrustTable(QWidget *parent) : BaseTable(parent,{"报单编号","代码","买卖方向","价格","总数量","剩余数量","状态","时间"})
 {
-
+    horizontalHeader()->setSectionResizeMode(6, QHeaderView::ResizeToContents); // 设置第6列根据内容调整宽度
 }
 QList<QString> EntrustTable::formatData(CThostFtdcOrderField o)
 {
     return {
-        Util::convertNumberToQString(o.BrokerOrderSeq),
+        QString(o.OrderSysID).trimmed(), // 去除开头空白字符
         o.InstrumentID,
         Util::convertDirectionToText(o.Direction),
         Util::convertNumberToQString(o.LimitPrice),
@@ -17,7 +17,6 @@ QList<QString> EntrustTable::formatData(CThostFtdcOrderField o)
         o.InsertTime
     };
 }
-
 void EntrustTable::receiveOrders(QVector<CThostFtdcOrderField> orders)
 {
     clearData();

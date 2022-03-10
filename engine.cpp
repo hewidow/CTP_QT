@@ -75,5 +75,15 @@ void Engine::receiveAllInstruments(QVector<InstrumentField>instruments)
 
 void Engine::receiveReqOrderInsert(CThostFtdcInputOrderField t)
 {
-	addCommand(std::make_shared<ReqOrderInsertCommand>(t));
+    addCommand(std::make_shared<ReqOrderInsertCommand>(t));
+}
+
+void Engine::receiveReqOrderAction(CThostFtdcInputOrderActionField t)
+{
+    addCommand(std::make_shared<ReqOrderActionCommand>(t));
+}
+
+void Engine::receiveOrderChange()
+{
+    getAccountDetail();
 }

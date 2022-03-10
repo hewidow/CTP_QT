@@ -26,7 +26,7 @@ void MdApi::release()
 }
 void MdApi::login()
 {
-    CThostFtdcReqUserLoginField t={{0}};
+    CThostFtdcReqUserLoginField t={ 0 };
     api->ReqUserLogin(&t, ++nRequestID);
 }
 void MdApi::subscribe(QVector<InstrumentField>instruments)

@@ -2,7 +2,7 @@
 #define UTIL_H
 
 #include <QString>
-
+#include "api/ThostFtdcUserApiStruct.h"
 
 class Util
 {
