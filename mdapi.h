@@ -14,10 +14,14 @@ class MdApi : public QObject,public CThostFtdcMdSpi
     Q_OBJECT
 public:
     explicit MdApi(QObject *parent = nullptr);
-    void release(); // 释放api
-    void connect(LoginField); // 设置连接
-    void login(); // 登录（行情登录不做校验）
-    void subscribe(QVector<InstrumentField>); // 订阅合约
+    // 释放api
+    void release();
+    // 设置连接
+    void connect(LoginField);
+    // 登录（行情登录不做校验）
+    void login();
+    // 订阅合约
+    void subscribe(QVector<InstrumentField>);
 
 private:
     void OnFrontConnected() override;
@@ -28,13 +32,17 @@ private:
 private:
     CThostFtdcMdApi *api;
     int nRequestID=0;
-    QMap<QString,InstrumentField>instrumentsMap;
+    QMap<QString,InstrumentField>instrumentsMap; // 合约id到合约的映射
 
 signals:
-    void sendError(QString); // 发送错误信息
-    void sendConnectionStatus(bool); // 发送连接状态
-    void sendRspLogin(CThostFtdcRspUserLoginField); // 登录成功响应
-    void sendRtnDepthMarketData(QuoteField); // 订阅合约响应
+    // 发送错误信息
+    void sendError(QString);
+    // 发送连接状态
+    void sendConnectionStatus(bool);
+    // 登录成功响应
+    void sendRspLogin(CThostFtdcRspUserLoginField);
+    // 订阅合约响应
+    void sendRtnDepthMarketData(QuoteField);
 };
 
 #endif // CTPAPI_H

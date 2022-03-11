@@ -19,28 +19,41 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    void logOutput(const QString &msg); // 日志输出
-    void init(); // 初始化槽函数和登录框
-    void loginDone(); // 登录完毕
+    // 日志输出
+    void logOutput(const QString &msg);
+    // 初始化槽函数和登录框
+    void init();
+    // 登录完毕
+    void loginDone();
 signals:
-    void sendLog(QString); // 解决不在ui线程更改ui的问题
+    // 解决不在ui线程更改ui的问题
+    void sendLog(QString);
 private slots:
     /* mdApi & tdApi */
-    void receiveError(QString); // 统一错误提示框
+    // 统一错误提示框
+    void receiveError(QString);
 
     /* mdApi */
-    void receiveMdConnectionStatus(bool); // md连接状态
-    void receiveRspLoginMd(CThostFtdcRspUserLoginField); // md登录成功回调
+    // md连接状态
+    void receiveMdConnectionStatus(bool);
+    // md登录成功回调
+    void receiveRspLoginMd(CThostFtdcRspUserLoginField);
 
     /* tdApi */
-    void receiveTdConnectionStatus(bool); // td连接状态
-    void receiveRspLoginTd(CThostFtdcRspUserLoginField); // td登录成功回调
+    // td连接状态
+    void receiveTdConnectionStatus(bool);
+    // td登录成功回调
+    void receiveRspLoginTd(CThostFtdcRspUserLoginField);
 
-    void receiveLog(QString); // 接收日志并显示在界面上
+    // 接收日志并显示在界面上
+    void receiveLog(QString);
 
+    // 交易菜单
     void on_trade_triggered();
+    // 策略菜单
     void on_strategy_triggered();
 
+    // 测试
     void on_test1_triggered();
     void on_test2_triggered();
 

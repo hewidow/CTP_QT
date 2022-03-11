@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     init();
 
-    // showMaximized();
+    showMaximized();
 }
 MainWindow::~MainWindow()
 {
@@ -62,7 +62,11 @@ void MainWindow::init()
 
     /* other */
     connect(this,&MainWindow::sendLog,this,&MainWindow::receiveLog);
+
+    connect(&engine, &Engine::sendError, this, &MainWindow::receiveError);
+
     connect(&login,&Login::sendLoginField,&engine,&Engine::receiveLoginField);
+
     connect(&trade,&Trade::sendReqOrderInsert,&engine,&Engine::receiveReqOrderInsert);
     connect(&trade,&Trade::sendReqOrderAction,&engine,&Engine::receiveReqOrderAction);
 
@@ -70,7 +74,7 @@ void MainWindow::init()
 }
 void MainWindow::receiveError(QString msg)
 {
-    QMessageBox::critical(this,"错误",msg);
+    QMessageBox::critical(nullptr,"错误",msg);
 }
 void MainWindow::receiveMdConnectionStatus(bool status)
 {

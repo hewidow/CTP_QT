@@ -7,6 +7,7 @@
 MainWindow *w;
 
 void logOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg) {
+    // 更详细的调试信息
     // w->logOutput(QString().sprintf("[%s][%s:%d][%s]",qPrintable(QDateTime::currentDateTime().toString("yyyy/MM/dd HH:mm:ss")),context.file,context.line,Util::convertQtMsgTypeToText(type).toStdString().data())+msg);
     w->logOutput(QString().sprintf("[%s][%s]",qPrintable(QDateTime::currentDateTime().toString("yyyy/MM/dd HH:mm:ss")),Util::convertQtMsgTypeToText(type).toStdString().data())+msg);
 }

@@ -6,6 +6,11 @@
 
 #define SUBSCRIBE_INFO_PATH QString("subscribeInfo/") // 订阅信息存放地址
 #define CONFIG_PATH QString("config.ini") // 一些用户配置选项
+#define COMMAND_QUEUE_RETRY_COUNT 3 // 命令队列重试次数
+#define COMMAND_QUEUE_REFRESH_INTERVAL 1 // 命令队列刷新间隔（秒）
+#define ACCOUNT_DETAIL_REFRESH_INTERVAL 10 // 账户详情刷新间隔（数字*COMMAND_QUEUE_REFRESH_INTERVAL）
+#define CONNECT_TIME_OUT 3 // 连接前置超时时间（数字*COMMAND_QUEUE_REFRESH_INTERVAL）
+
 
 struct LoginField // 登录表单
 {
