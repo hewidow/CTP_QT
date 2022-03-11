@@ -16,21 +16,25 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
+    w = new MainWindow();
+
+    // 重定向日志输出
+    qInstallMessageHandler(logOutput);
+
+    // 设置全局样式
     QString qss;
-    QFile qssFile(":/main.qss");
+    QFile qssFile(":/qss/main.qss");
     qssFile.open(QFile::ReadOnly);
-    if(qssFile.isOpen())
+    if (qssFile.isOpen())
     {
         qss = QLatin1String(qssFile.readAll());
         qApp->setStyleSheet(qss);
         qssFile.close();
-    } else {
-        iDebug<<"未找到全局样式";
-    } // 设置全局样式
+    }
+    else {
+        iDebug << "未找到全局样式";
+    }
 
-    qInstallMessageHandler(logOutput); // 注册日志输出捕获
-
-    w=new MainWindow();
     int code=a.exec();
     delete w;
     return code;

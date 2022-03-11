@@ -118,14 +118,24 @@ void MainWindow::on_trade_triggered()
 }
 void MainWindow::on_strategy_triggered()
 {
-    
+    strategy.show();
 }
 void MainWindow::on_test1_triggered()
 {
+    QDir dir;
+    if (!dir.exists(STRATEGY_PATH)) dir.mkpath(STRATEGY_PATH);
 
+    dir.setPath(STRATEGY_PATH);
+
+    dir.setFilter(QDir::Files);
+    QStringList filters;
+    filters << "*.cpp";
+    dir.setNameFilters(filters);
+    QStringList s=dir.entryList();
+    iDebug << s;
 }
 
 void MainWindow::on_test2_triggered()
 {
-
+    engine.getAccountDetail();
 }

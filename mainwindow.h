@@ -7,6 +7,8 @@
 #include "engine.h"
 #include "ledlabel.h"
 #include "trade.h"
+#include "strategy.h"
+#include "strategymodel.h"
 
 namespace Ui {
 class MainWindow;
@@ -67,6 +69,8 @@ private:
     QLabel *userStatus; // 底部状态栏的用户状态
     LedLabel *mdStatus,*tdStatus; // 底部状态栏的行情和交易连接状态
     Trade trade; // 交易界面
+    Strategy strategy; // 策略界面
+    StrategyModel strategyModel; // 策略模型
 };
 
 #endif // MAINWINDOW_H

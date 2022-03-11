@@ -1,7 +1,7 @@
 ﻿#ifndef ENGINE_H
 #define ENGINE_H
 
-#include <queue>
+#include <deque>
 #include <mutex>
 #include <QThread>
 #include "mdapi.h"
@@ -21,7 +21,7 @@ public:
     // 每秒运行一个tdApi
     void run() override;
     // 添加命令
-    void addCommand(std::shared_ptr<Command>);
+    void addCommand(std::shared_ptr<Command>,bool);
     // 清空所有命令
     void clearCommand();
     // 释放api
@@ -55,11 +55,12 @@ public:
     MdApi mdApi; // 行情api
     TdApi tdApi; // 交易api
 private:
-    std::queue<std::shared_ptr<Command>>commandQueue;
+    std::deque<std::shared_ptr<Command>>commandQueue;
     std::mutex queueMutex; // 队列锁
     bool working=true; // 通知工作线程
     bool initDone = false; // 初始化工作完成情况
     int connectTimeOut = CONNECT_NOT; // 连接前置超时时间计算
+    bool accountDetailCommandsInQueue = false; // getAccountDetail的相关命令是否在队列里，防止查询过多
 };
 
 #endif // ENGINE_H

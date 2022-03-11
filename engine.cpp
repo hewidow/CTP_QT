@@ -24,9 +24,10 @@ void Engine::run(){
                 iDebug << command->name() << "→" << Util::convertApiReturnValueToText(result);
                 ++retry;
                 if (result == 0 || retry > COMMAND_QUEUE_RETRY_COUNT) {
-                    commandQueue.pop();
+                    commandQueue.pop_front();
                     if (retry > COMMAND_QUEUE_RETRY_COUNT) emit sendError("超出请求重试次数");
                     retry = 0;
+                    if (command->name() == "请求查询报单") accountDetailCommandsInQueue = false; // 暂时使用这种方法完成需求
                 }
             }
         } // 释放锁
@@ -44,15 +45,16 @@ void Engine::run(){
         }
     }
 }
-void Engine::addCommand(std::shared_ptr<Command> newCommand)
+void Engine::addCommand(std::shared_ptr<Command> newCommand,bool back=true)
 {
     std::lock_guard<std::mutex>lock(queueMutex);
-    commandQueue.push(newCommand);
+    if (back) commandQueue.push_back(newCommand);
+    else commandQueue.push_front(newCommand); // 从前面插入，提高命令的优先级
 }
 void Engine::clearCommand()
 {
     std::lock_guard<std::mutex>lock(queueMutex);
-    while (commandQueue.size()) commandQueue.pop();
+    while (commandQueue.size()) commandQueue.pop_front();
 }
 void Engine::release()
 {
@@ -88,9 +90,12 @@ void Engine::tradeInit()
 
 void Engine::getAccountDetail()
 {
-    addCommand(std::make_shared<ReqQryTradingAccountCommand>());
-    addCommand(std::make_shared<ReqQryInvestorPositionCommand>());
-    addCommand(std::make_shared<ReqQryOrderCommand>());
+    if (!accountDetailCommandsInQueue) {
+        accountDetailCommandsInQueue = true;
+        addCommand(std::make_shared<ReqQryTradingAccountCommand>());
+        addCommand(std::make_shared<ReqQryInvestorPositionCommand>());
+        addCommand(std::make_shared<ReqQryOrderCommand>());
+    }
 }
 
 void Engine::getQuotes()
@@ -106,12 +111,12 @@ void Engine::receiveAllInstruments(QVector<InstrumentField>instruments)
 
 void Engine::receiveReqOrderInsert(CThostFtdcInputOrderField t)
 {
-    addCommand(std::make_shared<ReqOrderInsertCommand>(t));
+    addCommand(std::make_shared<ReqOrderInsertCommand>(t),false);
 }
 
 void Engine::receiveReqOrderAction(CThostFtdcInputOrderActionField t)
 {
-    addCommand(std::make_shared<ReqOrderActionCommand>(t));
+    addCommand(std::make_shared<ReqOrderActionCommand>(t),false);
 }
 
 void Engine::receiveOrderChange()

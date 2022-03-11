@@ -1,5 +1,10 @@
 <RCC>
     <qresource prefix="/">
-        <file>main.qss</file>
+        <file>image/add.svg</file>
+        <file>image/edit.svg</file>
+        <file>image/minus.svg</file>
+        <file>image/pause.svg</file>
+        <file>image/play.svg</file>
+        <file>qss/main.qss</file>
     </qresource>
 </RCC>
