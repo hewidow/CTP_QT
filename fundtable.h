@@ -5,7 +5,7 @@
 
 class FundTable : public BaseTable
 {
-
+    Q_OBJECT
 public:
     explicit FundTable(QWidget *parent = nullptr);
 public slots:

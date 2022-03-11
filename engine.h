@@ -18,7 +18,7 @@ class Engine:public QThread
 public:
     Engine();
     ~Engine();
-    // 每秒运行一个tdApi
+    // 启动子线程，每秒运行一个命令
     void run() override;
     // 添加命令
     void addCommand(std::shared_ptr<Command>,bool);
@@ -57,7 +57,7 @@ public:
 private:
     std::deque<std::shared_ptr<Command>>commandQueue;
     std::mutex queueMutex; // 队列锁
-    bool working=true; // 通知工作线程
+    bool working=true; // 子线程是否运行
     bool initDone = false; // 初始化工作完成情况
     int connectTimeOut = CONNECT_NOT; // 连接前置超时时间计算
     bool accountDetailCommandsInQueue = false; // getAccountDetail的相关命令是否在队列里，防止查询过多

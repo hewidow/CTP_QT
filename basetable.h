@@ -4,12 +4,12 @@
 #include <QTableView>
 #include <QHeaderView>
 #include <QStandardItemModel>
-#include "global.h"
 #include "util.h"
 #include "debug.h"
 
 class BaseTable : public QTableView
 {
+    Q_OBJECT
 public:
     explicit BaseTable(QWidget *parent = nullptr,QList<QString> _headers={});
     void clearData(); // 清空数据

@@ -2,7 +2,6 @@
 #define DEBUG_H
 
 #include <QDebug>
-#include <QDateTime>
 
 // 默认debug输出
 #define iDebug qDebug().noquote()

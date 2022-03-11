@@ -6,7 +6,6 @@
 #include "api/ThostFtdcMdApi.h"
 #include "debug.h"
 #include "util.h"
-#include "global.h"
 
 
 class MdApi : public QObject,public CThostFtdcMdSpi

@@ -5,6 +5,7 @@
 
 class QuoteTable : public BaseTable
 {
+    Q_OBJECT
 public:
     explicit QuoteTable(QWidget *parent = nullptr);
     QList<QString>formatData(int,QuoteField);

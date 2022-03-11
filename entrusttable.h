@@ -5,7 +5,7 @@
 
 class EntrustTable : public BaseTable
 {
-
+    Q_OBJECT
 public:
     explicit EntrustTable(QWidget *parent = nullptr);
     QList<QString> formatData(CThostFtdcOrderField);

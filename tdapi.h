@@ -6,7 +6,6 @@
 #include "api/ThostFtdcTraderApi.h"
 #include "debug.h"
 #include "util.h"
-#include "global.h"
 
 class TdApi : public QObject,public CThostFtdcTraderSpi
 {

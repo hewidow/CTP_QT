@@ -61,14 +61,18 @@ void MainWindow::init()
     connect(&engine.tdApi,&TdApi::sendOrderChange,&engine,&Engine::receiveOrderChange);
 
     /* other */
-    connect(this,&MainWindow::sendLog,this,&MainWindow::receiveLog);
-
+    
     connect(&engine, &Engine::sendError, this, &MainWindow::receiveError);
 
     connect(&login,&Login::sendLoginField,&engine,&Engine::receiveLoginField);
 
     connect(&trade,&Trade::sendReqOrderInsert,&engine,&Engine::receiveReqOrderInsert);
     connect(&trade,&Trade::sendReqOrderAction,&engine,&Engine::receiveReqOrderAction);
+
+    connect(&strategy.strategyModel, &StrategyModel::sendReqOrderInsert, &engine, &Engine::receiveReqOrderInsert);
+    connect(&strategy.strategyModel, &StrategyModel::sendReqOrderAction, &engine, &Engine::receiveReqOrderAction);
+
+    connect(this, &MainWindow::sendLog, this, &MainWindow::receiveLog);
 
     login.show();
 }

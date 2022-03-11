@@ -5,6 +5,7 @@
 
 class PosTable : public BaseTable
 {
+    Q_OBJECT
 public:
     explicit PosTable(QWidget *parent = nullptr);
 public slots:
