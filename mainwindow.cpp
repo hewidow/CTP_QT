@@ -47,6 +47,7 @@ void MainWindow::init()
     connect(&engine.mdApi,&MdApi::sendConnectionStatus,this,&MainWindow::receiveMdConnectionStatus);
     connect(&engine.mdApi,&MdApi::sendRspLogin,this,&MainWindow::receiveRspLoginMd);
     connect(&engine.mdApi,&MdApi::sendRtnDepthMarketData,ui->quoteTable,&QuoteTable::receiveRtnDepthMarketData);
+    connect(&engine.mdApi, &MdApi::sendRtnDepthMarketData, &strategy.strategyModel, &StrategyModel::receiveRtnDepthMarketData);
 
     /* tdApi */
     connect(&engine.tdApi,&TdApi::sendError,this,&MainWindow::receiveError);
@@ -71,6 +72,7 @@ void MainWindow::init()
 
     connect(&strategy.strategyModel, &StrategyModel::sendReqOrderInsert, &engine, &Engine::receiveReqOrderInsert);
     connect(&strategy.strategyModel, &StrategyModel::sendReqOrderAction, &engine, &Engine::receiveReqOrderAction);
+
 
     connect(this, &MainWindow::sendLog, this, &MainWindow::receiveLog);
 
@@ -122,7 +124,7 @@ void MainWindow::on_trade_triggered()
 }
 void MainWindow::on_strategy_triggered()
 {
-    strategy.show();
+    strategy.showDialog(userInfo);
 }
 void MainWindow::on_test1_triggered()
 {

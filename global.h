@@ -11,7 +11,7 @@
 #define ACCOUNT_DETAIL_REFRESH_INTERVAL 10 // 账户详情刷新间隔（数字*COMMAND_QUEUE_REFRESH_INTERVAL）
 #define CONNECT_TIME_OUT 3 // 连接前置超时时间（数字*COMMAND_QUEUE_REFRESH_INTERVAL）
 #define STRATEGY_PATH QString("strategy/") // 策略存放地址
-#define STRATEGY_MODEL_RUN_INTERVAL 1000 // 策略模型运行间隔（毫秒）
+#define STRATEGY_MODEL_RUN_INTERVAL 10000 // 策略模型运行间隔（毫秒）
 
 struct LoginField // 登录表单
 {

@@ -1,29 +1,39 @@
-#pragma once
+﻿#pragma once
 #include <QThread>
 #include <QTimer>
+#include <deque>
+#include <mutex>
 #include "global.h"
 #include "debug.h"
-
-#ifdef STRATEGY_MODEL_EXPORTS
-#define STRATEGY_MODEL_API __declspec(dllexport)
-#else
-#define STRATEGY_MODEL_API __declspec(dllimport)
-#endif
 
 class StrategyModel:public QThread
 {
 	Q_OBJECT
+		
 public:
 	StrategyModel();
 	~StrategyModel();
 	void run() override;
-	// ��ͣ���߳�
+	void play(CThostFtdcRspUserLoginField);
+	// 暂停子线程
 	void pause();
+	void buy(QuoteField);
+	void sell(QuoteField);
+	void cancel(QuoteField);
+	// 比较行情价格，前者高为true
+	bool compareHistory(int, int);
+	void test();
 public slots:
-	STRATEGY_MODEL_API void timeOut();
+	 void timeOut();
+	 void receiveRtnDepthMarketData(QuoteField);
 signals:
 	void sendReqOrderInsert(CThostFtdcInputOrderField);
 	void sendReqOrderAction(CThostFtdcInputOrderActionField);
 private:
-	bool working = true;
+	CThostFtdcRspUserLoginField userInfo;
+	std::mutex queueMutex; // 队列锁
+	// 历史行情
+	std::deque<QuoteField>history;
+	// 当前持仓
+	int nowVolume = 0;
 };

@@ -59,12 +59,12 @@ QString Util::convertQtMsgTypeToText(QtMsgType type)
     }
 }
 
-QString Util::convertDirectionToText(char dir)
+QString Util::convertDirectionToText(TThostFtdcDirectionType dir)
 {
     switch (dir) {
-    case '0':
+    case THOST_FTDC_D_Buy:
         return "买";
-    case '1':
+    case THOST_FTDC_D_Sell:
         return "卖";
     default:
         return "未知";

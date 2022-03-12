@@ -1,4 +1,4 @@
-#include "strategy.h"
+ï»¿#include "strategy.h"
 
 Strategy::Strategy(QWidget *parent)
 	: QWidget(parent)
@@ -17,18 +17,24 @@ Strategy::Strategy(QWidget *parent)
     dir.setNameFilters(filters);
     QStringList names = dir.entryList();
 
-    model= new QStandardItemModel(this);;
+    model= new QStandardItemModel(this);
     for (auto &name : names) {
         model->appendRow(new QStandardItem(name));
     }
-    ui.listView->setModel(model); // ÏÔÊ¾STRATEGY_PATHÂ·¾¶ÏÂËùÓÐºó×ºÎªcppµÄÎÄ¼þÃû
-    ui.listView->setEditTriggers(QAbstractItemView::NoEditTriggers); // ½ûÖ¹±à¼­
-    connect(ui.listView, &QListView::doubleClicked, this, &Strategy::on_edit_clicked); // °ó¶¨Ë«»÷ÊÂ¼þ
+    ui.listView->setModel(model); // æ˜¾ç¤ºSTRATEGY_PATHè·¯å¾„ä¸‹æ‰€æœ‰åŽç¼€ä¸ºcppçš„æ–‡ä»¶å
+    ui.listView->setEditTriggers(QAbstractItemView::NoEditTriggers); // ç¦æ­¢ç¼–è¾‘
+    connect(ui.listView, &QListView::doubleClicked, this, &Strategy::on_edit_clicked); // ç»‘å®šåŒå‡»äº‹ä»¶
 }
 
 Strategy::~Strategy()
 {
 
+}
+
+void Strategy::showDialog(CThostFtdcRspUserLoginField u)
+{
+    userInfo = u;
+    show();
 }
 
 void Strategy::on_add_clicked()
@@ -47,7 +53,7 @@ void Strategy::on_edit_clicked()
 }
 void Strategy::on_start_clicked()
 {
-    strategyModel.start();
+    strategyModel.play(userInfo);
     ui.start->setVisible(false);
     ui.pause->setVisible(true);
 }

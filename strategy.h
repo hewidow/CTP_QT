@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <QWidget>
 #include <QDir>
@@ -16,20 +16,22 @@ class Strategy : public QWidget
 public:
 	Strategy(QWidget *parent = Q_NULLPTR);
 	~Strategy();
+	void showDialog(CThostFtdcRspUserLoginField);
 private slots:
-	// Ìí¼Ó²ßÂÔ
+	// æ·»åŠ ç­–ç•¥
 	void on_add_clicked();
-	// É¾³ı²ßÂÔ
+	// åˆ é™¤ç­–ç•¥
 	void on_del_clicked();
-	// ±à¼­²ßÂÔ
+	// ç¼–è¾‘ç­–ç•¥
     void on_edit_clicked();
-	// Æô¶¯²ßÂÔ
+	// å¯åŠ¨ç­–ç•¥
     void on_start_clicked();
-	// ÔİÍ£²ßÂÔ
+	// æš‚åœç­–ç•¥
     void on_pause_clicked();
 public:
-	StrategyModel strategyModel; // ²ßÂÔÄ£ĞÍ
+	StrategyModel strategyModel; // ç­–ç•¥æ¨¡å‹
 private:
 	Ui::Strategy ui;
 	QStandardItemModel *model;
+	CThostFtdcRspUserLoginField userInfo;
 };

@@ -14,10 +14,11 @@ void MdApi::connect(LoginField u)
     api->RegisterFront(Util::convertQStringToCharPoint(u.mdAddress)); // 设置连接地址
     api->Init(); // 初始化运行环境
     iDebug<<"行情地址"<<u.mdAddress;
+    iDebug<<"设置行情API → 成功";
 }
 void MdApi::release()
 {
-	iDebug << "释放行情API";
+	iDebug << "释放行情API → 成功";
     if (api!=nullptr) {
         api->RegisterSpi(NULL);
         api->Release();

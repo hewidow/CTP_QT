@@ -15,7 +15,7 @@ public:
 class ReleaseCommand : public Command {
 public:
 	ReleaseCommand() {};
-	QString name() { return "请求释放交易API"; };
+	QString name() { return "释放交易API"; };
 	int execute(TdApi *tdApi) {
 		return tdApi->release();
 	};
@@ -23,7 +23,7 @@ public:
 class ConnectCommand :public Command {
 public:
 	ConnectCommand(LoginField _data) :Command(), data(_data) {};
-	QString name() { return "请求交易连接"; };
+	QString name() { return "设置交易API"; };
 	int execute(TdApi *tdApi) {
 		return tdApi->connect(data);
 	};
