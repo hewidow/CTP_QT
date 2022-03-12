@@ -13,11 +13,6 @@ Trade::~Trade()
     delete ui;
 }
 
-void Trade::showDialog(CThostFtdcRspUserLoginField u)
-{
-    userInfo=u;
-    show();
-}
 void Trade::on_add_clicked()
 {
     CThostFtdcInputOrderField ord = { 0 };
@@ -28,12 +23,8 @@ void Trade::on_add_clicked()
     ord.LimitPrice = ui->LimitPrice->text().toDouble();
     ord.VolumeTotalOriginal = ui->VolumeTotalOriginal->text().toInt();
 
-    strcpy_s(ord.BrokerID, userInfo.BrokerID);
-    strcpy_s(ord.InvestorID, userInfo.UserID);
-    strcpy_s(ord.UserID, userInfo.UserID);
     ord.OrderPriceType = THOST_FTDC_OPT_LimitPrice; // 限价单
     ord.CombOffsetFlag[0] = THOST_FTDC_OF_Open; // 开仓
-
     ord.CombHedgeFlag[0] = THOST_FTDC_HF_Speculation; // 投机
     ord.TimeCondition = THOST_FTDC_TC_GFD; // 当日有效
     ord.VolumeCondition = THOST_FTDC_VC_AV; //任意数量
@@ -48,9 +39,6 @@ void Trade::on_add_clicked()
 void Trade::on_del_clicked()
 {
     CThostFtdcInputOrderActionField a = { 0 };
-    strcpy_s(a.BrokerID, userInfo.BrokerID);
-    strcpy_s(a.InvestorID, userInfo.UserID);
-    strcpy_s(a.UserID, userInfo.UserID);
     strcpy_s(a.OrderSysID,("        " + ui->OrderSysID->text()).toStdString().c_str());  //对应要撤报单的OrderSysID，有8个空格的前缀
     strcpy_s(a.ExchangeID, ui->ExchangeID->text().toStdString().c_str());
     strcpy_s(a.InstrumentID, ui->InstrumentID->text().toStdString().c_str());

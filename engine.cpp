@@ -111,11 +111,17 @@ void Engine::receiveAllInstruments(QVector<InstrumentField>instruments)
 
 void Engine::receiveReqOrderInsert(CThostFtdcInputOrderField t)
 {
+    strcpy_s(t.BrokerID, userInfo.BrokerID);
+    strcpy_s(t.InvestorID, userInfo.UserID);
+    strcpy_s(t.UserID, userInfo.UserID);
     addCommand(std::make_shared<ReqOrderInsertCommand>(t),false);
 }
 
 void Engine::receiveReqOrderAction(CThostFtdcInputOrderActionField t)
 {
+    strcpy_s(t.BrokerID, userInfo.BrokerID);
+    strcpy_s(t.InvestorID, userInfo.UserID);
+    strcpy_s(t.UserID, userInfo.UserID);
     addCommand(std::make_shared<ReqOrderActionCommand>(t),false);
 }
 
@@ -123,3 +129,12 @@ void Engine::receiveOrderChange()
 {
     getAccountDetail();
 }
+
+//void Engine::syncGetUserInfo()
+//{
+//    addCommand(std::make_shared<ReqQryTradingAccountCommand>());
+//    while (true) {
+//
+//        std::this_thread::sleep_for(std::chrono::seconds(SYNC_COMMAND_REFRESH_INTERVAL));
+//    }
+//}

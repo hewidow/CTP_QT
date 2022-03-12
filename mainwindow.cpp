@@ -13,7 +13,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->statusbar->addPermanentWidget(mdStatus);
     ui->statusbar->addPermanentWidget(tdStatus);
 
-
     init();
 
     showMaximized();
@@ -61,6 +60,12 @@ void MainWindow::init()
     connect(&engine.tdApi,&TdApi::sendOrders,ui->entrustTable,&EntrustTable::receiveOrders);
     connect(&engine.tdApi,&TdApi::sendOrderChange,&engine,&Engine::receiveOrderChange);
 
+    connect(&engine.tdApi, &TdApi::sendAllInstruments, &strategy.strategyModel, &StrategyModel::receiveAllInstruments);
+    connect(&engine.tdApi, &TdApi::sendRspLogin, &strategy.strategyModel, &StrategyModel::receiveRspLoginTd);
+    connect(&engine.tdApi, &TdApi::sendTradingAccount, &strategy.strategyModel, &StrategyModel::receiveTradingAccount);
+    connect(&engine.tdApi, &TdApi::sendInvestorPositions, &strategy.strategyModel, &StrategyModel::receiveInvestorPositions);
+    connect(&engine.tdApi, &TdApi::sendOrders, &strategy.strategyModel, &StrategyModel::receiveOrders);
+
     /* other */
     
     connect(&engine, &Engine::sendError, this, &MainWindow::receiveError);
@@ -72,7 +77,6 @@ void MainWindow::init()
 
     connect(&strategy.strategyModel, &StrategyModel::sendReqOrderInsert, &engine, &Engine::receiveReqOrderInsert);
     connect(&strategy.strategyModel, &StrategyModel::sendReqOrderAction, &engine, &Engine::receiveReqOrderAction);
-
 
     connect(this, &MainWindow::sendLog, this, &MainWindow::receiveLog);
 
@@ -101,14 +105,14 @@ void MainWindow::receiveRspLoginMd(CThostFtdcRspUserLoginField u)
 void MainWindow::receiveRspLoginTd(CThostFtdcRspUserLoginField u)
 {
     isTdLogin=true;
-    userInfo=u;
+    engine.userInfo=u;
     if (isMdLogin&&isTdLogin) loginDone();
 }
 void MainWindow::loginDone() {
     login.close();
     showMaximized();
-    userStatus->setText("当前用户："+QString(userInfo.UserID)+" ");
-    iDebug<<"当前用户"<<userInfo.UserID<<"前置编号"<<userInfo.FrontID<<"会话编号"<<userInfo.SessionID;
+    userStatus->setText("当前用户："+QString(engine.userInfo.UserID)+" ");
+    iDebug<<"当前用户"<< engine.userInfo.UserID<<"前置编号"<< engine.userInfo.FrontID<<"会话编号"<< engine.userInfo.SessionID;
     engine.tradeInit();
     engine.getAccountDetail();
     engine.getQuotes();
@@ -120,11 +124,11 @@ void MainWindow::receiveLog(QString msg)
 
 void MainWindow::on_trade_triggered()
 {
-    trade.showDialog(userInfo);
+    trade.show();
 }
 void MainWindow::on_strategy_triggered()
 {
-    strategy.showDialog(userInfo);
+    strategy.show();
 }
 void MainWindow::on_test1_triggered()
 {

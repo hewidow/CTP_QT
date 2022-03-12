@@ -32,6 +32,9 @@ public:
     void getAccountDetail();
     // 获取行情
     void getQuotes();
+
+    //// 同步获取用户信息
+    //void syncGetUserInfo();
 	
 public slots:
     // 登录按钮信号
@@ -54,7 +57,9 @@ signals:
 public:
     MdApi mdApi; // 行情api
     TdApi tdApi; // 交易api
+    CThostFtdcRspUserLoginField userInfo; // 用户信息
 private:
+    //int nRequestID=0;
     std::deque<std::shared_ptr<Command>>commandQueue;
     std::mutex queueMutex; // 队列锁
     bool working=true; // 子线程是否运行

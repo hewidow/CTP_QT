@@ -16,7 +16,6 @@ class Strategy : public QWidget
 public:
 	Strategy(QWidget *parent = Q_NULLPTR);
 	~Strategy();
-	void showDialog(CThostFtdcRspUserLoginField);
 private slots:
 	// 添加策略
 	void on_add_clicked();
@@ -33,5 +32,4 @@ public:
 private:
 	Ui::Strategy ui;
 	QStandardItemModel *model;
-	CThostFtdcRspUserLoginField userInfo;
 };

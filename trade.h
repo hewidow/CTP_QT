@@ -16,7 +16,6 @@ class Trade : public QDialog
 public:
     explicit Trade(QWidget *parent = nullptr);
     ~Trade();
-    void showDialog(CThostFtdcRspUserLoginField);
 private slots:
     void on_add_clicked();
     void on_del_clicked();
@@ -26,7 +25,6 @@ signals:
 
 private:
     Ui::Trade *ui;
-    CThostFtdcRspUserLoginField userInfo;
 };
 
 #endif // TRADE_H

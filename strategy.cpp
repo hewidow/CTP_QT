@@ -31,11 +31,6 @@ Strategy::~Strategy()
 
 }
 
-void Strategy::showDialog(CThostFtdcRspUserLoginField u)
-{
-    userInfo = u;
-    show();
-}
 
 void Strategy::on_add_clicked()
 {
@@ -53,7 +48,7 @@ void Strategy::on_edit_clicked()
 }
 void Strategy::on_start_clicked()
 {
-    strategyModel.play(userInfo);
+    strategyModel.start();
     ui.start->setVisible(false);
     ui.pause->setVisible(true);
 }
