@@ -33,11 +33,11 @@ void QuoteTable::updateQuote(QuoteField q)
 {
     int index=findRowIndex(q.InstrumentID);
     QList<QString>tp=formatData(index,q);
-    if (index<model->rowCount()) { // 更新数据
+    if (index<model->rowCount()) { // 更新数据项
         for (int i=0;i<headers.size();++i) {
             model->setData(model->index(index,i),tp[i]);
         }
-    } else { // 创建项目        
+    } else { // 创建数据项
         for (int i=0;i<headers.size();++i) {
             model->setItem(index,i,new QStandardItem(tp[i]));
             model->item(index,i)->setTextAlignment(Qt::AlignCenter);

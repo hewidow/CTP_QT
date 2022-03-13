@@ -13,6 +13,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->statusbar->addPermanentWidget(mdStatus);
     ui->statusbar->addPermanentWidget(tdStatus);
 
+    ui->logText->document()->setMaximumBlockCount(LOG_MAX_ROW_COUNT); // 设置log最大行数
+
     init();
 
     showMaximized();
@@ -41,14 +43,15 @@ void MainWindow::init()
     qRegisterMetaType<CThostFtdcInputOrderActionField>("CThostFtdcInputOrderActionField");
 
     // 信号槽连接
-    /* mdApi */
+
+    /* MdApi */
     connect(&engine.mdApi,&MdApi::sendError,this,&MainWindow::receiveError);
     connect(&engine.mdApi,&MdApi::sendConnectionStatus,this,&MainWindow::receiveMdConnectionStatus);
     connect(&engine.mdApi,&MdApi::sendRspLogin,this,&MainWindow::receiveRspLoginMd);
     connect(&engine.mdApi,&MdApi::sendRtnDepthMarketData,ui->quoteTable,&QuoteTable::receiveRtnDepthMarketData);
     connect(&engine.mdApi, &MdApi::sendRtnDepthMarketData, &strategy.strategyModel, &StrategyModel::receiveRtnDepthMarketData);
 
-    /* tdApi */
+    /* TdApi & ui */
     connect(&engine.tdApi,&TdApi::sendError,this,&MainWindow::receiveError);
     connect(&engine.tdApi,&TdApi::sendConnectionStatus,this,&MainWindow::receiveTdConnectionStatus);
 	connect(&engine.tdApi,&TdApi::sendReqAuthenticateCommand, &engine, &Engine::receiveReqAuthenticateCommand);
@@ -60,24 +63,28 @@ void MainWindow::init()
     connect(&engine.tdApi,&TdApi::sendOrders,ui->entrustTable,&EntrustTable::receiveOrders);
     connect(&engine.tdApi,&TdApi::sendOrderChange,&engine,&Engine::receiveOrderChange);
 
+    /* TdApi & StrategyModel */
     connect(&engine.tdApi, &TdApi::sendAllInstruments, &strategy.strategyModel, &StrategyModel::receiveAllInstruments);
     connect(&engine.tdApi, &TdApi::sendRspLogin, &strategy.strategyModel, &StrategyModel::receiveRspLoginTd);
     connect(&engine.tdApi, &TdApi::sendTradingAccount, &strategy.strategyModel, &StrategyModel::receiveTradingAccount);
     connect(&engine.tdApi, &TdApi::sendInvestorPositions, &strategy.strategyModel, &StrategyModel::receiveInvestorPositions);
     connect(&engine.tdApi, &TdApi::sendOrders, &strategy.strategyModel, &StrategyModel::receiveOrders);
 
-    /* other */
-    
+    /* Engine */
     connect(&engine, &Engine::sendError, this, &MainWindow::receiveError);
 
-    connect(&login,&Login::sendLoginField,&engine,&Engine::receiveLoginField);
+    /* Login */
+    connect(&login, &Login::sendLoginField, &engine, &Engine::receiveLoginField);
 
+    /* Trade */
     connect(&trade,&Trade::sendReqOrderInsert,&engine,&Engine::receiveReqOrderInsert);
     connect(&trade,&Trade::sendReqOrderAction,&engine,&Engine::receiveReqOrderAction);
 
+    /* StrategyModel */
     connect(&strategy.strategyModel, &StrategyModel::sendReqOrderInsert, &engine, &Engine::receiveReqOrderInsert);
     connect(&strategy.strategyModel, &StrategyModel::sendReqOrderAction, &engine, &Engine::receiveReqOrderAction);
 
+    /* MainWindow */
     connect(this, &MainWindow::sendLog, this, &MainWindow::receiveLog);
 
     login.show();

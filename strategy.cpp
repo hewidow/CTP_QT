@@ -10,7 +10,6 @@ Strategy::Strategy(QWidget *parent)
     if (!dir.exists(STRATEGY_PATH)) dir.mkpath(STRATEGY_PATH);
 
     dir.setPath(STRATEGY_PATH);
-
     dir.setFilter(QDir::Files);
     QStringList filters;
     filters << "*.cpp";

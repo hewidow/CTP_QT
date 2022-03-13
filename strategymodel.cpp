@@ -19,8 +19,9 @@ void StrategyModel::run()
 }
 void StrategyModel::timeOut() {
     std::lock_guard<std::mutex>lock(mutex);
-	iDebug << "strategy running";
+	sDebug << "正在运行";
     QString InstrumentID = "IC2203";
+    if (tickMap.count(InstrumentID) == 0) return;
     auto& q = tickMap[InstrumentID];
     auto getPriceTrend = [&](int len) -> int {
         if (q.size() <= len) return 0; // 无趋势
@@ -38,7 +39,9 @@ void StrategyModel::timeOut() {
         buy(InstrumentID, q[0].LastPrice,1);
     }
     else if (trend == -1) {
-        sell(InstrumentID, q[0].LastPrice, positionMap[InstrumentID].Position);
+        if (positionsMap.count(InstrumentID) != 0 && positionsMap[InstrumentID].Position > 0) {
+            sell(InstrumentID, q[0].LastPrice, positionsMap[InstrumentID].Position);
+        }
     }
 }
 
@@ -50,8 +53,16 @@ void StrategyModel::pause()
 
 void StrategyModel::buy(QString InstrumentID,double LastPrice,int VolumeTotalOriginal)
 {
+    if (instrumentsMap.count(InstrumentID) == 0) {
+        sDebug << "下买单失败：合约不存在";
+        return;
+    }
+    if (VolumeTotalOriginal <= 0) {
+        sDebug << "下买单失败：数量小于等于0";
+        return;
+    }
     CThostFtdcInputOrderField ord = { 0 };
-    strcpy_s(ord.ExchangeID, instrumentMap[InstrumentID].ExchangeID.toStdString().c_str());
+    strcpy_s(ord.ExchangeID, instrumentsMap[InstrumentID].ExchangeID.toStdString().c_str());
     strcpy_s(ord.InstrumentID, InstrumentID.toStdString().c_str());
     ord.LimitPrice = LastPrice;
     ord.VolumeTotalOriginal = VolumeTotalOriginal;
@@ -67,12 +78,20 @@ void StrategyModel::buy(QString InstrumentID,double LastPrice,int VolumeTotalOri
     ord.ForceCloseReason = THOST_FTDC_FCC_NotForceClose; // 强平原因
     ord.IsAutoSuspend = 0; // 自动挂起标志
 	sendReqOrderInsert(ord);
-    iDebug << "自动交易策略：" << ord.InstrumentID << "买 价格" << ord.LimitPrice << "数量" << ord.VolumeTotalOriginal;
+    sDebug << ord.InstrumentID << "买 价格" << ord.LimitPrice << "数量" << ord.VolumeTotalOriginal;
 }
 void StrategyModel::sell(QString InstrumentID, double LastPrice, int VolumeTotalOriginal)
 {
+    if (instrumentsMap.count(InstrumentID) == 0) {
+        sDebug << "下卖单失败：合约不存在";
+        return;
+    }
+    if (VolumeTotalOriginal <= 0) {
+        sDebug << "下卖单失败：数量小于等于0";
+        return;
+    }
     CThostFtdcInputOrderField ord = { 0 };
-    strcpy_s(ord.ExchangeID, instrumentMap[InstrumentID].ExchangeID.toStdString().c_str());
+    strcpy_s(ord.ExchangeID, instrumentsMap[InstrumentID].ExchangeID.toStdString().c_str());
     strcpy_s(ord.InstrumentID, InstrumentID.toStdString().c_str());
     ord.LimitPrice = LastPrice;
     ord.VolumeTotalOriginal = VolumeTotalOriginal;
@@ -88,14 +107,27 @@ void StrategyModel::sell(QString InstrumentID, double LastPrice, int VolumeTotal
     ord.ForceCloseReason = THOST_FTDC_FCC_NotForceClose; // 强平原因
     ord.IsAutoSuspend = 0; // 自动挂起标志
     sendReqOrderInsert(ord);
-    iDebug << "自动交易策略：" << ord.InstrumentID << "卖 价格" << ord.LimitPrice << "数量" << ord.VolumeTotalOriginal;
+    sDebug << ord.InstrumentID << "卖 价格" << ord.LimitPrice << "数量" << ord.VolumeTotalOriginal;
 }
-void StrategyModel::cancel(QuoteField)
+void StrategyModel::cancel(TThostFtdcOrderSysIDType OrderSysID)
 {
+    if (ordersMap.count(OrderSysID) == 0) {
+        sDebug<<"取消报单失败：未找到该报单";
+        return;
+    }
+    sDebug << "取消报单" <<"报单编号"<< OrderSysID;
+    CThostFtdcInputOrderActionField a = { 0 };
+    strcpy_s(a.OrderSysID ,OrderSysID);
+    auto& o = ordersMap[OrderSysID];
+    strcpy_s(a.ExchangeID, o.ExchangeID);
+    strcpy_s(a.InstrumentID, o.InstrumentID);
+    a.ActionFlag = THOST_FTDC_AF_Delete;
+
+    emit sendReqOrderAction(a);
 }
 void StrategyModel::test()
 {
-	iDebug << "test";
+	sDebug << "test";
 }
 void StrategyModel::receiveRtnDepthMarketData(QuoteField q)
 {
@@ -119,22 +151,26 @@ void StrategyModel::receiveInvestorPositions(QVector<CThostFtdcInvestorPositionF
 {
     std::lock_guard<std::mutex>lock(mutex);
     positions = p;
-    positionMap.clear();
+    positionsMap.clear();
     for (auto& it : positions) {
-        positionMap[it.InstrumentID] = it;
+        positionsMap[it.InstrumentID] = it;
     }
 }
 void StrategyModel::receiveOrders(QVector<CThostFtdcOrderField> o)
 {
     std::lock_guard<std::mutex>lock(mutex);
     orders = o;
+    ordersMap.clear();
+    for (auto& it : orders) {
+        ordersMap[it.ExchangeID] = it;
+    }
 }
 void StrategyModel::receiveAllInstruments(QVector<InstrumentField>i)
 {
     std::lock_guard<std::mutex>lock(mutex);
     instruments = i;
-    instrumentMap.clear();
+    instrumentsMap.clear();
     for (auto& it : instruments) {
-        instrumentMap[it.InstrumentID] = it;
+        instrumentsMap[it.InstrumentID] = it;
     }
 }

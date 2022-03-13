@@ -14,6 +14,7 @@
 #define STRATEGY_MODEL_RUN_INTERVAL 5000 // 策略模型运行间隔（毫秒）
 #define SYNC_COMMAND_REFRESH_INTERVAL 1 // 同步命令刷新间隔（秒）
 #define TICK_HISTORY_LENGTH 50 // 每个合约的历史tick最大长度
+#define LOG_MAX_ROW_COUNT 50 // 记录log的最大行数
 
 struct LoginField // 登录表单
 {
