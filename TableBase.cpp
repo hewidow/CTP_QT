@@ -1,6 +1,6 @@
-﻿#include "basetable.h"
+﻿#include "TableBase.h"
 
-BaseTable::BaseTable(QWidget *parent,QList<QString> _headers) : QTableView(parent)
+TableBase::TableBase(QWidget *parent,QList<QString> _headers) : QTableView(parent)
 {
     model = new QStandardItemModel(parent);
     // 设置表头
@@ -20,7 +20,7 @@ BaseTable::BaseTable(QWidget *parent,QList<QString> _headers) : QTableView(paren
     setEditTriggers(QAbstractItemView::NoEditTriggers); // 禁止编辑
 }
 
-void BaseTable::clearData()
+void TableBase::clearData()
 {
     model->removeRows(0,model->rowCount());
 }

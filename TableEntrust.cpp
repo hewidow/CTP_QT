@@ -1,10 +1,10 @@
-﻿#include "entrusttable.h"
+﻿#include "TableEntrust.h"
 
-EntrustTable::EntrustTable(QWidget *parent) : BaseTable(parent,{"报单编号","代码","买卖方向","价格","总数量","剩余数量","状态","时间"})
+TableEntrust::TableEntrust(QWidget *parent) : TableBase(parent,{"报单编号","代码","买卖方向","价格","总数量","剩余数量","状态","时间"})
 {
     horizontalHeader()->setSectionResizeMode(6, QHeaderView::ResizeToContents); // 设置第6列根据内容调整宽度
 }
-QList<QString> EntrustTable::formatData(CThostFtdcOrderField o)
+QList<QString> TableEntrust::formatData(CThostFtdcOrderField o)
 {
     return {
         QString(o.OrderSysID).trimmed(), // 去除开头空白字符
@@ -17,7 +17,7 @@ QList<QString> EntrustTable::formatData(CThostFtdcOrderField o)
         o.InsertTime
     };
 }
-void EntrustTable::receiveOrders(QVector<CThostFtdcOrderField> orders)
+void TableEntrust::receiveOrders(QVector<CThostFtdcOrderField> orders)
 {
     clearData();
     std::sort(orders.begin(),orders.end(),[](const CThostFtdcOrderField &x,const CThostFtdcOrderField &y){

@@ -1,11 +1,11 @@
-﻿#include "postable.h"
+﻿#include "TablePos.h"
 
-PosTable::PosTable(QWidget *parent) : BaseTable(parent,{"代码","当前持仓","盈亏"})
+TablePos::TablePos(QWidget *parent) : TableBase(parent,{"代码","当前持仓","盈亏"})
 {
 
 }
 
-void PosTable::receiveInvestorPositions(QVector<CThostFtdcInvestorPositionField> positions)
+void TablePos::receiveInvestorPositions(QVector<CThostFtdcInvestorPositionField> positions)
 {
     clearData();
     for (int i=0;i<positions.size();++i) {

@@ -5,10 +5,12 @@
 #include <QStandardItemModel>
 #include <QDesktopServices>
 #include <QUrl>
+#include <QMessageBox>
 #include "ui_strategy.h"
 #include "global.h"
 #include "debug.h"
-#include "strategymodel.h"
+#include "StrategyBase.h"
+#include "StrategyExample.h"
 
 class Strategy : public QWidget
 {
@@ -16,6 +18,17 @@ class Strategy : public QWidget
 public:
 	Strategy(QWidget *parent = Q_NULLPTR);
 	~Strategy();
+public slots:
+	void receiveTradingAccount(TradingAccount);
+	void receiveInvestorPositions(QVector<CThostFtdcInvestorPositionField>);
+	void receiveOrders(QVector<CThostFtdcOrderField>);
+	void receiveAllInstruments(QVector<InstrumentField>);
+	void receiveRtnDepthMarketData(QuoteField);
+	void receiveReqOrderInsert(CThostFtdcInputOrderField);
+	void receiveReqOrderAction(CThostFtdcInputOrderActionField);
+signals:
+	void sendReqOrderInsert(CThostFtdcInputOrderField);
+	void sendReqOrderAction(CThostFtdcInputOrderActionField);
 private slots:
 	// 添加策略
 	void on_add_clicked();
@@ -27,8 +40,9 @@ private slots:
     void on_start_clicked();
 	// 暂停策略
     void on_pause_clicked();
-public:
-	StrategyModel strategyModel; // 策略模型
+private:
+	QVector<StrategyBase*>strategies;
+	int cur=-1; // 当前正在运行的策略
 private:
 	Ui::Strategy ui;
 	QStandardItemModel *model;

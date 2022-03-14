@@ -48,8 +48,8 @@ void MainWindow::init()
     connect(&engine.mdApi,&MdApi::sendError,this,&MainWindow::receiveError);
     connect(&engine.mdApi,&MdApi::sendConnectionStatus,this,&MainWindow::receiveMdConnectionStatus);
     connect(&engine.mdApi,&MdApi::sendRspLogin,this,&MainWindow::receiveRspLoginMd);
-    connect(&engine.mdApi,&MdApi::sendRtnDepthMarketData,ui->quoteTable,&QuoteTable::receiveRtnDepthMarketData);
-    connect(&engine.mdApi, &MdApi::sendRtnDepthMarketData, &strategy.strategyModel, &StrategyModel::receiveRtnDepthMarketData);
+    connect(&engine.mdApi,&MdApi::sendRtnDepthMarketData,ui->tableQuote,&TableQuote::receiveRtnDepthMarketData);
+    connect(&engine.mdApi, &MdApi::sendRtnDepthMarketData, &strategy, &Strategy::receiveRtnDepthMarketData);
 
     /* TdApi & ui */
     connect(&engine.tdApi,&TdApi::sendError,this,&MainWindow::receiveError);
@@ -58,17 +58,16 @@ void MainWindow::init()
 	connect(&engine.tdApi,&TdApi::sendLoginCommand, &engine, &Engine::receiveLoginCommand);
     connect(&engine.tdApi,&TdApi::sendRspLogin,this,&MainWindow::receiveRspLoginTd);
     connect(&engine.tdApi,&TdApi::sendAllInstruments,&engine,&Engine::receiveAllInstruments);
-    connect(&engine.tdApi,&TdApi::sendTradingAccount,ui->fundTable,&FundTable::receiveTradingAccount);
-    connect(&engine.tdApi,&TdApi::sendInvestorPositions,ui->posTable,&PosTable::receiveInvestorPositions);
-    connect(&engine.tdApi,&TdApi::sendOrders,ui->entrustTable,&EntrustTable::receiveOrders);
+    connect(&engine.tdApi,&TdApi::sendTradingAccount,ui->tableFund,&TableFund::receiveTradingAccount);
+    connect(&engine.tdApi,&TdApi::sendInvestorPositions,ui->tablePos,&TablePos::receiveInvestorPositions);
+    connect(&engine.tdApi,&TdApi::sendOrders,ui->tableEntrust,&TableEntrust::receiveOrders);
     connect(&engine.tdApi,&TdApi::sendOrderChange,&engine,&Engine::receiveOrderChange);
 
     /* TdApi & StrategyModel */
-    connect(&engine.tdApi, &TdApi::sendAllInstruments, &strategy.strategyModel, &StrategyModel::receiveAllInstruments);
-    connect(&engine.tdApi, &TdApi::sendRspLogin, &strategy.strategyModel, &StrategyModel::receiveRspLoginTd);
-    connect(&engine.tdApi, &TdApi::sendTradingAccount, &strategy.strategyModel, &StrategyModel::receiveTradingAccount);
-    connect(&engine.tdApi, &TdApi::sendInvestorPositions, &strategy.strategyModel, &StrategyModel::receiveInvestorPositions);
-    connect(&engine.tdApi, &TdApi::sendOrders, &strategy.strategyModel, &StrategyModel::receiveOrders);
+    connect(&engine.tdApi, &TdApi::sendAllInstruments, &strategy, &Strategy::receiveAllInstruments);
+    connect(&engine.tdApi, &TdApi::sendTradingAccount, &strategy, &Strategy::receiveTradingAccount);
+    connect(&engine.tdApi, &TdApi::sendInvestorPositions, &strategy, &Strategy::receiveInvestorPositions);
+    connect(&engine.tdApi, &TdApi::sendOrders, &strategy, &Strategy::receiveOrders);
 
     /* Engine */
     connect(&engine, &Engine::sendError, this, &MainWindow::receiveError);
@@ -80,9 +79,9 @@ void MainWindow::init()
     connect(&trade,&Trade::sendReqOrderInsert,&engine,&Engine::receiveReqOrderInsert);
     connect(&trade,&Trade::sendReqOrderAction,&engine,&Engine::receiveReqOrderAction);
 
-    /* StrategyModel */
-    connect(&strategy.strategyModel, &StrategyModel::sendReqOrderInsert, &engine, &Engine::receiveReqOrderInsert);
-    connect(&strategy.strategyModel, &StrategyModel::sendReqOrderAction, &engine, &Engine::receiveReqOrderAction);
+    /* Strategy */
+    connect(&strategy, &Strategy::sendReqOrderInsert, &engine, &Engine::receiveReqOrderInsert);
+    connect(&strategy, &Strategy::sendReqOrderAction, &engine, &Engine::receiveReqOrderAction);
 
     /* MainWindow */
     connect(this, &MainWindow::sendLog, this, &MainWindow::receiveLog);

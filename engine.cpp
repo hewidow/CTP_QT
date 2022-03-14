@@ -105,6 +105,9 @@ void Engine::getQuotes()
 
 void Engine::receiveAllInstruments(QVector<InstrumentField>instruments)
 {
+    for (auto& it : instruments) {
+        instrumentsMap[it.InstrumentID] = it;
+    }
     mdApi.subscribe(instruments);
     initDone = true;
 }
@@ -114,6 +117,7 @@ void Engine::receiveReqOrderInsert(CThostFtdcInputOrderField t)
     strcpy_s(t.BrokerID, userInfo.BrokerID);
     strcpy_s(t.InvestorID, userInfo.UserID);
     strcpy_s(t.UserID, userInfo.UserID);
+    strcpy_s(t.ExchangeID, instrumentsMap[t.InstrumentID].ExchangeID.toStdString().c_str());
     addCommand(std::make_shared<ReqOrderInsertCommand>(t),false);
 }
 
@@ -122,6 +126,7 @@ void Engine::receiveReqOrderAction(CThostFtdcInputOrderActionField t)
     strcpy_s(t.BrokerID, userInfo.BrokerID);
     strcpy_s(t.InvestorID, userInfo.UserID);
     strcpy_s(t.UserID, userInfo.UserID);
+    strcpy_s(t.ExchangeID, instrumentsMap[t.InstrumentID].ExchangeID.toStdString().c_str());
     addCommand(std::make_shared<ReqOrderActionCommand>(t),false);
 }
 

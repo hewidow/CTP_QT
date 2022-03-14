@@ -84,7 +84,7 @@ QTabWidget::pane{
           <number>0</number>
          </property>
          <item row="0" column="0">
-          <widget class="QuoteTable" name="quoteTable">
+          <widget class="TableQuote" name="tableQuote">
            <property name="styleSheet">
             <string notr="true">QTableView{
     border: none;
@@ -201,7 +201,7 @@ QTabWidget::pane{
            <number>0</number>
           </property>
           <item row="0" column="0">
-           <widget class="EntrustTable" name="entrustTable">
+           <widget class="TableEntrust" name="tableEntrust">
             <property name="styleSheet">
              <string notr="true">QTableView{
     border: none;
@@ -254,7 +254,7 @@ QTabWidget::pane{
            <number>0</number>
           </property>
           <item row="0" column="0">
-           <widget class="PosTable" name="posTable">
+           <widget class="TablePos" name="tablePos">
             <property name="styleSheet">
              <string notr="true">QTableView{
     border: none;
@@ -291,7 +291,7 @@ QHeaderView::section{
            <number>6</number>
           </property>
           <item row="0" column="0">
-           <widget class="FundTable" name="fundTable">
+           <widget class="TableFund" name="tableFund">
             <property name="styleSheet">
              <string notr="true">QTableView{
     border: none;
@@ -384,36 +384,36 @@ background-color: rgb(0, 0, 0);</string>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QuoteTable</class>
+   <class>TableQuote</class>
    <extends>QTableView</extends>
-   <header>quotetable.h</header>
+   <header>TableQuote.h</header>
   </customwidget>
   <customwidget>
-   <class>FundTable</class>
+   <class>TableFund</class>
    <extends>QTableView</extends>
-   <header>fundtable.h</header>
+   <header>TableFund.h</header>
   </customwidget>
   <customwidget>
-   <class>PosTable</class>
+   <class>TablePos</class>
    <extends>QTableView</extends>
-   <header>postable.h</header>
+   <header>TablePos.h</header>
   </customwidget>
   <customwidget>
-   <class>EntrustTable</class>
+   <class>TableEntrust</class>
    <extends>QTableView</extends>
-   <header>entrusttable.h</header>
+   <header>TableEntrust.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
   <tabstop>topTab</tabstop>
-  <tabstop>quoteTable</tabstop>
+  <tabstop>tableQuote</tabstop>
   <tabstop>bottomLeftTab</tabstop>
   <tabstop>logText</tabstop>
   <tabstop>bottomCenterTab</tabstop>
-  <tabstop>entrustTable</tabstop>
+  <tabstop>tableEntrust</tabstop>
   <tabstop>bottomRightTab</tabstop>
-  <tabstop>posTable</tabstop>
-  <tabstop>fundTable</tabstop>
+  <tabstop>tablePos</tabstop>
+  <tabstop>tableFund</tabstop>
  </tabstops>
  <resources/>
  <connections/>
