@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include <QWidget>
+#include <QDialog>
 #include <QDir>
 #include <QStandardItemModel>
 #include <QDesktopServices>
@@ -11,8 +11,9 @@
 #include "debug.h"
 #include "StrategyBase.h"
 #include "StrategyExample.h"
+#include "backtesting.h"
 
-class Strategy : public QWidget
+class Strategy : public QDialog
 {
 	Q_OBJECT
 public:
@@ -40,10 +41,12 @@ private slots:
     void on_start_clicked();
 	// 暂停策略
     void on_pause_clicked();
-private:
-	QVector<StrategyBase*>strategies;
-	int cur=-1; // 当前正在运行的策略
+	// 回测
+	void on_backtesting_clicked();
 private:
 	Ui::Strategy ui;
 	QStandardItemModel *model;
+	QVector<StrategyBase*>strategies;
+	int cur = -1; // 当前正在运行的策略
+	Backtesting backtesting;
 };

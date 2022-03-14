@@ -2,7 +2,7 @@
 
 void StrategyBase::log(QString s)
 {
-    iDebug << "【当前策略】【"+name()+"】" << s;
+    iDebug << "【当前策略："+name()+"】" << s;
 }
 void StrategyBase::buy(QString InstrumentID, double LastPrice, int VolumeTotalOriginal)
 {
@@ -22,7 +22,7 @@ void StrategyBase::buy(QString InstrumentID, double LastPrice, int VolumeTotalOr
     ord.ForceCloseReason = THOST_FTDC_FCC_NotForceClose; // 强平原因
     ord.IsAutoSuspend = 0; // 自动挂起标志
     sendReqOrderInsert(ord);
-    log("买入开仓 | 合约名 " + QString(ord.InstrumentID) + " | 价格 " + QString::number(ord.LimitPrice) + " | 数量 " + QString::number(ord.VolumeTotalOriginal));
+    log("买入开仓 | 代码 " + QString(ord.InstrumentID) + " | 价格 " + QString::number(ord.LimitPrice) + " | 数量 " + QString::number(ord.VolumeTotalOriginal));
 }
 void StrategyBase::sell(QString InstrumentID, double LastPrice, int VolumeTotalOriginal)
 {
@@ -30,9 +30,9 @@ void StrategyBase::sell(QString InstrumentID, double LastPrice, int VolumeTotalO
     strcpy_s(ord.InstrumentID, InstrumentID.toStdString().c_str());
     ord.LimitPrice = LastPrice;
     ord.VolumeTotalOriginal = VolumeTotalOriginal;
-    ord.Direction = THOST_FTDC_D_Sell;
+    ord.Direction = THOST_FTDC_D_Buy;
     ord.OrderPriceType = THOST_FTDC_OPT_LimitPrice; // 限价单
-    ord.CombOffsetFlag[0] = THOST_FTDC_OF_Open; // 开仓
+    ord.CombOffsetFlag[0] = THOST_FTDC_OF_Close; // 平仓
     ord.CombHedgeFlag[0] = THOST_FTDC_HF_Speculation; // 投机
     ord.TimeCondition = THOST_FTDC_TC_GFD; // 当日有效
     ord.VolumeCondition = THOST_FTDC_VC_AV; //任意数量
@@ -42,7 +42,7 @@ void StrategyBase::sell(QString InstrumentID, double LastPrice, int VolumeTotalO
     ord.ForceCloseReason = THOST_FTDC_FCC_NotForceClose; // 强平原因
     ord.IsAutoSuspend = 0; // 自动挂起标志
     emit sendReqOrderInsert(ord);
-    log("卖出平仓 | 合约名 " + QString(ord.InstrumentID) + " | 价格 " + QString::number(ord.LimitPrice) + " | 数量 " + QString::number(ord.VolumeTotalOriginal));
+    log("卖出平仓 | 代码 " + QString(ord.InstrumentID) + " | 价格 " + QString::number(ord.LimitPrice) + " | 数量 " + QString::number(ord.VolumeTotalOriginal));
 }
 void StrategyBase::cancel(TThostFtdcOrderSysIDType OrderSysID)
 {

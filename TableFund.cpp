@@ -1,6 +1,6 @@
 ﻿#include "TableFund.h"
 
-TableFund::TableFund(QWidget *parent) : TableBase(parent,{"可用资金","冻结资金","可取资金"})
+TableFund::TableFund(QWidget *parent) : TableBase(parent,{"总额","冻结","可用","持仓盈亏"})
 {
     for (int i=0;i<headers.size();++i) {
         model->setItem(0,i,new QStandardItem("正在获取"));
@@ -10,7 +10,8 @@ TableFund::TableFund(QWidget *parent) : TableBase(parent,{"可用资金","冻结
 
 void TableFund::receiveTradingAccount(TradingAccount t)
 {
-    model->setData(model->index(0,0),Util::convertNumberToQString(t.Available,2));
-    model->setData(model->index(0,1),Util::convertNumberToQString(t.FrozenCash,2));
-    model->setData(model->index(0,2),Util::convertNumberToQString(t.WithdrawQuota,2));
+    model->setData(model->index(0,0),Util::convertNumberToQString(t.total,2));
+    model->setData(model->index(0,1),Util::convertNumberToQString(t.FrozenMargin,2));
+    model->setData(model->index(0,2),Util::convertNumberToQString(t.Available,2));
+    model->setData(model->index(0,3),Util::convertNumberToQString(t.PositionProfit,2));
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>Strategy</class>
- <widget class="QWidget" name="Strategy">
+ <widget class="QDialog" name="Strategy">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -83,6 +83,20 @@
        <property name="icon">
         <iconset resource="qss.qrc">
          <normaloff>:/image/pause.svg</normaloff>:/image/pause.svg</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="backtesting">
+       <property name="toolTip">
+        <string>回测</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="qss.qrc">
+         <normaloff>:/image/backtesting.svg</normaloff>:/image/backtesting.svg</iconset>
        </property>
       </widget>
      </item>

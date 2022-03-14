@@ -43,7 +43,7 @@
      <item row="2" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>买卖方向（添加生效）</string>
+        <string>方向（添加生效）</string>
        </property>
       </widget>
      </item>
@@ -51,45 +51,66 @@
       <widget class="QComboBox" name="Direction">
        <item>
         <property name="text">
-         <string>买</string>
+         <string>多</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>卖</string>
+         <string>空</string>
         </property>
        </item>
       </widget>
      </item>
-     <item row="3" column="0">
+     <item row="4" column="0">
       <widget class="QLabel" name="label_3">
        <property name="text">
         <string>价格（添加生效）</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
+     <item row="4" column="1">
       <widget class="QLineEdit" name="LimitPrice"/>
      </item>
-     <item row="4" column="0">
+     <item row="5" column="0">
       <widget class="QLabel" name="label_4">
        <property name="text">
         <string>数量（添加生效）</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
+     <item row="5" column="1">
       <widget class="QLineEdit" name="VolumeTotalOriginal"/>
      </item>
-     <item row="5" column="0">
+     <item row="6" column="0">
       <widget class="QLabel" name="label_6">
        <property name="text">
         <string>报单编号（删除生效）</string>
        </property>
       </widget>
      </item>
-     <item row="5" column="1">
+     <item row="6" column="1">
       <widget class="QLineEdit" name="OrderSysID"/>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_7">
+       <property name="text">
+        <string>开平（添加生效）</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QComboBox" name="Offset">
+       <item>
+        <property name="text">
+         <string>开</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>平</string>
+        </property>
+       </item>
+      </widget>
      </item>
     </layout>
    </item>

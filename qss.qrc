@@ -6,5 +6,6 @@
         <file>image/pause.svg</file>
         <file>image/play.svg</file>
         <file>qss/main.qss</file>
+        <file>image/backtesting.svg</file>
     </qresource>
 </RCC>

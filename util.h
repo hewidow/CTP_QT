@@ -13,8 +13,10 @@ public:
     static QString convertNumberToQString(double,int prec=-1);
     static QString convertNumberToQString(int);
     static QString convertQtMsgTypeToText(QtMsgType);
-    static QString convertDirectionToText(char);
-    static QString convertOrderStatusToText(char);
+    static QString convertDirectionToText(TThostFtdcDirectionType);
+    static QString convertOrderStatusToText(TThostFtdcOrderStatusType);
+    static QString convertPosiDirectionToText(TThostFtdcPosiDirectionType);
+    static QString convertCombOffsetFlagToText(TThostFtdcCombOffsetFlagType);
 };
 
 #endif // UTIL_H

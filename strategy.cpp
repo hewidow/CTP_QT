@@ -1,7 +1,7 @@
 ﻿#include "strategy.h"
 
 Strategy::Strategy(QWidget *parent)
-	: QWidget(parent)
+	: QDialog(parent)
 {
 	ui.setupUi(this);
     ui.pause->setVisible(false);
@@ -69,6 +69,10 @@ void Strategy::on_pause_clicked()
     cur = -1;
     ui.start->setVisible(true);
     ui.pause->setVisible(false);
+}
+void Strategy::on_backtesting_clicked()
+{
+    backtesting.exec();
 }
 void Strategy::receiveRtnDepthMarketData(QuoteField q)
 {

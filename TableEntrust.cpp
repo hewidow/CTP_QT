@@ -1,8 +1,9 @@
 ﻿#include "TableEntrust.h"
 
-TableEntrust::TableEntrust(QWidget *parent) : TableBase(parent,{"报单编号","代码","买卖方向","价格","总数量","剩余数量","状态","时间"})
+TableEntrust::TableEntrust(QWidget *parent) : TableBase(parent,{"报单编号","代码","方向","开平","价格","总数量","剩余数量","状态","时间"})
 {
-    horizontalHeader()->setSectionResizeMode(6, QHeaderView::ResizeToContents); // 设置第6列根据内容调整宽度
+    horizontalHeader()->setSectionResizeMode(7, QHeaderView::ResizeToContents); // 设置第6列根据内容调整宽度
+    horizontalHeader()->setSectionResizeMode(8, QHeaderView::ResizeToContents); // 设置第6列根据内容调整宽度
 }
 QList<QString> TableEntrust::formatData(CThostFtdcOrderField o)
 {
@@ -10,6 +11,7 @@ QList<QString> TableEntrust::formatData(CThostFtdcOrderField o)
         QString(o.OrderSysID).trimmed(), // 去除开头空白字符
         o.InstrumentID,
         Util::convertDirectionToText(o.Direction),
+        Util::convertCombOffsetFlagToText(o.CombOffsetFlag),
         Util::convertNumberToQString(o.LimitPrice),
         Util::convertNumberToQString(o.VolumeTotalOriginal),
         Util::convertNumberToQString(o.VolumeTotal),

@@ -63,11 +63,11 @@ QString Util::convertDirectionToText(TThostFtdcDirectionType dir)
 {
     switch (dir) {
     case THOST_FTDC_D_Buy:
-        return "买";
+        return "多";
     case THOST_FTDC_D_Sell:
-        return "卖";
+        return "空";
     default:
-        return "未知";
+        return "未定义";
     }
 }
 
@@ -96,4 +96,28 @@ QString Util::convertOrderStatusToText(TThostFtdcOrderStatusType status)
         return "未定义";
     }
 }
+QString Util::convertPosiDirectionToText(TThostFtdcPosiDirectionType dir)
+{
+    switch (dir) {
+    case THOST_FTDC_PD_Net:
+        return "净";
+    case THOST_FTDC_PD_Long:
+        return "多";
+    case THOST_FTDC_PD_Short:
+        return "空";
+    default:
+        return "未定义";
+    }
+}
 
+QString Util::convertCombOffsetFlagToText(TThostFtdcCombOffsetFlagType offset)
+{
+    switch (offset[0]) {
+    case THOST_FTDC_OF_Open:
+        return "开";
+    case THOST_FTDC_OF_Close:
+        return "平";
+    default:
+        return "未定义";
+    }
+}

@@ -27,9 +27,10 @@ struct LoginField // 登录表单
     QString password; // 密码
 };
 struct TradingAccount{ // 账户资金信息
+    double total;
+    double FrozenMargin;
     double Available;
-    double FrozenCash;
-    double WithdrawQuota;
+    double PositionProfit;
 };
 
 struct InstrumentField // 合约信息

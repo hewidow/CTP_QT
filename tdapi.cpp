@@ -96,9 +96,10 @@ void TdApi::OnRspQryTradingAccount(CThostFtdcTradingAccountField *pTradingAccoun
 {
     rDebug("查询资金账户响应",pRspInfo); // pRspInfo为nullptr，很奇怪
     emit sendTradingAccount(TradingAccount{
+        pTradingAccount->FrozenMargin + pTradingAccount->Available + pTradingAccount->PositionProfit,
+        pTradingAccount->FrozenMargin,
         pTradingAccount->Available,
-        pTradingAccount->FrozenCash,
-        pTradingAccount->WithdrawQuota
+        pTradingAccount->PositionProfit
     });
 }
 int TdApi::reqQryInvestorPosition()
