@@ -30,17 +30,17 @@ void StrategyExample::onAccount(TradingAccount t)
     tradingAccount = t;
 }
 
-void StrategyExample::onPositions(QVector<CThostFtdcInvestorPositionField> p)
+void StrategyExample::onPositions(QVector<CThostFtdcInvestorPositionField> t)
 {
-    positions = p;
+    positions = t;
     positionsMap.clear();
     for (auto& it : positions) {
         positionsMap[it.InstrumentID] = it;
     }
 }
-void StrategyExample::onOrders(QVector<CThostFtdcOrderField> o)
+void StrategyExample::onOrders(QVector<CThostFtdcOrderField> t)
 {
-    orders = o;
+    orders = t;
     ordersMap.clear();
     for (auto& it : orders) {
         ordersMap[it.ExchangeID] = it;

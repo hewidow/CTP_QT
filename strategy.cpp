@@ -27,6 +27,13 @@ Strategy::Strategy(QWidget *parent)
     ui.listView->setModel(model); // 显示STRATEGY_PATH路径下所有后缀为cpp的文件名
     ui.listView->setEditTriggers(QAbstractItemView::NoEditTriggers); // 禁止编辑
     connect(ui.listView, &QListView::doubleClicked, this, &Strategy::on_edit_clicked); // 绑定双击事件
+
+    // 连接回测的信号槽，根据sender()来筛选信号
+    connect(&backtesting, &Backtesting::sendBacktestingStatus, this, &Strategy::receiveBacktestingStatus);
+    connect(&backtesting, &Backtesting::sendRtnDepthMarketData, this, &Strategy::receiveRtnDepthMarketData);
+    connect(&backtesting, &Backtesting::sendTradingAccount, this, &Strategy::receiveTradingAccount);
+    connect(&backtesting, &Backtesting::sendInvestorPositions, this, &Strategy::receiveInvestorPositions);
+    connect(&backtesting, &Backtesting::sendOrders, this, &Strategy::receiveOrders);
 }
 
 Strategy::~Strategy()
@@ -49,62 +56,87 @@ void Strategy::on_edit_clicked()
     QString path = STRATEGY_PATH + ui.listView->currentIndex().data().toString();
     QDesktopServices::openUrl(QUrl::fromLocalFile(QFileInfo(path).absoluteFilePath()));
 }
-void Strategy::on_start_clicked() {
-    cur = ui.listView->currentIndex().row();
-    if (cur == -1) {
+bool Strategy::checkCurrentSelectIndex()
+{
+    if (ui.listView->currentIndex().row() == -1) {
         QMessageBox::critical(nullptr, "错误", "请先选择一项策略");
-        return;
+        return false;
     }
+    return true;
+}
+void Strategy::on_start_clicked() {
+    if (!checkCurrentSelectIndex() || strategyRunning) return;
+    cur = ui.listView->currentIndex().row();
+    emit sendStrategyStatus(strategies[cur]->name());
     connect(strategies[cur], &StrategyBase::sendReqOrderInsert, this, &Strategy::receiveReqOrderInsert);
     connect(strategies[cur], &StrategyBase::sendReqOrderAction, this, &Strategy::receiveReqOrderAction);
     strategies[cur]->onStart();
     ui.start->setVisible(false);
     ui.pause->setVisible(true);
+    strategyRunning = true;
 }
 
 void Strategy::on_pause_clicked()
 {
+    if (!strategyRunning) return;
+    strategyRunning = false;
+    strategyBacktesting = false;
     strategies[cur]->onStop();
-    strategies[cur]->disconnect(); // 断开所有连接
+    strategies[cur]->disconnect(); // 断开所有信号槽
     cur = -1;
     ui.start->setVisible(true);
     ui.pause->setVisible(false);
+    emit sendStrategyStatus("无");
 }
 void Strategy::on_backtesting_clicked()
 {
+    if (!checkCurrentSelectIndex()) return;
+    on_pause_clicked();
+    strategyBacktesting = true;
     backtesting.exec();
 }
-void Strategy::receiveRtnDepthMarketData(QuoteField q)
+bool Strategy::checkEnvironment()
 {
-    if (cur == -1) return;
-    strategies[cur]->onTick(q);
+    if (!strategyRunning) return false;
+    const Backtesting* obj = qobject_cast<Backtesting*>(sender());
+    if (strategyBacktesting && obj==nullptr) return false;
+    return true;
+}
+void Strategy::receiveRtnDepthMarketData(QuoteField t)
+{
+    if (!checkEnvironment()) return;
+    strategies[cur]->onTick(t);
 }
 void Strategy::receiveTradingAccount(TradingAccount t)
 {
-    if (cur == -1) return;
+    if (!checkEnvironment()) return;
     strategies[cur]->onAccount(t);
 }
-void Strategy::receiveInvestorPositions(QVector<CThostFtdcInvestorPositionField> p)
+void Strategy::receiveInvestorPositions(QVector<CThostFtdcInvestorPositionField> t)
 {
-    if (cur == -1) return;
-    strategies[cur]->onPositions(p);
+    if (!checkEnvironment()) return;
+    strategies[cur]->onPositions(t);
 }
-void Strategy::receiveOrders(QVector<CThostFtdcOrderField> o)
+void Strategy::receiveOrders(QVector<CThostFtdcOrderField> t)
 {
-    if (cur == -1) return;
-    strategies[cur]->onOrders(o);
+    if (!checkEnvironment()) return;
+    strategies[cur]->onOrders(t);
 }
-void Strategy::receiveAllInstruments(QVector<InstrumentField>i)
+void Strategy::receiveReqOrderInsert(CThostFtdcInputOrderField t)
 {
-    if (cur == -1) return;
+    if (!strategyRunning) return;
+    if (strategyBacktesting) backtesting.receiveReqOrderInsert(t);
+    else emit sendReqOrderInsert(t);
 }
-void Strategy::receiveReqOrderInsert(CThostFtdcInputOrderField o)
+void Strategy::receiveReqOrderAction(CThostFtdcInputOrderActionField t)
 {
-    if (cur == -1) return;
-    emit sendReqOrderInsert(o);
+    if (!strategyRunning) return;
+    if (strategyBacktesting) backtesting.receiveReqOrderAction(t);
+    else emit sendReqOrderAction(t);
 }
-void Strategy::receiveReqOrderAction(CThostFtdcInputOrderActionField a)
+
+void Strategy::receiveBacktestingStatus(bool status)
 {
-    if (cur == -1) return;
-    emit sendReqOrderAction(a);
+    if (status) on_start_clicked();
+    else on_pause_clicked();
 }

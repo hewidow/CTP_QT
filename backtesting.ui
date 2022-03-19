@@ -13,10 +13,10 @@
   <property name="windowTitle">
    <string>Backtesting</string>
   </property>
-  <widget class="QPushButton" name="startButton">
+  <widget class="QPushButton" name="start">
    <property name="geometry">
     <rect>
-     <x>270</x>
+     <x>10</x>
      <y>240</y>
      <width>93</width>
      <height>28</height>
@@ -24,6 +24,19 @@
    </property>
    <property name="text">
     <string>开始回测</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="stop">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>240</y>
+     <width>93</width>
+     <height>28</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>停止回测</string>
    </property>
   </widget>
  </widget>

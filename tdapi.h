@@ -81,7 +81,7 @@ signals:
     void sendInvestorPositions(QVector<CThostFtdcInvestorPositionField>);
     // 发送报单信息
     void sendOrders(QVector<CThostFtdcOrderField>);
-    // 报单变更通知刷新
+    // 报单变更通知刷新持仓、报单和账户信息
     void sendOrderChange();
 };
 

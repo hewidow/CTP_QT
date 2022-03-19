@@ -49,6 +49,9 @@ private slots:
     // 接收日志并显示在界面上
     void receiveLog(QString);
 
+    // 接收当前策略状态
+    void receiveStrategyStatus(QString);
+
     // 交易菜单
     void on_trade_triggered();
     // 策略菜单
@@ -64,6 +67,7 @@ private:
     Engine engine; // 管理mdApi和tdApi
     bool isMdLogin=false; // 是否登录行情
     bool isTdLogin=false; // 是否登录交易
+    QLabel* strategyStatus; // 底部状态栏的策略状态
     QLabel *userStatus; // 底部状态栏的用户状态
     LedLabel *mdStatus,*tdStatus; // 底部状态栏的行情和交易连接状态
     Trade trade; // 交易界面

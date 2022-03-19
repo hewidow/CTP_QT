@@ -19,15 +19,21 @@ class Strategy : public QDialog
 public:
 	Strategy(QWidget *parent = Q_NULLPTR);
 	~Strategy();
+	// 检查是否选中一项策略
+	bool checkCurrentSelectIndex();
+	// 检查参数是否正确及筛选信号
+	bool checkEnvironment();
 public slots:
 	void receiveTradingAccount(TradingAccount);
 	void receiveInvestorPositions(QVector<CThostFtdcInvestorPositionField>);
 	void receiveOrders(QVector<CThostFtdcOrderField>);
-	void receiveAllInstruments(QVector<InstrumentField>);
 	void receiveRtnDepthMarketData(QuoteField);
 	void receiveReqOrderInsert(CThostFtdcInputOrderField);
 	void receiveReqOrderAction(CThostFtdcInputOrderActionField);
+	void receiveBacktestingStatus(bool);
 signals:
+	// 发送当前策略状态到主界面状态栏
+	void sendStrategyStatus(QString);
 	void sendReqOrderInsert(CThostFtdcInputOrderField);
 	void sendReqOrderAction(CThostFtdcInputOrderActionField);
 private slots:
@@ -48,5 +54,9 @@ private:
 	QStandardItemModel *model;
 	QVector<StrategyBase*>strategies;
 	int cur = -1; // 当前正在运行的策略
+	// 是否打开回测
+	bool strategyBacktesting = false;
+	// 策略是否运行
+	bool strategyRunning = false;
 	Backtesting backtesting;
 };

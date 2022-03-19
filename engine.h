@@ -44,7 +44,7 @@ public slots:
     void receiveAllInstruments(QVector<InstrumentField>);
     // 新建报单
     void receiveReqOrderInsert(CThostFtdcInputOrderField);
-    // 操作报单
+    // 修改报单
     void receiveReqOrderAction(CThostFtdcInputOrderActionField);
     // 报单变更事件
     void receiveOrderChange();

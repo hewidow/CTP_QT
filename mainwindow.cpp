@@ -6,9 +6,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    userStatus=new QLabel("当前用户：未登录 ",this);
+    strategyStatus = new QLabel(" 当前策略：无 ", this);
+    userStatus=new QLabel(" 当前用户：未登录 ",this);
     mdStatus=new LedLabel(this, "red", "行情未连接");
     tdStatus=new LedLabel(this, "red", "交易未连接");
+    ui->statusbar->addPermanentWidget(strategyStatus);
     ui->statusbar->addPermanentWidget(userStatus);
     ui->statusbar->addPermanentWidget(mdStatus);
     ui->statusbar->addPermanentWidget(tdStatus);
@@ -17,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     init();
 
-    showMaximized();
+    //showMaximized();
 }
 MainWindow::~MainWindow()
 {
@@ -63,8 +65,7 @@ void MainWindow::init()
     connect(&engine.tdApi,&TdApi::sendOrders,ui->tableEntrust,&TableEntrust::receiveOrders);
     connect(&engine.tdApi,&TdApi::sendOrderChange,&engine,&Engine::receiveOrderChange);
 
-    /* TdApi & StrategyModel */
-    connect(&engine.tdApi, &TdApi::sendAllInstruments, &strategy, &Strategy::receiveAllInstruments);
+    /* TdApi & Strategy */
     connect(&engine.tdApi, &TdApi::sendTradingAccount, &strategy, &Strategy::receiveTradingAccount);
     connect(&engine.tdApi, &TdApi::sendInvestorPositions, &strategy, &Strategy::receiveInvestorPositions);
     connect(&engine.tdApi, &TdApi::sendOrders, &strategy, &Strategy::receiveOrders);
@@ -80,6 +81,7 @@ void MainWindow::init()
     connect(&trade,&Trade::sendReqOrderAction,&engine,&Engine::receiveReqOrderAction);
 
     /* Strategy */
+    connect(&strategy, &Strategy::sendStrategyStatus, this, &MainWindow::receiveStrategyStatus);
     connect(&strategy, &Strategy::sendReqOrderInsert, &engine, &Engine::receiveReqOrderInsert);
     connect(&strategy, &Strategy::sendReqOrderAction, &engine, &Engine::receiveReqOrderAction);
 
@@ -117,7 +119,7 @@ void MainWindow::receiveRspLoginTd(CThostFtdcRspUserLoginField u)
 void MainWindow::loginDone() {
     login.close();
     showMaximized();
-    userStatus->setText("当前用户："+QString(engine.userInfo.UserID)+" ");
+    userStatus->setText(" 当前用户："+QString(engine.userInfo.UserID)+" ");
     iDebug<<"当前用户"<< engine.userInfo.UserID<<"前置编号"<< engine.userInfo.FrontID<<"会话编号"<< engine.userInfo.SessionID;
     engine.tradeInit();
     engine.getAccountDetail();
@@ -126,6 +128,11 @@ void MainWindow::loginDone() {
 void MainWindow::receiveLog(QString msg)
 {
     ui->logText->append(msg);
+}
+
+void MainWindow::receiveStrategyStatus(QString s)
+{
+    strategyStatus->setText(" 当前策略：" + s + " ");
 }
 
 void MainWindow::on_trade_triggered()
