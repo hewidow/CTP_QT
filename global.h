@@ -4,13 +4,14 @@
 #include <QString>
 #include "ThostFtdcUserApiStruct.h"
 
-#define SUBSCRIBE_INFO_PATH QString("subscribeInfo/") // 订阅信息存放地址
-#define CONFIG_PATH QString("config.ini") // 一些用户配置选项
+#define INSTRUMENT_ID_FILTER "204"
+#define SUBSCRIBE_INFO_PATH "subscribeInfo/" // 订阅信息存放地址
+#define CONFIG_PATH "config.ini" // 一些用户配置选项
 #define COMMAND_QUEUE_RETRY_COUNT 3 // 命令队列重试次数
 #define COMMAND_QUEUE_REFRESH_INTERVAL 1 // 命令队列刷新间隔（秒）
 #define ACCOUNT_DETAIL_REFRESH_INTERVAL 10 // 账户详情刷新间隔（数字*COMMAND_QUEUE_REFRESH_INTERVAL）
 #define CONNECT_TIME_OUT 3 // 连接前置超时时间（数字*COMMAND_QUEUE_REFRESH_INTERVAL）
-#define STRATEGY_PATH QString("strategy/") // 策略存放地址
+#define STRATEGY_PATH "strategy/" // 策略存放地址
 #define STRATEGY_MODEL_RUN_INTERVAL 5000 // 策略模型运行间隔（毫秒）
 #define SYNC_COMMAND_REFRESH_INTERVAL 1 // 同步命令刷新间隔（秒）
 #define TICK_HISTORY_LENGTH 50 // 每个合约的历史tick最大长度

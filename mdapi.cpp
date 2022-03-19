@@ -9,7 +9,7 @@ void MdApi::connect(LoginField u)
     QDir dir;
     if (!dir.exists(SUBSCRIBE_INFO_PATH)) dir.mkpath(SUBSCRIBE_INFO_PATH);
 
-    api=CThostFtdcMdApi::CreateFtdcMdApi(SUBSCRIBE_INFO_PATH.toStdString().c_str()); // 初始化api
+    api=CThostFtdcMdApi::CreateFtdcMdApi(SUBSCRIBE_INFO_PATH); // 初始化api
     api->RegisterSpi(this); // 绑定回调接口
     api->RegisterFront(Util::convertQStringToCharPoint(u.mdAddress)); // 设置连接地址
     api->Init(); // 初始化运行环境

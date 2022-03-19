@@ -18,7 +18,7 @@ int TdApi::connect(LoginField u)
     QDir dir;
     if (!dir.exists(SUBSCRIBE_INFO_PATH)) dir.mkpath(SUBSCRIBE_INFO_PATH);
 
-    api=CThostFtdcTraderApi::CreateFtdcTraderApi(SUBSCRIBE_INFO_PATH.toStdString().c_str()); // 初始化api
+    api=CThostFtdcTraderApi::CreateFtdcTraderApi(SUBSCRIBE_INFO_PATH); // 初始化api
     api->RegisterSpi(this); // 绑定回调接口
     api->SubscribePublicTopic(THOST_TERT_QUICK);
     api->SubscribePrivateTopic(THOST_TERT_QUICK);
@@ -146,8 +146,8 @@ int TdApi::reqAllInstruments()
 }
 void TdApi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-    // 只要长度6位且后四位为如下条件的，这样少一点
-    if (strlen(pInstrument->InstrumentID)==6&&strcmp(&(pInstrument->InstrumentID[2]),"2203")==0) {
+    // 只要如下条件的，这样少一点
+    if (strlen(pInstrument->InstrumentID)<=6&&strstr(pInstrument->InstrumentID, INSTRUMENT_ID_FILTER) != nullptr) {
         instruments.push_back(InstrumentField{
             pInstrument->InstrumentID,
             QString::fromLocal8Bit(pInstrument->InstrumentName),
