@@ -198,10 +198,3 @@ void TdApi::OnErrRtnOrderAction(CThostFtdcOrderActionField* pOrderAction, CThost
     // 一个用户多连接的情况下，当前连接会通过此接口收到其他连接的报单操作错误回报
     // rDebug("报单操作错误回报",pRspInfo);
 }
-
-void TdApi::test1(){
-
-}
-void TdApi::test2(){
-
-}

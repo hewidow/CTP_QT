@@ -30,10 +30,11 @@ Strategy::Strategy(QWidget *parent)
 
     // 连接回测的信号槽，根据sender()来筛选信号
     connect(&backtesting, &Backtesting::sendBacktestingStatus, this, &Strategy::receiveBacktestingStatus);
-    connect(&backtesting, &Backtesting::sendRtnDepthMarketData, this, &Strategy::receiveRtnDepthMarketData);
     connect(&backtesting, &Backtesting::sendTradingAccount, this, &Strategy::receiveTradingAccount);
     connect(&backtesting, &Backtesting::sendInvestorPositions, this, &Strategy::receiveInvestorPositions);
     connect(&backtesting, &Backtesting::sendOrders, this, &Strategy::receiveOrders);
+    connect(&backtesting, &Backtesting::sendRtnDepthMarketData, this, &Strategy::receiveRtnDepthMarketData);
+    connect(&backtesting, &Backtesting::sendKLine, this, &Strategy::receiveKLine);
 }
 
 Strategy::~Strategy()
@@ -95,6 +96,11 @@ void Strategy::on_backtesting_clicked()
     strategyBacktesting = true;
     backtesting.exec();
 }
+void Strategy::receiveBacktestingStatus(bool status)
+{
+    if (status) on_start_clicked();
+    else on_pause_clicked();
+}
 bool Strategy::checkEnvironment()
 {
     if (!strategyRunning) return false;
@@ -122,6 +128,11 @@ void Strategy::receiveOrders(QVector<CThostFtdcOrderField> t)
     if (!checkEnvironment()) return;
     strategies[cur]->onOrders(t);
 }
+void Strategy::receiveKLine(KLine t)
+{
+    if (!checkEnvironment()) return;
+    strategies[cur]->onKLine(t);
+}
 void Strategy::receiveReqOrderInsert(CThostFtdcInputOrderField t)
 {
     if (!strategyRunning) return;
@@ -135,8 +146,4 @@ void Strategy::receiveReqOrderAction(CThostFtdcInputOrderActionField t)
     else emit sendReqOrderAction(t);
 }
 
-void Strategy::receiveBacktestingStatus(bool status)
-{
-    if (status) on_start_clicked();
-    else on_pause_clicked();
-}
+

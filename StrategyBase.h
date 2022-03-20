@@ -7,19 +7,23 @@ class StrategyBase:public QObject
 {
 	Q_OBJECT
 public:
+	StrategyBase();
+	// 策略名称
 	virtual QString name() = 0;
 	// 策略启动
 	virtual void onStart() = 0;
 	// 策略停止
 	virtual void onStop() = 0;
-	// 账户资金回报
-	virtual void onAccount(TradingAccount) = 0;
 	// 持仓回报
 	virtual void onPositions(QVector<CThostFtdcInvestorPositionField>) = 0;
 	// 委托回报
 	virtual void onOrders(QVector<CThostFtdcOrderField>) = 0;
 	// 行情回报
 	virtual void onTick(QuoteField) = 0;
+	// k线回报
+	virtual void onKLine(KLine) = 0;
+	// 账户资金回报
+	void onAccount(TradingAccount);
 	// 打印日志接口
 	void log(QString);
 	// 买入开仓
@@ -37,4 +41,6 @@ public:
 signals:
 	void sendReqOrderInsert(CThostFtdcInputOrderField);
 	void sendReqOrderAction(CThostFtdcInputOrderActionField);
+protected:
+	TradingAccount tradingAccount; // 交易账户资金信息
 };

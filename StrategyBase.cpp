@@ -1,5 +1,12 @@
 ﻿#include "StrategyBase.h"
-
+StrategyBase::StrategyBase()
+{
+    tradingAccount = TradingAccount{ 0 };
+}
+void StrategyBase::onAccount(TradingAccount t)
+{
+    tradingAccount = t;
+}
 void StrategyBase::log(QString s)
 {
     iDebug << "【当前策略："+name()+"】" << s;
@@ -53,3 +60,4 @@ void StrategyBase::cancel(TThostFtdcOrderSysIDType OrderSysID)
 
     emit sendReqOrderAction(a);
 }
+

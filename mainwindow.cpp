@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     init();
 
-    //showMaximized();
+    showMaximized();
 }
 MainWindow::~MainWindow()
 {

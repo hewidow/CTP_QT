@@ -34,8 +34,6 @@ public:
     int reqOrderInsert(CThostFtdcInputOrderField);
     // 报单操作
     int reqOrderAction(CThostFtdcInputOrderActionField);
-    void test1();
-    void test2();
 
 private:
     void OnFrontConnected() override;

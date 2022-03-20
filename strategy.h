@@ -24,13 +24,14 @@ public:
 	// 检查参数是否正确及筛选信号
 	bool checkEnvironment();
 public slots:
+	void receiveBacktestingStatus(bool);
 	void receiveTradingAccount(TradingAccount);
 	void receiveInvestorPositions(QVector<CThostFtdcInvestorPositionField>);
 	void receiveOrders(QVector<CThostFtdcOrderField>);
 	void receiveRtnDepthMarketData(QuoteField);
+	void receiveKLine(KLine);
 	void receiveReqOrderInsert(CThostFtdcInputOrderField);
 	void receiveReqOrderAction(CThostFtdcInputOrderActionField);
-	void receiveBacktestingStatus(bool);
 signals:
 	// 发送当前策略状态到主界面状态栏
 	void sendStrategyStatus(QString);
@@ -54,9 +55,7 @@ private:
 	QStandardItemModel *model;
 	QVector<StrategyBase*>strategies;
 	int cur = -1; // 当前正在运行的策略
-	// 是否打开回测
-	bool strategyBacktesting = false;
-	// 策略是否运行
-	bool strategyRunning = false;
+	bool strategyBacktesting = false; // 是否打开回测
+	bool strategyRunning = false; // 策略是否运行
 	Backtesting backtesting;
 };

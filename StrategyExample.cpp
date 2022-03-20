@@ -25,11 +25,6 @@ void StrategyExample::onStop()
     log("策略停止");
 }
 
-void StrategyExample::onAccount(TradingAccount t)
-{
-    tradingAccount = t;
-}
-
 void StrategyExample::onPositions(QVector<CThostFtdcInvestorPositionField> t)
 {
     positions = t;
@@ -78,4 +73,8 @@ void StrategyExample::onTick(QuoteField tick)
         }
     }
     while (que.size() > 0) que.pop_back();
+}
+
+void StrategyExample::onKLine(KLine)
+{
 }

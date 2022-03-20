@@ -1,7 +1,13 @@
-#pragma once
+ï»¿#pragma once
 
 #include <QDialog>
 #include <QCloseEvent>
+#include <QDir>
+#include <QStandardItemModel>
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <QMessageBox>
 #include "ui_backtesting.h"
 #include "util.h"
 #include "debug.h"
@@ -13,34 +19,44 @@ class Backtesting : public QDialog
 public:
 	Backtesting(QWidget *parent = Q_NULLPTR);
 	~Backtesting();
-	// ĞÂ½¨±¨µ¥
-	void receiveReqOrderInsert(CThostFtdcInputOrderField);
-	// ĞŞ¸Ä±¨µ¥
-	void receiveReqOrderAction(CThostFtdcInputOrderActionField);
-	// ¼ÓÔØÊı¾İ
+	// é”™è¯¯å¼¹çª—
+	void sendError(QString);
+	// æ˜¾ç¤ºå¯é€‰æ•°æ®åº“
+	void showDatabase();
+	// åˆå§‹åŒ–æ•°æ®åº“
+	bool initDatabase();
+	// åŠ è½½æ•°æ®
 	void loadData();
+	// æ–°å»ºæŠ¥å•
+	void receiveReqOrderInsert(CThostFtdcInputOrderField);
+	// ä¿®æ”¹æŠ¥å•
+	void receiveReqOrderAction(CThostFtdcInputOrderActionField);
 protected:
-	// ÖØĞ´¹Ø±ÕÊÂ¼ş
+	// é‡å†™å…³é—­äº‹ä»¶
 	void closeEvent(QCloseEvent* event) override;
 private slots:
-	// ¿ªÊ¼»Ø²â
+	// å¼€å§‹å›æµ‹
 	void on_start_clicked();
-	// ÔİÍ£»Ø²â
+	// æš‚åœå›æµ‹
 	void on_stop_clicked();
 signals:
-	// ·¢ËÍ»Ø²â¿ªÊ¼»¹ÊÇÔİÍ£µÄ×´Ì¬
+	// æ˜¾ç¤ºå›æµ‹ç»“æœ
+	void sendBacktestingResult(BacktestingResult);
+	// å‘é€å›æµ‹å¼€å§‹è¿˜æ˜¯æš‚åœçš„çŠ¶æ€
 	void sendBacktestingStatus(bool);
-    // ·¢ËÍÕË»§×Ê½ğĞÅÏ¢
+    // å‘é€è´¦æˆ·èµ„é‡‘ä¿¡æ¯
     void sendTradingAccount(TradingAccount);
-    // ·¢ËÍÍ¶×ÊÕß³Ö²Ö
+    // å‘é€æŠ•èµ„è€…æŒä»“
     void sendInvestorPositions(QVector<CThostFtdcInvestorPositionField>);
-    // ·¢ËÍ±¨µ¥ĞÅÏ¢
+    // å‘é€æŠ¥å•ä¿¡æ¯
     void sendOrders(QVector<CThostFtdcOrderField>);
-	// ¶©ÔÄºÏÔ¼ÏìÓ¦
+	// tickå“åº”
 	void sendRtnDepthMarketData(QuoteField);
-
-
-
+	// é»˜è®¤1åˆ†é’Ÿkçº¿å“åº”
+	void sendKLine(KLine);
 private:
 	Ui::Backtesting ui;
+	BacktestingResult result;
+	QSqlDatabase db;
+	TradingAccount account;
 };

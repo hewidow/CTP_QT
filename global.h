@@ -2,6 +2,7 @@
 #define GLOBAL_H
 
 #include <QString>
+#include <QDate>
 #include "ThostFtdcUserApiStruct.h"
 
 #define INSTRUMENT_ID_FILTER "204"
@@ -16,6 +17,7 @@
 #define SYNC_COMMAND_REFRESH_INTERVAL 1 // 同步命令刷新间隔（秒）
 #define TICK_HISTORY_LENGTH 50 // 每个合约的历史tick最大长度
 #define LOG_MAX_ROW_COUNT 50 // 记录log的最大行数
+#define DATABASE_PATH "database/" // 数据存放地址
 
 struct LoginField // 登录表单
 {
@@ -58,6 +60,29 @@ struct QuoteField // 行情响应表单
     double OpenPrice;
     double HighestPrice;
     double LowestPrice;
+};
+struct KLine // k线
+{
+    QString InstrumentID;
+    QString ExchangeID;
+};
+struct BacktestingResult
+{
+    QDate startTime;
+    QDate endTime;
+    int totalTradingDays;
+    int profitableTradingDays;
+    int lossTradingDays;
+    double startFund;
+    double endFund;
+    double profitRate;
+    double annualizedProfit;
+    double maximumDrawdown;
+    double maximumDrawdownPercent;
+    double totalProfitAndLoss;
+    double totalHandlingFee;
+    double totalTurnover;
+    int totalTransactionNum;
 };
 
 #endif // GLOBAL_H
