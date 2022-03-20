@@ -15,7 +15,7 @@ public:
     // 释放api
     int release();
     // 设置连接
-    int connect(LoginField);
+    int connect(LoginForm);
     // 客户端认证
     int reqAuthenticate();
     // 登录
@@ -58,7 +58,7 @@ private:
     QVector<InstrumentField>instruments; // 所有合约
     QVector<CThostFtdcInvestorPositionField>positions; // 所有持仓
     QVector<CThostFtdcOrderField>orders; // 所有报单
-    LoginField userInfo;
+    LoginForm userInfo;
 
 signals:
     // 发送错误信息

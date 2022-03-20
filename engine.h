@@ -35,7 +35,7 @@ public:
 	
 public slots:
     // 登录按钮信号
-    void receiveLoginField(LoginField);
+    void receiveLoginForm(LoginForm);
     // 添加请求认证命令的信号
 	void receiveReqAuthenticateCommand();
     // 添加登录命令的信号

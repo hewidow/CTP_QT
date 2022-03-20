@@ -13,7 +13,7 @@ int TdApi::release()
     }
     return 0; // 本地操作，api总是执行成功
 }
-int TdApi::connect(LoginField u)
+int TdApi::connect(LoginForm u)
 {
     QDir dir;
     if (!dir.exists(SUBSCRIBE_INFO_PATH)) dir.mkpath(SUBSCRIBE_INFO_PATH);

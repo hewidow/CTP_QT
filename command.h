@@ -22,13 +22,13 @@ public:
 };
 class ConnectCommand :public Command {
 public:
-	ConnectCommand(LoginField _data) :Command(), data(_data) {};
+	ConnectCommand(LoginForm _data) :Command(), data(_data) {};
 	QString name() { return "设置交易API"; };
 	int execute(TdApi *tdApi) {
 		return tdApi->connect(data);
 	};
 private:
-	LoginField data;
+	LoginForm data;
 };
 class ReqAuthenticateCommand :public Command {
 public:

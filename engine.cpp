@@ -64,7 +64,7 @@ void Engine::release()
     initDone = false; // 重置变量
     connectTimeOut = CONNECT_NOT;
 }
-void Engine::receiveLoginField(LoginField data)
+void Engine::receiveLoginForm(LoginForm data)
 {
     if (connectTimeOut == CONNECT_NOT) { // 避免重复收到登录事件
         mdApi.connect(data);

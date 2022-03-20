@@ -43,6 +43,7 @@ void MainWindow::init()
     qRegisterMetaType<CThostFtdcOrderField>("CThostFtdcOrderField");
     qRegisterMetaType<CThostFtdcInputOrderField>("CThostFtdcInputOrderField");
     qRegisterMetaType<CThostFtdcInputOrderActionField>("CThostFtdcInputOrderActionField");
+    qRegisterMetaType<KLine>("KLine");
 
     // 信号槽连接
 
@@ -74,7 +75,7 @@ void MainWindow::init()
     connect(&engine, &Engine::sendError, this, &MainWindow::receiveError);
 
     /* Login */
-    connect(&login, &Login::sendLoginField, &engine, &Engine::receiveLoginField);
+    connect(&login, &Login::sendLoginField, &engine, &Engine::receiveLoginForm);
 
     /* Trade */
     connect(&trade,&Trade::sendReqOrderInsert,&engine,&Engine::receiveReqOrderInsert);

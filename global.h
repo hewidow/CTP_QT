@@ -19,7 +19,7 @@
 #define LOG_MAX_ROW_COUNT 50 // 记录log的最大行数
 #define DATABASE_PATH "database/" // 数据存放地址
 
-struct LoginField // 登录表单
+struct LoginForm // 登录表单
 {
     QString mdAddress; // 行情地址
     QString tdAddress; // 交易地址
@@ -65,6 +65,21 @@ struct KLine // k线
 {
     QString InstrumentID;
     QString ExchangeID;
+    QDate dateTime;
+    double volume;
+    double turnover;
+    double openInterest;
+    double openPrice;
+    double highPrice;
+    double lowPrice;
+    double closePrice;
+};
+struct BacktestingForm
+{
+    QString data;
+    QDate startTime;
+    QDate endTime;
+    double fund;
 };
 struct BacktestingResult
 {
@@ -84,5 +99,4 @@ struct BacktestingResult
     double totalTurnover;
     int totalTransactionNum;
 };
-
 #endif // GLOBAL_H

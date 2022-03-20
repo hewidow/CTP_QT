@@ -21,7 +21,7 @@ void Login::init()
 }
 void Login::on_loginBtn_clicked()
 {
-    emit sendLoginField(LoginField{
+    emit sendLoginField(LoginForm{
         ui->mdEdit->text(),
         ui->tdEdit->text(),
         ui->brokeIdEdit->text(),

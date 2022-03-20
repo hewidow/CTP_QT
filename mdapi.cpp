@@ -4,7 +4,7 @@ MdApi::MdApi(QObject *parent) : QObject(parent)
 {
     api=nullptr;
 }
-void MdApi::connect(LoginField u)
+void MdApi::connect(LoginForm u)
 {
     QDir dir;
     if (!dir.exists(SUBSCRIBE_INFO_PATH)) dir.mkpath(SUBSCRIBE_INFO_PATH);

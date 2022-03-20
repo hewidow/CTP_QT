@@ -37,6 +37,8 @@ signals:
 	void sendStrategyStatus(QString);
 	void sendReqOrderInsert(CThostFtdcInputOrderField);
 	void sendReqOrderAction(CThostFtdcInputOrderActionField);
+	void sendReqOrderInsertBacktesting(CThostFtdcInputOrderField);
+	void sendReqOrderActionBacktesting(CThostFtdcInputOrderActionField);
 private slots:
 	// 添加策略
 	void on_add_clicked();

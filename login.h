@@ -18,7 +18,7 @@ public:
     ~Login();
     void init();
 signals:
-    void sendLoginField(LoginField);
+    void sendLoginField(LoginForm);
 private slots:
     void on_loginBtn_clicked();
 

@@ -16,7 +16,7 @@ public:
     // 释放api
     void release();
     // 设置连接
-    void connect(LoginField);
+    void connect(LoginForm);
     // 登录（行情登录不做校验）
     void login();
     // 订阅合约

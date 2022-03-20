@@ -30,11 +30,14 @@ Strategy::Strategy(QWidget *parent)
 
     // 连接回测的信号槽，根据sender()来筛选信号
     connect(&backtesting, &Backtesting::sendBacktestingStatus, this, &Strategy::receiveBacktestingStatus);
-    connect(&backtesting, &Backtesting::sendTradingAccount, this, &Strategy::receiveTradingAccount);
-    connect(&backtesting, &Backtesting::sendInvestorPositions, this, &Strategy::receiveInvestorPositions);
-    connect(&backtesting, &Backtesting::sendOrders, this, &Strategy::receiveOrders);
-    connect(&backtesting, &Backtesting::sendRtnDepthMarketData, this, &Strategy::receiveRtnDepthMarketData);
-    connect(&backtesting, &Backtesting::sendKLine, this, &Strategy::receiveKLine);
+    connect(&backtesting.engine, &BacktestingEngine::sendTradingAccount, this, &Strategy::receiveTradingAccount);
+    connect(&backtesting.engine, &BacktestingEngine::sendInvestorPositions, this, &Strategy::receiveInvestorPositions);
+    connect(&backtesting.engine, &BacktestingEngine::sendOrders, this, &Strategy::receiveOrders);
+    connect(&backtesting.engine, &BacktestingEngine::sendRtnDepthMarketData, this, &Strategy::receiveRtnDepthMarketData);
+    connect(&backtesting.engine, &BacktestingEngine::sendKLine, this, &Strategy::receiveKLine);
+    connect(this, &Strategy::sendReqOrderInsertBacktesting, &backtesting.engine, &BacktestingEngine::receiveReqOrderInsert);
+    connect(this, &Strategy::sendReqOrderActionBacktesting, &backtesting.engine, &BacktestingEngine::receiveReqOrderAction);
+
 }
 
 Strategy::~Strategy()
@@ -104,7 +107,7 @@ void Strategy::receiveBacktestingStatus(bool status)
 bool Strategy::checkEnvironment()
 {
     if (!strategyRunning) return false;
-    const Backtesting* obj = qobject_cast<Backtesting*>(sender());
+    const BacktestingEngine* obj = qobject_cast<BacktestingEngine*>(sender());
     if (strategyBacktesting && obj==nullptr) return false;
     return true;
 }
@@ -136,13 +139,13 @@ void Strategy::receiveKLine(KLine t)
 void Strategy::receiveReqOrderInsert(CThostFtdcInputOrderField t)
 {
     if (!strategyRunning) return;
-    if (strategyBacktesting) backtesting.receiveReqOrderInsert(t);
+    if (strategyBacktesting) emit sendReqOrderInsertBacktesting(t);
     else emit sendReqOrderInsert(t);
 }
 void Strategy::receiveReqOrderAction(CThostFtdcInputOrderActionField t)
 {
     if (!strategyRunning) return;
-    if (strategyBacktesting) backtesting.receiveReqOrderAction(t);
+    if (strategyBacktesting)emit sendReqOrderActionBacktesting(t);
     else emit sendReqOrderAction(t);
 }
 
