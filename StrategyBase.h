@@ -3,7 +3,7 @@
 #include "util.h"
 #include "debug.h"
 
-class StrategyBase:public QObject
+class StrategyBase :public QObject
 {
 	Q_OBJECT
 public:
@@ -18,7 +18,7 @@ public:
 	virtual void onPositions(QVector<CThostFtdcInvestorPositionField>) = 0;
 	// 委托回报
 	virtual void onOrders(QVector<CThostFtdcOrderField>) = 0;
-	// 行情回报
+	// tick回报
 	virtual void onTick(QuoteField) = 0;
 	// k线回报
 	virtual void onKLine(KLine) = 0;
@@ -41,6 +41,8 @@ public:
 signals:
 	void sendReqOrderInsert(CThostFtdcInputOrderField);
 	void sendReqOrderAction(CThostFtdcInputOrderActionField);
+public:
+	bool backtest = false;
 protected:
 	TradingAccount tradingAccount; // 交易账户资金信息
 };

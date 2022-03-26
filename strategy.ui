@@ -87,7 +87,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="backtesting">
+      <widget class="QPushButton" name="backtest">
        <property name="toolTip">
         <string>回测</string>
        </property>

@@ -69,19 +69,19 @@ struct KLine // k线
     double volume;
     double turnover;
     double openInterest;
-    double openPrice;
-    double highPrice;
-    double lowPrice;
-    double closePrice;
+    double openPrice; // 一分钟开始价
+    double highPrice; // 一分钟中的最高价
+    double lowPrice; // 一分钟中的最低价
+    double closePrice; // 一分钟结束价
 };
-struct BacktestingForm
+struct BacktestForm
 {
-    QString data;
+    QString databaseName;
     QDate startTime;
     QDate endTime;
-    double fund;
+    double startFund;
 };
-struct BacktestingResult
+struct BacktestResult
 {
     QDate startTime;
     QDate endTime;

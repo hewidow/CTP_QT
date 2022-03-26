@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Backtesting</class>
- <widget class="QDialog" name="Backtesting">
+ <class>Backtest</class>
+ <widget class="QDialog" name="Backtest">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -26,7 +26,7 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QComboBox" name="bData"/>
+        <widget class="QComboBox" name="bDatabaseName"/>
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_18">
@@ -72,7 +72,7 @@
         </widget>
        </item>
        <item row="3" column="1">
-        <widget class="QDoubleSpinBox" name="bFund">
+        <widget class="QDoubleSpinBox" name="bStartFund">
          <property name="maximum">
           <double>20000000.000000000000000</double>
          </property>
@@ -89,22 +89,26 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QLabel" name="label_20">
-         <property name="text">
-          <string>进度</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QProgressBar" name="progressBar">
          <property name="autoFillBackground">
           <bool>false</bool>
          </property>
+         <property name="styleSheet">
+          <string notr="true">QProgressBar{
+	background:black;
+}
+QProgressBar::chunk{
+	background:#2196F3;
+}</string>
+         </property>
          <property name="value">
           <number>0</number>
          </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
          <property name="textVisible">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -114,6 +118,9 @@
          </property>
          <property name="textDirection">
           <enum>QProgressBar::TopToBottom</enum>
+         </property>
+         <property name="format">
+          <string>当前进度：%p%</string>
          </property>
         </widget>
        </item>
@@ -143,16 +150,16 @@
     </layout>
    </item>
    <item>
-    <widget class="TableBacktestingResult" name="tableBacktestingResult"/>
+    <widget class="TableBacktestResult" name="tableBacktestResult"/>
    </item>
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>TableBacktestingResult</class>
+   <class>TableBacktestResult</class>
    <extends>QTableView</extends>
-   <header>TableBacktestingResult.h</header>
+   <header>TableBacktestResult.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

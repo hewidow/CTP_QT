@@ -9,6 +9,7 @@ void StrategyBase::onAccount(TradingAccount t)
 }
 void StrategyBase::log(QString s)
 {
+    if (backtest) return;
     iDebug << "【当前策略："+name()+"】" << s;
 }
 void StrategyBase::buy(QString InstrumentID, double LastPrice, int VolumeTotalOriginal)
@@ -21,8 +22,8 @@ void StrategyBase::buy(QString InstrumentID, double LastPrice, int VolumeTotalOr
     ord.OrderPriceType = THOST_FTDC_OPT_LimitPrice; // 限价单
     ord.CombOffsetFlag[0] = THOST_FTDC_OF_Open; // 开仓
     ord.CombHedgeFlag[0] = THOST_FTDC_HF_Speculation; // 投机
-    ord.TimeCondition = THOST_FTDC_TC_GFD; // 当日有效
-    ord.VolumeCondition = THOST_FTDC_VC_AV; //任意数量
+    ord.TimeCondition = THOST_FTDC_TC_GTC; // 撤销前有效
+    ord.VolumeCondition = THOST_FTDC_VC_AV; // 任意数量
     ord.MinVolume = 1; // 最小成交量
     ord.ContingentCondition = THOST_FTDC_CC_Immediately; // 触发条件
     ord.StopPrice = 0; // 止损价
@@ -41,8 +42,8 @@ void StrategyBase::sell(QString InstrumentID, double LastPrice, int VolumeTotalO
     ord.OrderPriceType = THOST_FTDC_OPT_LimitPrice; // 限价单
     ord.CombOffsetFlag[0] = THOST_FTDC_OF_Close; // 平仓
     ord.CombHedgeFlag[0] = THOST_FTDC_HF_Speculation; // 投机
-    ord.TimeCondition = THOST_FTDC_TC_GFD; // 当日有效
-    ord.VolumeCondition = THOST_FTDC_VC_AV; //任意数量
+    ord.TimeCondition = THOST_FTDC_TC_GTC; // 撤销前有效
+    ord.VolumeCondition = THOST_FTDC_VC_AV; // 任意数量
     ord.MinVolume = 1; // 最小成交量
     ord.ContingentCondition = THOST_FTDC_CC_Immediately; // 触发条件
     ord.StopPrice = 0; // 止损价
