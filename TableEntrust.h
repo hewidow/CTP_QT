@@ -5,12 +5,12 @@
 
 class TableEntrust : public TableBase
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    explicit TableEntrust(QWidget *parent = nullptr);
-    QList<QString> formatData(CThostFtdcOrderField);
+	explicit TableEntrust(QWidget* parent = nullptr);
+	QList<QString> formatData(CThostFtdcOrderField);
 public slots:
-    void receiveOrders(QVector<CThostFtdcOrderField>); // 接收报单信息
+	void receiveOrders(QVector<CThostFtdcOrderField>); // 接收报单信息
 };
 
 #endif // TableEntrust_H

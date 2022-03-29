@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <QObject>
+#include <QThread>
 #include <QVector>
 #include <QSqlDatabase>
 #include <QSqlQuery>

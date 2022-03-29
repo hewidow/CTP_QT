@@ -5,11 +5,11 @@
 
 class TableFund : public TableBase
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    explicit TableFund(QWidget *parent = nullptr);
+	explicit TableFund(QWidget* parent = nullptr);
 public slots:
-    void receiveTradingAccount(TradingAccount);
+	void receiveTradingAccount(TradingAccount);
 };
 
 #endif // TableFund_H

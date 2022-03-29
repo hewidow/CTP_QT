@@ -21,82 +21,82 @@
 
 struct LoginForm // 登录表单
 {
-    QString mdAddress; // 行情地址
-    QString tdAddress; // 交易地址
-    QString brokerId; // BrokerID
-    QString appId; // 产品名称
-    QString authCode; // 授权编码
-    QString userId; // 账户
-    QString password; // 密码
+	QString mdAddress; // 行情地址
+	QString tdAddress; // 交易地址
+	QString brokerId; // BrokerID
+	QString appId; // 产品名称
+	QString authCode; // 授权编码
+	QString userId; // 账户
+	QString password; // 密码
 };
-struct TradingAccount{ // 账户资金信息
-    double total;
-    double FrozenMargin;
-    double Available;
-    double PositionProfit;
+struct TradingAccount { // 账户资金信息
+	double total;
+	double FrozenMargin;
+	double Available;
+	double PositionProfit;
 };
 
 struct InstrumentField // 合约信息
 {
-    QString InstrumentID;
-    QString InstrumentName;
-    QString ExchangeID;
+	QString InstrumentID;
+	QString InstrumentName;
+	QString ExchangeID;
 };
 
 struct QuoteField // 行情响应表单
 {
-    QString ExchangeID;
-    QString InstrumentID;
-    QString InstrumentName;
-    QString UpdateTime;
-    double LastPrice;
-    double UpDown; // 涨跌
-    double Gain; // 幅度
-    double BidPrice1;
-    int BidVolume1;
-    double AskPrice1;
-    int AskVolume1;
-    int Volume; // 成交量
-    double OpenPrice;
-    double HighestPrice;
-    double LowestPrice;
+	QString ExchangeID;
+	QString InstrumentID;
+	QString InstrumentName;
+	QString UpdateTime;
+	double LastPrice;
+	double UpDown; // 涨跌
+	double Gain; // 幅度
+	double BidPrice1;
+	int BidVolume1;
+	double AskPrice1;
+	int AskVolume1;
+	int Volume; // 成交量
+	double OpenPrice;
+	double HighestPrice;
+	double LowestPrice;
 };
 struct KLine // k线
 {
-    QString InstrumentID;
-    QString ExchangeID;
-    QDate dateTime;
-    double volume;
-    double turnover;
-    double openInterest;
-    double openPrice; // 一分钟开始价
-    double highPrice; // 一分钟中的最高价
-    double lowPrice; // 一分钟中的最低价
-    double closePrice; // 一分钟结束价
+	QString InstrumentID;
+	QString ExchangeID;
+	QDate dateTime;
+	double volume;
+	double turnover;
+	double openInterest;
+	double openPrice; // 一分钟开始价
+	double highPrice; // 一分钟中的最高价
+	double lowPrice; // 一分钟中的最低价
+	double closePrice; // 一分钟结束价
 };
 struct BacktestForm
 {
-    QString databaseName;
-    QDate startTime;
-    QDate endTime;
-    double startFund;
+	QString databaseName;
+	QDate startTime;
+	QDate endTime;
+	double startFund;
 };
 struct BacktestResult
 {
-    QDate startTime;
-    QDate endTime;
-    int totalTradingDays;
-    int profitableTradingDays;
-    int lossTradingDays;
-    double startFund;
-    double endFund;
-    double profitRate;
-    double annualizedProfit;
-    double maximumDrawdown;
-    double maximumDrawdownPercent;
-    double totalProfitAndLoss;
-    double totalHandlingFee;
-    double totalTurnover;
-    int totalTransactionNum;
+	QDate startTime;
+	QDate endTime;
+	int totalTradingDays;
+	int profitableTradingDays;
+	int lossTradingDays;
+	double startFund;
+	double endFund;
+	double profitRate;
+	double annualizedProfit;
+	double maximumDrawdown;
+	double maximumDrawdownPercent;
+	double totalProfitAndLoss;
+	double totalHandlingFee;
+	double totalTurnover;
+	int totalTransactionNum;
 };
 #endif // GLOBAL_H

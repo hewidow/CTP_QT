@@ -9,13 +9,13 @@
 
 class TableBase : public QTableView
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    explicit TableBase(QWidget *parent = nullptr,QList<QString> _headers={});
-    void clearData(); // 清空数据
+	explicit TableBase(QWidget* parent = nullptr, QList<QString> _headers = {});
+	void clearData(); // 清空数据
 protected:
-    QStandardItemModel* model;
-    QList<QString>headers;
+	QStandardItemModel* model;
+	QList<QString>headers;
 };
 
 #endif // TableBase_H

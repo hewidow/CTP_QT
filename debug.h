@@ -11,6 +11,6 @@
 class Debug
 {
 public:
-    Debug();
+	Debug();
 };
 #endif // DEBUG_H

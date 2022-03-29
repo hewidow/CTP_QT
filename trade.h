@@ -6,25 +6,25 @@
 #include "debug.h"
 
 namespace Ui {
-class Trade;
+	class Trade;
 }
 
 class Trade : public QDialog
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit Trade(QWidget *parent = nullptr);
-    ~Trade();
+	explicit Trade(QWidget* parent = nullptr);
+	~Trade();
 private slots:
-    void on_add_clicked();
-    void on_del_clicked();
+	void on_add_clicked();
+	void on_del_clicked();
 signals:
-    void sendReqOrderInsert(CThostFtdcInputOrderField);
-    void sendReqOrderAction(CThostFtdcInputOrderActionField);
+	void sendReqOrderInsert(CThostFtdcInputOrderField);
+	void sendReqOrderAction(CThostFtdcInputOrderActionField);
 
 private:
-    Ui::Trade *ui;
+	Ui::Trade* ui;
 };
 
 #endif // TRADE_H

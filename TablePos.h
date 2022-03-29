@@ -5,11 +5,11 @@
 
 class TablePos : public TableBase
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    explicit TablePos(QWidget *parent = nullptr);
+	explicit TablePos(QWidget* parent = nullptr);
 public slots:
-    void receiveInvestorPositions(QVector<CThostFtdcInvestorPositionField>);
+	void receiveInvestorPositions(QVector<CThostFtdcInvestorPositionField>);
 };
 
 #endif // TablePos_H

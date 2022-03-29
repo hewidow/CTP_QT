@@ -5,10 +5,12 @@ Backtest::Backtest(QWidget* parent)
 {
 	ui.setupUi(this);
 
+	thread = nullptr;
+	engine = nullptr;
+
 	showDatabase();
 
 	qRegisterMetaType<BacktestResult>("BacktestResult");
-
 	connect(this, &Backtest::sendBacktestResult, ui.tableBacktestResult, &TableBacktestResult::receiveBacktestResult);
 	emit sendBacktestResult({ QDate(),QDate(),0 });
 }
@@ -89,11 +91,18 @@ void Backtest::on_start_clicked()
 }
 void Backtest::on_stop_clicked()
 {
-	thread->quit();
-	thread->wait();
-	engine->disconnect();
-	delete thread;
-	delete engine;
+	if (thread != nullptr) {
+		thread->requestInterruption();
+		thread->quit();
+		thread->wait();
+		delete thread;
+		thread = nullptr;
+	}
+	if (engine != nullptr) {
+		engine->disconnect();
+		delete engine;
+		engine = nullptr;
+	}
 	emit sendBacktestStatus(false);
 	ui.start->setEnabled(true);
 	ui.stop->setEnabled(false);

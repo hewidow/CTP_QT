@@ -3,7 +3,7 @@
 #include <QQueue>
 #include "StrategyBase.h"
 
-class StrategyExample: public StrategyBase
+class StrategyExample : public StrategyBase
 {
 public:
 	StrategyExample();
@@ -18,7 +18,7 @@ public:
 private:
 	QMap<QString, QQueue<QuoteField> >tickMap; // 历史行情
 	QVector<CThostFtdcInvestorPositionField> positions; // 持仓情况
-	QMap<QString,CThostFtdcInvestorPositionField> positionsMap; // InstrumentID映射持仓
+	QMap<QString, CThostFtdcInvestorPositionField> positionsMap; // InstrumentID映射持仓
 	QVector<CThostFtdcOrderField> orders; // 报单情况
 	QMap<QString, CThostFtdcOrderField>ordersMap; // OrderSysID映射报单
 };

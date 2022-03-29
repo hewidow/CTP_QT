@@ -39,14 +39,14 @@ void BacktestEngine::receiveStartBacktestEngine(BacktestForm t)
 	}
 	query.prepare("SELECT count(1) FROM dbbardata WHERE datetime>='" + form.startTime.toString("yyyy-MM-dd") + "' AND datetime<='" + form.endTime.toString("yyyy-MM-dd") + "'");
 	query.exec();
-	int rowCount = INT_MAX;
+	int rowTotal = INT_MAX;
 	while (query.next()) {
-		rowCount = query.value(0).toInt();
+		rowTotal = query.value(0).toInt();
 	}
 	// 加载k线数据
 	query.prepare("SELECT * FROM dbbardata WHERE datetime>='" + form.startTime.toString("yyyy-MM-dd") + "' AND datetime<='" + form.endTime.toString("yyyy-MM-dd") + "'");
 	query.exec();
-	int rowNow = 0;
+	int rowCount = 0;
 	while (query.next()) {
 		kLines.push_back(KLine{
 			query.value(1).toString(),
@@ -60,8 +60,9 @@ void BacktestEngine::receiveStartBacktestEngine(BacktestForm t)
 			query.value(10).toDouble(),
 			query.value(11).toDouble()
 			});
-		++rowNow;
-		emit sendBacktestProgress(10ll * rowNow / rowCount);
+		++rowCount;
+		emit sendBacktestProgress(10ll * rowCount / rowTotal);
+		if (rowCount % 5000 == 0 && QThread::currentThread()->isInterruptionRequested()) return;
 	}
 	db.close();
 	emit sendBacktestProgress(10);
