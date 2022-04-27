@@ -46,8 +46,6 @@ signals:
 	void sendKLine(KLine);
 	// 发送行情数据
 	void sendData();
-	// 发送图表数据
-	void sendBacktestChartData(BacktestChartData);
 public slots:
 	// 回测开始
 	void receiveStartBacktestEngine(BacktestForm);
@@ -66,7 +64,6 @@ private:
 	QSqlDatabase db;
 	BacktestForm form;
 	BacktestResult result = { QDate(),QDate(),0 };
-	BacktestChartData chartData;
 	TradingAccount account;
 	QMap<QString, InstrumentForm>instruments;
 	QVector<KLine>kLines;

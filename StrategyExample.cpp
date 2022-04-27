@@ -43,20 +43,23 @@ void StrategyExample::onOrders(QVector<CThostFtdcOrderField> t)
 }
 void StrategyExample::onTick(QuoteField tick)
 {
-	auto& que = tickMap[tick.InstrumentID];
-	que.push_front(tick);
+
+}
+
+void StrategyExample::onKLine(KLine kLine)
+{
+	auto& que = kLineMap[kLine.InstrumentID];
+	que.push_front(kLine);
 	while (que.size() > TICK_HISTORY_LENGTH) que.pop_back();
 
-	QString InstrumentID = "IC2203";
-	if (tick.InstrumentID != InstrumentID) return;
-	if (tickMap.count(InstrumentID) == 0) return;
-	auto& q = tickMap[InstrumentID];
+	QString InstrumentID = kLine.InstrumentID;
+	auto& q = kLineMap[InstrumentID];
 	auto getPriceTrend = [&](int len) -> int {
 		if (q.size() <= len) return 0; // 无趋势
 		bool up = true, down = true;
 		for (int i = 0; i < len; ++i) {
-			up &= (q[i].LastPrice > q[i + 1].LastPrice);
-			down &= (q[i].LastPrice < q[i + 1].LastPrice);
+			up &= (q[i].closePrice > q[i + 1].closePrice);
+			down &= (q[i].closePrice < q[i + 1].closePrice);
 		}
 		if (up) return 1; // 上涨
 		if (down) return -1; // 下跌
@@ -65,16 +68,12 @@ void StrategyExample::onTick(QuoteField tick)
 	int trend = getPriceTrend(5);
 	if (trend == 0) return;
 	if (trend == 1) {
-		buy(InstrumentID, q[0].LastPrice, 1);
+		buy(InstrumentID, q[0].closePrice, std::max(1, int(tradingAccount.Available / q[0].closePrice / 2)));
 	}
 	else {
-		if (positionsMap.count(InstrumentID) != 0 && positionsMap[InstrumentID].Position > 0) {
-			sell(InstrumentID, q[0].LastPrice, positionsMap[InstrumentID].Position);
+		if (positionsMap.count(InstrumentID) != 0 && positionsMap[InstrumentID].OpenVolume - positionsMap[InstrumentID].CloseVolume > 0) {
+			sell(InstrumentID, q[0].closePrice, std::max(1, (positionsMap[InstrumentID].OpenVolume - positionsMap[InstrumentID].CloseVolume) / 2));
 		}
 	}
 	while (que.size() > 0) que.pop_back();
-}
-
-void StrategyExample::onKLine(KLine)
-{
 }

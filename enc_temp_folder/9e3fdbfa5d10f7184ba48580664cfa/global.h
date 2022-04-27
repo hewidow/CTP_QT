@@ -65,7 +65,7 @@ struct KLine // k线
 {
 	QString InstrumentID;
 	QString ExchangeID;
-	QDateTime dateTime;
+	QDate dateTime;
 	double volume;
 	double turnover;
 	double openInterest;
@@ -99,8 +99,5 @@ struct BacktestResult
 
 	double maximumDrawdown;
 	double handlingFeeRate;
-};
-struct BacktestChartData {
-	QVector<QPair<long long, double> >floatingProfitLossData;
 };
 #endif // GLOBAL_H

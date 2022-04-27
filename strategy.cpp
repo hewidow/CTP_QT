@@ -26,7 +26,7 @@ Strategy::Strategy(QWidget* parent)
 	}
 	ui.listView->setModel(model); // 显示STRATEGY_PATH路径下所有后缀为cpp的文件名
 	ui.listView->setEditTriggers(QAbstractItemView::NoEditTriggers); // 禁止编辑
-	connect(ui.listView, &QListView::doubleClicked, this, &Strategy::on_edit_clicked); // 绑定双击事件
+	connect(ui.listView, &QListView::doubleClicked, this, &Strategy::on_backtest_clicked); // 绑定双击事件
 
 	// 连接回测的信号槽，根据sender()来筛选信号
 	connect(&backtest, &Backtest::sendBacktestStatus, this, &Strategy::receiveBacktestStatus);
@@ -56,8 +56,9 @@ void Strategy::on_del_clicked()
 
 void Strategy::on_edit_clicked()
 {
-	QString path = STRATEGY_PATH + ui.listView->currentIndex().data().toString();
-	QDesktopServices::openUrl(QUrl::fromLocalFile(QFileInfo(path).absoluteFilePath()));
+	iDebug << "edit";
+	//QString path = STRATEGY_PATH + ui.listView->currentIndex().data().toString();
+	//QDesktopServices::openUrl(QUrl::fromLocalFile(QFileInfo(path).absoluteFilePath()));
 }
 bool Strategy::checkCurrentSelectIndex()
 {

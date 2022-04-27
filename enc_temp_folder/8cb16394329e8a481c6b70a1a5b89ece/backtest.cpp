@@ -82,8 +82,6 @@ void Backtest::on_start_clicked()
 	connect(engine, &BacktestEngine::sendBacktestProgress, this, &Backtest::receiveBacktestProgress);
 	connect(this, &Backtest::sendStartBacktestEngine, engine, &BacktestEngine::receiveStartBacktestEngine);
 	connect(engine, &BacktestEngine::sendStopBacktestEngine, this, &Backtest::receiveStopBacktestEngine);
-	qRegisterMetaType<BacktestChartData>("BacktestChartData");
-	connect(engine, &BacktestEngine::sendBacktestChartData, this, &Backtest::receiveBacktestChartData);
 
 	engine->moveToThread(thread);
 	thread->start();
@@ -114,14 +112,4 @@ void Backtest::on_stop_clicked()
 	emit sendBacktestStatus(false);
 	ui.start->setEnabled(true);
 	ui.stop->setEnabled(false);
-}
-
-void Backtest::receiveBacktestChartData(BacktestChartData)
-{
-	QJsonObject series;
-	QJsonArray data;
-	series.insert("data", data);
-	QString optionStr = QJsonDocument(series).toJson();
-	QString js = QString("setData(%1)").arg(optionStr);
-	ui.webEngineView->page()->runJavaScript(js);
 }

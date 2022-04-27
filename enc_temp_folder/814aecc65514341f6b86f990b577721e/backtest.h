@@ -7,9 +7,6 @@
 #include <QMessageBox>
 #include <QThread>
 #include <QWebEngineView>
-#include <QJsonObject>
-#include <QJsonArray>
-#include <QJsonDocument>
 #include "ui_backtest.h"
 #include "util.h"
 #include "debug.h"
@@ -38,8 +35,6 @@ private slots:
 	void on_start_clicked();
 	// 暂停回测按钮
 	void on_stop_clicked();
-	// 接收浮动盈亏数据
-	void receiveBacktestChartData(BacktestChartData);
 signals:
 	// 发送回测开始还是暂停的状态
 	void sendBacktestStatus(bool);
@@ -51,6 +46,7 @@ private:
 	Ui::Backtest ui;
 	BacktestEngine* engine;
 	QThread* thread;
+	QVector<int> floatingProfitLossSeries; // 浮动盈亏数据
 	/* 以下为转发 */
 signals:
 	void sendTradingAccount(TradingAccount);

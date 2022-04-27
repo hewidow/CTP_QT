@@ -51,7 +51,7 @@ void BacktestEngine::receiveStartBacktestEngine(BacktestForm t)
 		kLines.push_back(KLine{
 			query.value(1).toString(),
 			query.value(2).toString(),
-			query.value(3).toDateTime(),
+			query.value(3).toDate(),
 			query.value(5).toDouble(),
 			query.value(6).toDouble(),
 			query.value(7).toDouble(),
@@ -217,6 +217,7 @@ void BacktestEngine::receiveData()
 	if (kLinesP < kLines.size()) {
 		emit sendKLine(kLines[kLinesP]);
 		instruments[kLines[kLinesP].InstrumentID].Price = kLines[kLinesP].closePrice;
+		++kLinesP;
 		double nowFund = result.endFund;
 		for (auto& p : pos) {
 			nowFund += instruments[p.InstrumentID].Price * (p.OpenVolume - p.CloseVolume);
@@ -225,8 +226,6 @@ void BacktestEngine::receiveData()
 		account.PositionProfit = nowFund - result.startFund;
 		account.Available = result.endFund;
 		account.totalAssets = account.FrozenMargin + account.Available + account.PositionProfit;
-		chartData.floatingProfitLossData.push_back({ kLines[kLinesP].dateTime.toMSecsSinceEpoch() ,nowFund});
-		++kLinesP;
 		emit sendTradingAccount(account);
 		emit sendBacktestProgress(10 + 90ll * kLinesP / kLines.size());
 		emit sendData();
@@ -247,7 +246,6 @@ void BacktestEngine::receiveData()
 		solveOrders();
 		calcResult();
 		emit sendBacktestProgress(100);
-		emit sendBacktestChartData(chartData);
 		emit sendStopBacktestEngine(result);
 	}
 }

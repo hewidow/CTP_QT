@@ -28,14 +28,14 @@ public:
 	void log(QString);
 	// 买入开仓
 	void buy(QString, double, int);
-	// 卖出平仓
+	// 买入平仓
 	void sell(QString, double, int);
 	// 取消订单
 	void cancel(TThostFtdcOrderSysIDType);
 	/*
 	// 卖出开仓
 	void short(QString, double, int);
-	// 买入平仓
+	// 卖出平仓
 	void cover(QString, double, int);
 	*/
 signals:
