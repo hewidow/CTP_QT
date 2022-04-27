@@ -89,6 +89,7 @@ void Backtest::on_start_clicked()
 	thread->start();
 
 	emit sendBacktestResult({ QDate(),QDate(),0 });
+	ui.webEngineView->reload();
 	emit sendStartBacktestEngine(BacktestForm{
 		ui.bDatabaseName->currentText(),
 		ui.bStartTime->date(),
