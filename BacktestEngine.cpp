@@ -225,7 +225,10 @@ void BacktestEngine::receiveData()
 		account.PositionProfit = nowFund - result.startFund;
 		account.Available = result.endFund;
 		account.totalAssets = account.FrozenMargin + account.Available + account.PositionProfit;
-		chartData.floatingProfitLossData.push_back({ kLines[kLinesP].dateTime.toMSecsSinceEpoch() ,nowFund});
+		// 每三小时记录一次浮动盈亏数据
+		if (kLines[kLinesP].dateTime.toSecsSinceEpoch() % (3600 * 3) == 0) {
+			chartData.floatingProfitLossData.push_back({ kLines[kLinesP].dateTime.toMSecsSinceEpoch() ,(long long)(nowFund * 100) / 100.0 });
+		}
 		++kLinesP;
 		emit sendTradingAccount(account);
 		emit sendBacktestProgress(10 + 90ll * kLinesP / kLines.size());

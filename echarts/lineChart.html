@@ -38,27 +38,90 @@
     var option;
 
     option = {
+      title: {
+        text: '浮动盈亏',
+        left: 'center'
+      },
+      visualMap: [
+        {
+          show: false,
+          precision: 2,
+          pieces: [
+            {
+              lt: 0,
+              gt: -Number.MAX_SAFE_INTEGER,
+              color: 'green'
+            },
+            {
+              gt: 0,
+              lt: Number.MAX_SAFE_INTEGER,
+              color: 'red'
+            }
+          ],
+          outOfRange: {
+            color: '#000'
+          }
+        }
+      ],
+      tooltip: {
+        trigger: 'axis'
+      },
       xAxis: {
         type: 'time'
       },
       yAxis: {
+        scale: true,
         type: 'value'
       },
       dataZoom: [
         {
-          type: 'slider'
+          type: 'slider',
+          filterMode: 'none'
         },
         {
-          type: 'inside'
+          type: 'inside',
+          filterMode: 'none'
         }
       ],
       series: [
         {
           data: [],
-          type: 'line'
+          type: 'line',
+          showSymbol: false,
+          markPoint: {
+            data: [
+              {
+                type: 'max',
+                name: 'Max',
+                itemStyle: {
+                  color: 'red'
+                },
+                label: {
+                  formatter: 'High'
+                }
+              },
+              {
+                type: 'min',
+                name: 'Min',
+                symbolRotate: 180,
+                itemStyle: {
+                  color: 'green'
+                },
+                label: {
+                  formatter: 'Low',
+                  offset: [0, 10]
+                }
+              }
+            ]
+          },
+          markLine: {
+            symbol: 'none',
+            data: [{ name: '基线', yAxis: 20 }]
+          }
         }
       ]
     };
+
 
     if (option && typeof option === 'object') {
       myChart.setOption(option);
@@ -67,10 +130,11 @@
     window.onresize = myChart.resize;
 
     function setData(obj) {
-      option.series.data = obj.data;
-      if (option && typeof option === 'object') {
-        myChart.setOption(option);
-      }
+      option.series[0].data = obj.data;
+      option.series[0].markLine.data[0].yAxis = obj.startFund;
+      option.visualMap[0].pieces[0].lt = obj.startFund;
+      option.visualMap[0].pieces[1].gt = obj.startFund;
+      myChart.setOption(option);
     }
   </script>
 </body>

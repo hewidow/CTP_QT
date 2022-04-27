@@ -1,6 +1,7 @@
 ﻿#ifndef GLOBAL_H
 #define GLOBAL_H
 
+#include <vector>
 #include <QString>
 #include <QDate>
 #include "ThostFtdcUserApiStruct.h"
@@ -101,6 +102,6 @@ struct BacktestResult
 	double handlingFeeRate;
 };
 struct BacktestChartData {
-	QVector<QPair<long long, double> >floatingProfitLossData;
+	std::vector<QPair<long long, double>>floatingProfitLossData; // 浮动盈亏数据
 };
 #endif // GLOBAL_H

@@ -116,12 +116,16 @@ void Backtest::on_stop_clicked()
 	ui.stop->setEnabled(false);
 }
 
-void Backtest::receiveBacktestChartData(BacktestChartData)
+void Backtest::receiveBacktestChartData(BacktestChartData d)
 {
 	QJsonObject series;
 	QJsonArray data;
+	for (auto& it : d.floatingProfitLossData) {
+		data.append(QJsonArray{ it.first,it.second });
+	}
 	series.insert("data", data);
-	QString optionStr = QJsonDocument(series).toJson();
-	QString js = QString("setData(%1)").arg(optionStr);
+	series.insert("startFund", ui.bStartFund->value());
+	QString option = QJsonDocument(series).toJson();
+	QString js = QString("setData(%1)").arg(option);
 	ui.webEngineView->page()->runJavaScript(js);
 }
