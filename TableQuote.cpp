@@ -18,7 +18,7 @@ QList<QString> TableQuote::formatData(int index, QuoteField q)
 		q.UpdateTime,
 		Util::convertNumberToQString(q.LastPrice),
 		Util::convertNumberToQString(q.UpDown),
-		Util::convertNumberToQString(q.Gain,2) + "%",
+		Util::convertNumberToQString(q.Gain,2) + (q.Gain==DBL_MAX?"":"%"),
 		Util::convertNumberToQString(q.BidPrice1),
 		Util::convertNumberToQString(q.BidVolume1),
 		Util::convertNumberToQString(q.AskPrice1),

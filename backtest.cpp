@@ -12,22 +12,26 @@ Backtest::Backtest(QWidget* parent)
 
 	qRegisterMetaType<BacktestResult>("BacktestResult");
 	connect(this, &Backtest::sendBacktestResult, ui.tableBacktestResult, &TableBacktestResult::receiveBacktestResult);
-	emit sendBacktestResult({ QDate(),QDate(),0 });
-	receiveBacktestProgress(0);
 
 	ui.webEngineView->setContextMenuPolicy(Qt::NoContextMenu);
 	ui.webEngineView->setUrl(QUrl("qrc:/echarts/lineChart.html"));
 	ui.webEngineView->show();
-
 }
 
 Backtest::~Backtest()
 {
 	on_stop_clicked();
 }
-void Backtest::closeEvent(QCloseEvent* event)
+void Backtest::clearData() {
+	emit sendBacktestResult({ QDate(),QDate(),0 });
+	ui.tableBacktestResultPos->clearData();
+	ui.webEngineView->reload();
+	receiveBacktestProgress(0);
+}
+void Backtest::showBacktest()
 {
-	on_stop_clicked();
+	clearData();
+	exec();
 }
 void Backtest::showDatabase()
 {
@@ -45,6 +49,10 @@ void Backtest::showDatabase()
 	}
 	ui.bDatabaseName->setModel(model);
 	if (names.size() == 0) ui.start->setEnabled(false);
+}
+void Backtest::closeEvent(QCloseEvent* event)
+{
+	on_stop_clicked();
 }
 void Backtest::receiveError(QString msg)
 {
@@ -69,6 +77,8 @@ void Backtest::on_start_clicked()
 
 	emit sendBacktestStatus(true);
 
+	clearData();
+
 	engine = new BacktestEngine();
 	thread = new QThread();
 	connect(engine, &BacktestEngine::sendTradingAccount, this, &Backtest::sendTradingAccount);
@@ -85,12 +95,12 @@ void Backtest::on_start_clicked()
 	connect(engine, &BacktestEngine::sendStopBacktestEngine, this, &Backtest::receiveStopBacktestEngine);
 	qRegisterMetaType<BacktestChartData>("BacktestChartData");
 	connect(engine, &BacktestEngine::sendBacktestChartData, this, &Backtest::receiveBacktestChartData);
+	qRegisterMetaType<QMap<QString, BacktestResultPos>>("QMap<QString,BacktestResultPos>");
+	connect(engine, &BacktestEngine::sendBacktestResultPos, ui.tableBacktestResultPos, &TableBacktestResultPos::receiveBacktestResultPos);
 
 	engine->moveToThread(thread);
 	thread->start();
 
-	emit sendBacktestResult({ QDate(),QDate(),0 });
-	ui.webEngineView->reload();
 	emit sendStartBacktestEngine(BacktestForm{
 		ui.bDatabaseName->currentText(),
 		ui.bStartTime->date(),

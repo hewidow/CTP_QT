@@ -21,7 +21,7 @@ void Engine::run() {
 				int result = INT_MAX;
 				std::shared_ptr<Command>command = commandQueue.front();
 				result = command->execute(&tdApi);
-				iDebug << command->name() << "→" << Util::convertApiReturnValueToText(result);
+				iDebug << command->name() + "【" + Util::convertApiReturnValueToText(result) + "】" ;
 				++retry;
 				if (result == 0 || retry > COMMAND_QUEUE_RETRY_COUNT) {
 					commandQueue.pop_front();

@@ -12,7 +12,7 @@
 #include "backtest.h"
 #include "StrategyBase.h"
 #include "StrategyExample.h"
-#include "StrategyMultiBreed.h"
+#include "StrategyDoubleMovingAverage.h"
 
 class Strategy : public QDialog
 {

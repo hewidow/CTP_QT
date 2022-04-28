@@ -31,7 +31,7 @@ void BacktestEngine::receiveStartBacktestEngine(BacktestForm t)
 	query.prepare("SELECT symbol,exchange FROM dbbaroverview WHERE NOT(end<'" + form.startTime.toString("yyyy-MM-dd") + "' OR start>'" + form.endTime.toString("yyyy-MM-dd") + "');");
 	query.exec();
 	while (query.next()) {
-		instruments[query.value(0).toString()] = InstrumentForm{
+		instruments[query.value(0).toString()] = BacktestInstrumentForm{
 			query.value(0).toString(),
 			query.value(1).toString(),
 			0
@@ -125,6 +125,13 @@ void BacktestEngine::cleanPos() {
 		if (p.OpenVolume - p.CloseVolume > 0) {
 			newPos.push_back(p);
 		}
+		else {
+			if (resultPos.count(p.InstrumentID)) resultPos[p.InstrumentID].profitLoss += p.CloseAmount - p.OpenAmount;
+			else resultPos[p.InstrumentID] = BacktestResultPos{
+				p.InstrumentID,
+				p.CloseAmount - p.OpenAmount
+			};
+		}
 	}
 	pos.clear();
 	pos = newPos;
@@ -168,13 +175,13 @@ void BacktestEngine::solveOrders() {
 				int posIndex = findPosIndex(order.InstrumentID);
 				if (posIndex != -1) {
 					pos[posIndex].OpenVolume += order.VolumeTotalOriginal;
-					pos[posIndex].OpenAmount += nowPrice * order.VolumeTotalOriginal;
+					pos[posIndex].OpenAmount += nowPrice * order.VolumeTotalOriginal * (1.0 + result.handlingFeeRate);
 				}
 				else {
 					CThostFtdcInvestorPositionField t = { 0 };
 					strcpy_s(t.InstrumentID, order.InstrumentID);
 					t.OpenVolume = order.VolumeTotalOriginal;
-					t.OpenAmount = nowPrice * order.VolumeTotalOriginal;
+					t.OpenAmount = nowPrice * order.VolumeTotalOriginal * (1.0 + result.handlingFeeRate);
 					pos.push_back(t);
 				}
 				order.OrderStatus = THOST_FTDC_OST_AllTraded;
@@ -261,6 +268,7 @@ void BacktestEngine::receiveData()
 		calcResult();
 		emit sendBacktestProgress(100);
 		emit sendBacktestChartData(chartData);
+		emit sendBacktestResultPos(resultPos);
 		emit sendStopBacktestEngine(result);
 	}
 }

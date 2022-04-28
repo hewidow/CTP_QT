@@ -6,7 +6,6 @@
 #include <QDate>
 #include "ThostFtdcUserApiStruct.h"
 
-#define INSTRUMENT_ID_FILTER "204"
 #define SUBSCRIBE_INFO_PATH "subscribeInfo/" // 订阅信息存放地址
 #define CONFIG_PATH "config.ini" // 一些用户配置选项
 #define COMMAND_QUEUE_RETRY_COUNT 3 // 命令队列重试次数
@@ -16,8 +15,8 @@
 #define STRATEGY_PATH "strategy/" // 策略存放地址
 #define STRATEGY_MODEL_RUN_INTERVAL 5000 // 策略模型运行间隔（毫秒）
 #define SYNC_COMMAND_REFRESH_INTERVAL 1 // 同步命令刷新间隔（秒）
-#define TICK_HISTORY_LENGTH 50 // 每个合约的历史tick最大长度
-#define LOG_MAX_ROW_COUNT 50 // 记录log的最大行数
+#define TICK_HISTORY_LENGTH 60 // 每个合约的历史tick最大长度
+#define LOG_MAX_ROW_COUNT 60 // 记录log的最大行数
 #define DATABASE_PATH "database/" // 数据存放地址
 
 struct LoginForm // 登录表单
@@ -75,6 +74,11 @@ struct KLine // k线
 	double lowPrice; // 一分钟中的最低价
 	double closePrice; // 一分钟结束价
 };
+struct BacktestInstrumentForm {
+	QString ExchangeID;
+	QString InstrumentID;
+	double Price;
+};
 struct BacktestForm
 {
 	QString databaseName;
@@ -100,6 +104,10 @@ struct BacktestResult
 
 	double maximumDrawdown;
 	double handlingFeeRate;
+};
+struct BacktestResultPos {
+	QString InstrumentID;
+	double profitLoss;
 };
 struct BacktestChartData {
 	std::vector<QPair<long long, double>> floatingProfitLossData; // 浮动盈亏数据

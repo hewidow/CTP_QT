@@ -14,11 +14,11 @@ void MdApi::connect(LoginForm u)
 	api->RegisterFront(Util::convertQStringToCharPoint(u.mdAddress)); // 设置连接地址
 	api->Init(); // 初始化运行环境
 	iDebug << "行情地址" << u.mdAddress;
-	iDebug << "设置行情API → 成功";
+	mDebug("设置行情API", "成功");
 }
 void MdApi::release()
 {
-	iDebug << "释放行情API → 成功";
+	mDebug("释放行情API","成功");
 	if (api != nullptr) {
 		api->RegisterSpi(NULL);
 		api->Release();
@@ -43,18 +43,18 @@ void MdApi::subscribe(QVector<InstrumentField>instruments)
 	}
 	int val = api->SubscribeMarketData(pInstrument, len);
 	iDebug << "订阅合约总数" << len;
-	iDebug << "请求订阅合约" << Util::convertApiReturnValueToText(val);
+	mDebug("请求订阅合约", Util::convertApiReturnValueToText(val));
 }
 
 void MdApi::OnFrontConnected()
 {
-	iDebug << "行情连接成功";
+	mDebug("行情连接响应", "成功");
 	emit sendConnectionStatus(true);
 	login();
 }
 void MdApi::OnFrontDisconnected(int nReason)
 {
-	iDebug << "行情连接断开" << "错误码:" << QString::number(nReason, 16);
+	mDebug("行情连接断开", "错误码:" + QString::number(nReason, 16));
 	emit sendConnectionStatus(false);
 }
 void MdApi::OnRspUserLogin(CThostFtdcRspUserLoginField* pRspUserLogin, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast)

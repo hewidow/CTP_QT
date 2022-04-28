@@ -30,13 +30,13 @@ int TdApi::connect(LoginForm u)
 }
 void TdApi::OnFrontConnected()
 {
-	iDebug << "交易连接响应" << "→" << "成功";
+	mDebug("交易连接响应", "成功");
 	emit sendConnectionStatus(true);
 	emit sendReqAuthenticateCommand();
 }
 void TdApi::OnFrontDisconnected(int nReason)
 {
-	iDebug << "交易连接断开" << "错误码:" << QString::number(nReason, 16);
+	mDebug("交易连接断开", "错误码:"+ QString::number(nReason, 16));
 	emit sendConnectionStatus(false);
 }
 
@@ -147,7 +147,7 @@ int TdApi::reqAllInstruments()
 void TdApi::OnRspQryInstrument(CThostFtdcInstrumentField* pInstrument, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast)
 {
 	// 只要如下条件的，这样少一点
-	if (strlen(pInstrument->InstrumentID) <= 6 && strstr(pInstrument->InstrumentID, INSTRUMENT_ID_FILTER) != nullptr) {
+	if (strlen(pInstrument->InstrumentID) <= configInstance->get("INSTRUMENT_ID_LEN").toInt() && strstr(pInstrument->InstrumentID, configInstance->get("INSTRUMENT_ID_FILTER").toString().toStdString().c_str()) != nullptr) {
 		instruments.push_back(InstrumentField{
 			pInstrument->InstrumentID,
 			QString::fromLocal8Bit(pInstrument->InstrumentName),

@@ -20,6 +20,18 @@
       <widget class="TableBacktestResult" name="tableBacktestResult"/>
      </item>
      <item>
+      <widget class="TableBacktestResultPos" name="tableBacktestResultPos">
+       <property name="styleSheet">
+        <string notr="true">QHeaderView::section{
+    border:none;
+    color:black;
+    padding: 6px 0;
+    background-color: white;
+}</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
         <layout class="QFormLayout" name="formLayout">
@@ -205,6 +217,11 @@ QProgressBar::chunk{
    <class>TableBacktestResult</class>
    <extends>QTableView</extends>
    <header>TableBacktestResult.h</header>
+  </customwidget>
+  <customwidget>
+   <class>TableBacktestResultPos</class>
+   <extends>QTableView</extends>
+   <header>TableBacktestResultPos.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

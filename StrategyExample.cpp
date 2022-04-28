@@ -48,12 +48,12 @@ void StrategyExample::onTick(QuoteField tick)
 
 void StrategyExample::onKLine(KLine kLine)
 {
-	auto& que = kLineMap[kLine.InstrumentID];
-	que.push_front(kLine);
-	while (que.size() > TICK_HISTORY_LENGTH) que.pop_back();
-
 	QString InstrumentID = kLine.InstrumentID;
+
 	auto& q = kLineMap[InstrumentID];
+	q.push_front(kLine);
+	while (q.size() > TICK_HISTORY_LENGTH) q.pop_back();
+
 	auto getPriceTrend = [&](int len) -> int {
 		if (q.size() <= len) return 0; // 无趋势
 		bool up = true, down = true;
@@ -77,5 +77,6 @@ void StrategyExample::onKLine(KLine kLine)
 			sell(InstrumentID, q[0].closePrice, std::max(1, (positionsMap[InstrumentID].OpenVolume - positionsMap[InstrumentID].CloseVolume) / 2));
 		}
 	}
-	while (que.size() > 0) que.pop_back();
+	// 清空上涨信号
+	while (q.size() > 0) q.pop_back();
 }

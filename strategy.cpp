@@ -18,8 +18,9 @@ Strategy::Strategy(QWidget* parent)
 	//for (auto &name : names) {
 	//    model->appendRow(new QStandardItem(name));
 	//}
+	// 创建策略类对象，未来改进为自编译
 	strategies.push_back(new StrategyExample());
-	strategies.push_back(new StrategyMultiBreed());
+	strategies.push_back(new StrategyDoubleMovingAverage());
 	model = new QStandardItemModel(this);
 	for (auto& it : strategies) {
 		model->appendRow(new QStandardItem(it->name()));
@@ -99,7 +100,7 @@ void Strategy::on_backtest_clicked()
 {
 	if (!checkCurrentSelectIndex()) return;
 	on_pause_clicked();
-	backtest.exec();
+	backtest.showBacktest();
 }
 void Strategy::receiveBacktestStatus(bool status)
 {

@@ -22,6 +22,10 @@ class Backtest : public QDialog
 public:
 	Backtest(QWidget* parent = Q_NULLPTR);
 	~Backtest();
+	// 清空数据
+	void clearData();
+	// 显示回测
+	void showBacktest();
 	// 显示可选数据库
 	void showDatabase();
 protected:
