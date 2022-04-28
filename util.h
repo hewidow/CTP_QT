@@ -17,6 +17,7 @@ public:
 	static QString convertOrderStatusToText(TThostFtdcOrderStatusType);
 	static QString convertPosiDirectionToText(TThostFtdcPosiDirectionType);
 	static QString convertCombOffsetFlagToText(TThostFtdcCombOffsetFlagType);
+	static double formatDoubleTwoDecimal(double);
 };
 
 #endif // UTIL_H

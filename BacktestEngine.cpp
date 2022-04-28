@@ -28,23 +28,23 @@ void BacktestEngine::receiveStartBacktestEngine(BacktestForm t)
 	}
 	// 加载合约信息
 	QSqlQuery query = QSqlQuery(db);
-	query.prepare("SELECT symbol,exchange FROM dbbaroverview");
+	query.prepare("SELECT symbol,exchange FROM dbbaroverview WHERE NOT(end<'" + form.startTime.toString("yyyy-MM-dd") + "' OR start>'" + form.endTime.toString("yyyy-MM-dd") + "');");
 	query.exec();
 	while (query.next()) {
-		instruments[query.value(1).toString()] = InstrumentForm{
+		instruments[query.value(0).toString()] = InstrumentForm{
 			query.value(0).toString(),
 			query.value(1).toString(),
 			0
 		};
 	}
-	query.prepare("SELECT count(1) FROM dbbardata WHERE datetime>='" + form.startTime.toString("yyyy-MM-dd") + "' AND datetime<='" + form.endTime.toString("yyyy-MM-dd") + "'");
+	query.prepare("SELECT count(1) FROM dbbardata WHERE datetime>='" + form.startTime.toString("yyyy-MM-dd") + "' AND datetime<='" + form.endTime.toString("yyyy-MM-dd") + "';");
 	query.exec();
 	int rowTotal = INT_MAX;
 	while (query.next()) {
 		rowTotal = query.value(0).toInt();
 	}
 	// 加载k线数据
-	query.prepare("SELECT * FROM dbbardata WHERE datetime>='" + form.startTime.toString("yyyy-MM-dd") + "' AND datetime<='" + form.endTime.toString("yyyy-MM-dd") + "'");
+	query.prepare("SELECT * FROM dbbardata WHERE datetime>='" + form.startTime.toString("yyyy-MM-dd") + "' AND datetime<='" + form.endTime.toString("yyyy-MM-dd") + "';");
 	query.exec();
 	int rowCount = 0;
 	while (query.next()) {
@@ -206,31 +206,41 @@ void BacktestEngine::solveOrders() {
 	if (change) {
 		emit sendInvestorPositions(pos);
 		emit sendOrders(orders);
+		// 传完了再删，保持一个消息单位的延迟
 		cleanPos();
 		cleanOrders();
-		// 传完了再删，保持一个报文的延迟
 	}
 }
 void BacktestEngine::receiveData()
 {
 	solveOrders();
 	if (kLinesP < kLines.size()) {
-		emit sendKLine(kLines[kLinesP]);
 		instruments[kLines[kLinesP].InstrumentID].Price = kLines[kLinesP].closePrice;
-		double nowFund = result.endFund;
-		for (auto& p : pos) {
-			nowFund += instruments[p.InstrumentID].Price * (p.OpenVolume - p.CloseVolume);
-		}
-		result.maximumDrawdown = std::min(result.maximumDrawdown, nowFund - result.startFund);
-		account.PositionProfit = nowFund - result.startFund;
-		account.Available = result.endFund;
-		account.totalAssets = account.FrozenMargin + account.Available + account.PositionProfit;
-		// 每三小时记录一次浮动盈亏数据
-		if (kLines[kLinesP].dateTime.toSecsSinceEpoch() % (3600 * 3) == 0) {
-			chartData.floatingProfitLossData.push_back({ kLines[kLinesP].dateTime.toMSecsSinceEpoch() ,(long long)(nowFund * 100) / 100.0 });
+		emit sendKLine(kLines[kLinesP]);
+		// 当是这个时刻最后一条k线数据时
+		if (kLinesP + 1 >= kLines.size() || kLines[kLinesP].dateTime != kLines[kLinesP + 1].dateTime) {
+			double nowFund = result.endFund;
+			for (auto& p : pos) {
+				nowFund += instruments[p.InstrumentID].Price * (p.OpenVolume - p.CloseVolume);
+			}
+			result.maximumDrawdown = std::min(result.maximumDrawdown, nowFund - result.startFund);
+			account.PositionProfit = nowFund - result.startFund;
+			account.Available = result.endFund;
+			account.totalAssets = account.FrozenMargin + account.Available + account.PositionProfit;
+			// 每三小时记录一次浮动盈亏数据
+			if (kLines[kLinesP].dateTime.toMSecsSinceEpoch() - startTimeStamp >= (long long)1000 * 60 * 60 * 12) {
+				startTimeStamp = kLines[kLinesP].dateTime.toMSecsSinceEpoch();
+				chartData.floatingProfitLossData.push_back({ startTimeStamp ,Util::formatDoubleTwoDecimal(nowFund) });
+				chartData.floatingProfitLossRateData.push_back({ startTimeStamp ,Util::formatDoubleTwoDecimal((nowFund - result.startFund) / result.startFund * 100) });
+				double nowFuturesPrice = calcFuturesPrice();
+				if (startRecord) {
+					if (firstRecord) startFuturesPrice = nowFuturesPrice, firstRecord = false, iDebug << instruments.size();
+					chartData.futuresPriceRateData.push_back({ startTimeStamp ,Util::formatDoubleTwoDecimal((nowFuturesPrice - startFuturesPrice) / startFuturesPrice * 100) });
+				}
+			}
+			emit sendTradingAccount(account);
 		}
 		++kLinesP;
-		emit sendTradingAccount(account);
 		emit sendBacktestProgress(10 + 90ll * kLinesP / kLines.size());
 		emit sendData();
 	}
@@ -261,4 +271,17 @@ void BacktestEngine::calcResult() {
 	result.annualizedProfitRate = (result.endFund - result.startFund) / result.startFund * totalDays / 365;
 	result.maximumDrawdownRate = result.maximumDrawdown / result.startFund;
 	result.totalProfitAndLoss = result.endFund - result.startFund;
+}
+
+double BacktestEngine::calcFuturesPrice()
+{
+	int count = 0;
+	double sum = 0;
+	for (auto& it : instruments) {
+		if (it.Price <= 0) return 0;
+		sum += it.Price;
+		++count;
+	}
+	startRecord = true;
+	return sum / count;
 }

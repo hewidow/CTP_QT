@@ -121,3 +121,8 @@ QString Util::convertCombOffsetFlagToText(TThostFtdcCombOffsetFlagType offset)
 		return "未定义";
 	}
 }
+
+double Util::formatDoubleTwoDecimal(double x)
+{
+	return (long long)(x * 100) / 100.0;
+}

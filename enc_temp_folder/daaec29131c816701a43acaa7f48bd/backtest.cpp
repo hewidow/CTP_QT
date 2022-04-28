@@ -125,6 +125,7 @@ void Backtest::receiveBacktestChartData(BacktestChartData d)
 		for (auto& it : v) {
 			r.append(QJsonArray{ it.first,it.second });
 		}
+		iDebug << v.size();
 		return r;
 	};
 	QJsonArray floatingProfitLossData = convertVectorToQJsonArray(d.floatingProfitLossData);

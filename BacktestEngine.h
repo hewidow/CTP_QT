@@ -27,6 +27,8 @@ public:
 	int findPosIndex(const char*);
 	// 计算统计结果
 	void calcResult();
+	// 计算期货均价
+	double calcFuturesPrice();
 signals:
 	// 发送错误信息
 	void sendError(QString);
@@ -74,4 +76,8 @@ private:
 	QVector<CThostFtdcInvestorPositionField>pos;
 	QVector<CThostFtdcOrderField>orders;
 	int orderSysID = 0;
+	double startFuturesPrice;
+	bool firstRecord = true; // 记录首次期货均价
+	bool startRecord = false; // 开始记录期货均价
+	long long startTimeStamp = 0;
 };

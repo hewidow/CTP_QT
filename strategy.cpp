@@ -99,7 +99,7 @@ void Strategy::on_backtest_clicked()
 {
 	if (!checkCurrentSelectIndex()) return;
 	on_pause_clicked();
-	backtest.exec();
+	backtest.showMaximized();
 }
 void Strategy::receiveBacktestStatus(bool status)
 {

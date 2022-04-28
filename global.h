@@ -102,6 +102,8 @@ struct BacktestResult
 	double handlingFeeRate;
 };
 struct BacktestChartData {
-	std::vector<QPair<long long, double>>floatingProfitLossData; // 浮动盈亏数据
+	std::vector<QPair<long long, double>> floatingProfitLossData; // 浮动盈亏数据
+	std::vector<QPair<long long, double>> floatingProfitLossRateData; // 浮动盈亏率数据
+	std::vector<QPair<long long, double>> futuresPriceRateData; // 期货均价变化率数据
 };
 #endif // GLOBAL_H

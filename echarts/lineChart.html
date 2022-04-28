@@ -9,8 +9,10 @@
 </head>
 
 <body style="height: 100%; margin: 0">
-  <div id="container" style="height: 100%"></div>
-
+  <div style="height: 90%;top: 5%;position: relative;">
+    <div id="container" style="height: 50%"></div>
+    <div id="rateContainer" style="height: 50%"></div>
+  </div>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@5.3.2/dist/echarts.min.js"></script>
   <!-- Uncomment this line if you want to dataTool extension
         <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@5.3.2/dist/extension/dataTool.min.js"></script>
@@ -33,11 +35,9 @@
   <script type="text/javascript">
     var dom = document.getElementById("container");
     var myChart = echarts.init(dom);
-    var app = {};
 
-    var option;
-
-    option = {
+    // 浮动盈亏表
+    var option = {
       title: {
         text: '浮动盈亏',
         left: 'center'
@@ -127,14 +127,73 @@
       myChart.setOption(option);
     }
 
-    window.onresize = myChart.resize;
+    // 浮动盈亏率表
+    var rateDom = document.getElementById("rateContainer");
+    var myRateChart = echarts.init(rateDom);
+    var rateOption = {
+      title: {
+        text: '浮动盈亏率表',
+        left: 'center'
+      },
+      tooltip: {
+        trigger: 'axis'
+      },
+      xAxis: {
+        type: 'time'
+      },
+      yAxis: {
+        scale: true,
+        type: 'value',
+        axisLabel: {
+          formatter: '{value}%'
+        }
+      },
+      dataZoom: [
+        {
+          type: 'slider'
+        },
+        {
+          type: 'inside'
+        }
+      ],
+      legend: {
+        data: ['浮动盈亏率', '期货均价变化率'],
+        left: 'right'
+      },
+      series: [
+        {
+          name: '浮动盈亏率',
+          data: [],
+          type: 'line',
+          showSymbol: false
+        },
+        {
+          name: '期货均价变化率',
+          data: [],
+          type: 'line',
+          showSymbol: false
+        }
+      ]
+    };
+    if (rateOption && typeof rateOption === 'object') {
+      myRateChart.setOption(rateOption);
+    }
+
+    // window.onresize = function () {
+    //   myChart.resize();
+    //   myRateChart.resize();
+    // }
 
     function setData(obj) {
-      option.series[0].data = obj.data;
+      option.series[0].data = obj.floatingProfitLossData;
       option.series[0].markLine.data[0].yAxis = obj.startFund;
       option.visualMap[0].pieces[0].lt = obj.startFund;
       option.visualMap[0].pieces[1].gt = obj.startFund;
       myChart.setOption(option);
+
+      rateOption.series[0].data = obj.floatingProfitLossRateData;
+      rateOption.series[1].data = obj.futuresPriceRateData;
+      myRateChart.setOption(rateOption);
     }
   </script>
 </body>

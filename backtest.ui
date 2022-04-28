@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Backtesting</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_3">
+  <layout class="QVBoxLayout" name="verticalLayout_3" stretch="2,8">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
