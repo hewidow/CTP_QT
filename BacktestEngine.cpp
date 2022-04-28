@@ -191,7 +191,7 @@ void BacktestEngine::solveOrders() {
 				else if (order.LimitPrice <= nowPrice) { // 如果报单价格小于等于当前价格，即可平仓
 					change = true;
 					pos[posIndex].CloseVolume += order.VolumeTotalOriginal;
-					pos[posIndex].CloseAmount += nowPrice * order.VolumeTotalOriginal;
+					pos[posIndex].CloseAmount += nowPrice * order.VolumeTotalOriginal * (1 - result.handlingFeeRate);
 					result.endFund += nowPrice * order.VolumeTotalOriginal * (1 - result.handlingFeeRate);
 					result.totalHandlingFee += nowPrice * order.VolumeTotalOriginal * result.handlingFeeRate;
 					order.OrderStatus = THOST_FTDC_OST_AllTraded;
@@ -217,7 +217,7 @@ void BacktestEngine::receiveData()
 	if (kLinesP < kLines.size()) {
 		instruments[kLines[kLinesP].InstrumentID].Price = kLines[kLinesP].closePrice;
 		emit sendKLine(kLines[kLinesP]);
-		// 当是这个时刻最后一条k线数据时
+		// 当是这个时刻最后一条数据时
 		if (kLinesP + 1 >= kLines.size() || kLines[kLinesP].dateTime != kLines[kLinesP + 1].dateTime) {
 			double nowFund = result.endFund;
 			for (auto& p : pos) {
@@ -227,14 +227,14 @@ void BacktestEngine::receiveData()
 			account.PositionProfit = nowFund - result.startFund;
 			account.Available = result.endFund;
 			account.totalAssets = account.FrozenMargin + account.Available + account.PositionProfit;
-			// 每十二小时记录一次浮动盈亏数据
-			if (kLines[kLinesP].dateTime.toMSecsSinceEpoch() - startTimeStamp >= (long long)1000 * 60 * 60 * 12) {
+			// 最后一条数据 或 每十二小时记录一次浮动盈亏数据
+			if (kLinesP + 1 >= kLines.size() || kLines[kLinesP].dateTime.toMSecsSinceEpoch() - startTimeStamp >= (long long)1000 * 60 * 60 * 12) {
 				startTimeStamp = kLines[kLinesP].dateTime.toMSecsSinceEpoch();
 				chartData.floatingProfitLossData.push_back({ startTimeStamp ,Util::formatDoubleTwoDecimal(nowFund) });
 				chartData.floatingProfitLossRateData.push_back({ startTimeStamp ,Util::formatDoubleTwoDecimal((nowFund - result.startFund) / result.startFund * 100) });
 				double nowFuturesPrice = calcFuturesPrice();
 				if (startRecord) {
-					if (firstRecord) startFuturesPrice = nowFuturesPrice, firstRecord = false, iDebug << instruments.size();
+					if (firstRecord) startFuturesPrice = nowFuturesPrice, firstRecord = false;
 					chartData.futuresPriceRateData.push_back({ startTimeStamp ,Util::formatDoubleTwoDecimal((nowFuturesPrice - startFuturesPrice) / startFuturesPrice * 100) });
 				}
 			}

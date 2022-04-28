@@ -124,5 +124,5 @@ QString Util::convertCombOffsetFlagToText(TThostFtdcCombOffsetFlagType offset)
 
 double Util::formatDoubleTwoDecimal(double x)
 {
-	return (long long)(x * 100) / 100.0;
+	return qRound64(x * 100) / 100.0;
 }
