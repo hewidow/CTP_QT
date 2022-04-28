@@ -221,13 +221,13 @@ void BacktestEngine::receiveData()
 		if (kLinesP + 1 >= kLines.size() || kLines[kLinesP].dateTime != kLines[kLinesP + 1].dateTime) {
 			double nowFund = result.endFund;
 			for (auto& p : pos) {
-				nowFund += instruments[p.InstrumentID].Price * (p.OpenVolume - p.CloseVolume);
+				nowFund += instruments[p.InstrumentID].Price * (p.OpenVolume - p.CloseVolume) * (1 - result.handlingFeeRate);
 			}
 			result.maximumDrawdown = std::min(result.maximumDrawdown, nowFund - result.startFund);
 			account.PositionProfit = nowFund - result.startFund;
 			account.Available = result.endFund;
 			account.totalAssets = account.FrozenMargin + account.Available + account.PositionProfit;
-			// 每三小时记录一次浮动盈亏数据
+			// 每十二小时记录一次浮动盈亏数据
 			if (kLines[kLinesP].dateTime.toMSecsSinceEpoch() - startTimeStamp >= (long long)1000 * 60 * 60 * 12) {
 				startTimeStamp = kLines[kLinesP].dateTime.toMSecsSinceEpoch();
 				chartData.floatingProfitLossData.push_back({ startTimeStamp ,Util::formatDoubleTwoDecimal(nowFund) });
