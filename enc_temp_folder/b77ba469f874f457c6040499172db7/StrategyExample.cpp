@@ -68,12 +68,10 @@ void StrategyExample::onKLine(KLine kLine)
 	int trend = getPriceTrend(5);
 	if (trend == 0) return;
 	if (trend == 1) {
-		// 连续5个上涨信号，每次买入可用资金的一半
 		buy(InstrumentID, q[0].closePrice, std::max(1, int(tradingAccount.Available / q[0].closePrice / 2)));
 	}
 	else {
-		if (positionsMap.count(InstrumentID) && positionsMap[InstrumentID].OpenVolume - positionsMap[InstrumentID].CloseVolume > 0) {
-			// 连续5个下跌信号，每次卖出持仓的一半
+		if (positionsMap.count(InstrumentID) != 0 && positionsMap[InstrumentID].OpenVolume - positionsMap[InstrumentID].CloseVolume > 0) {
 			sell(InstrumentID, q[0].closePrice, std::max(1, (positionsMap[InstrumentID].OpenVolume - positionsMap[InstrumentID].CloseVolume) / 2));
 		}
 	}
