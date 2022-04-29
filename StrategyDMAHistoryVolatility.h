@@ -1,7 +1,8 @@
 #pragma once
 
-#include <QQueue>
 #include "StrategyBase.h"
+#include <QQueue>
+#include <cmath>
 
 class StrategyDMAHistoryVolatility : public StrategyBase
 {
@@ -27,5 +28,6 @@ private:
 	int shortPeriod = 20; // 短均线周期
 
 	QVector<QString>instruments{ "ag2203","IC2203","jd2203" }; // 需要交易的合约品种名称
-	QMap<QString, double> weights; // 可使用资金的权重
+	QMap<QString, double>weights; // 可使用资金的权重
+	QMap<QString, double>HV; // 历史波动率
 };

@@ -68,7 +68,7 @@ void StrategyDoubleMovingAverage::onKLine(KLine kLine)
 		auto longMA = getMA(longPeriod);
 		// 短均线上穿长均线，做多（买）
 		if (shortMA[0] >= longMA[0] && shortMA[1] < longMA[1]) {
-			buy(kLine.InstrumentID, q[0].closePrice + 3, std::min(100, int(tradingAccount.Available / q[0].closePrice / 2)));
+			buy(kLine.InstrumentID, q[0].closePrice + 3, std::max(1, int(tradingAccount.Available / q[0].closePrice / 2)));
 		}
 		// 短均线下穿长均线，平多（卖）
 		if (longMA[0] >= shortMA[0] && longMA[1] < shortMA[1]) {
