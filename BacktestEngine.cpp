@@ -88,12 +88,8 @@ void BacktestEngine::receiveReqOrderInsert(CThostFtdcInputOrderField t)
 		o.VolumeTotalOriginal = t.VolumeTotalOriginal;
 		o.OrderStatus = THOST_FTDC_OST_NoTradeQueueing;
 		orders.push_back(o);
+		emit sendOrders(orders);
 	}
-	emit sendInvestorPositions(pos);
-	emit sendOrders(orders);
-	cleanPos();
-	cleanOrders();
-	solveOrders();
 }
 
 void BacktestEngine::receiveReqOrderAction(CThostFtdcInputOrderActionField t)
@@ -110,14 +106,11 @@ void BacktestEngine::receiveReqOrderAction(CThostFtdcInputOrderActionField t)
 					break;
 				}
 			}
+			emit sendOrders(orders);
+			cleanOrders();
 			break;
 		}
 	}
-	emit sendInvestorPositions(pos);
-	emit sendOrders(orders);
-	cleanPos();
-	cleanOrders();
-	solveOrders();
 }
 void BacktestEngine::cleanPos() {
 	QVector<CThostFtdcInvestorPositionField>newPos;
@@ -219,12 +212,20 @@ void BacktestEngine::solveOrders() {
 	}
 }
 void BacktestEngine::receiveReceivedKLine() {
+	// 先解决上一确认时刻的数据
+	if (receivedKLinesP >= 0 && receivedKLinesP < kLines.size()) solveOrders();
+	// 应用当前确认时刻的数据
 	++receivedKLinesP;
-	if (receivedKLinesP + 1 < kLines.size()) {
+	if (receivedKLinesP >= 0 && receivedKLinesP < kLines.size()) {
+		instruments[kLines[receivedKLinesP].InstrumentID].Price = kLines[receivedKLinesP].closePrice;
 		emit sendBacktestProgress(10 + 90ll * (receivedKLinesP + 1) / kLines.size());
+	}
+	// 发送未来时刻的数据
+	if (receivedKLinesP + 1 < kLines.size()) {
 		int sendKLinesP = receivedKLinesP + 1;
+		// 暂存未来k线数据
+		double temp = instruments[kLines[sendKLinesP].InstrumentID].Price;
 		instruments[kLines[sendKLinesP].InstrumentID].Price = kLines[sendKLinesP].closePrice;
-		solveOrders();
 		double nowFund = result.endFund;
 		for (auto& p : pos) {
 			p.PositionCost = instruments[p.InstrumentID].Price * (p.OpenVolume - p.CloseVolume) * (1 - result.handlingFeeRate);
@@ -245,6 +246,9 @@ void BacktestEngine::receiveReceivedKLine() {
 				chartData.futuresPriceRateData.push_back({ startTimeStamp ,Util::formatDoubleTwoDecimal((nowFuturesPrice - startFuturesPrice) / startFuturesPrice * 100) });
 			}
 		}
+		// 恢复数据
+		instruments[kLines[sendKLinesP].InstrumentID].Price = temp;
+		// 发送未来k线时先发送未来的盈亏数据
 		emit sendTradingAccount(account);
 		sendKLine(kLines[sendKLinesP]);
 	}
@@ -269,7 +273,6 @@ void BacktestEngine::receiveReceivedKLine() {
 		emit sendStopBacktestEngine(result);
 	}
 }
-
 void BacktestEngine::calcResult() {
 	int totalDays = result.startTime.daysTo(result.endTime);
 	result.profitRate = (result.endFund - result.startFund) / result.startFund;

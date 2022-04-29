@@ -96,8 +96,8 @@ struct BacktestResult
 	int lossTransactions;
 	double startFund;
 	double endFund;
-	double profitRate;
 	double annualizedProfitRate;
+	double profitRate;
 	double maximumDrawdownRate;
 	double totalProfitAndLoss;
 	double totalHandlingFee;

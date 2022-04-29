@@ -36,7 +36,7 @@
     var dom = document.getElementById("container");
     var myChart = echarts.init(dom);
 
-    // 浮动盈亏表
+    // 浮动盈亏折线图
     var option = {
       title: {
         text: '浮动盈亏',
@@ -127,12 +127,12 @@
       myChart.setOption(option);
     }
 
-    // 浮动盈亏率表
+    // 浮动盈亏率折线图
     var rateDom = document.getElementById("rateContainer");
     var myRateChart = echarts.init(rateDom);
     var rateOption = {
       title: {
-        text: '浮动盈亏率表',
+        text: '浮动盈亏率',
         left: 'center'
       },
       tooltip: {

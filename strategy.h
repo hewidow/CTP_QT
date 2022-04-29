@@ -15,6 +15,7 @@
 #include "StrategyDoubleMovingAverage.h"
 #include "StrategyDMAEqualWeight.h"
 #include "StrategyDMAHistoryVolatility.h"
+#include "StrategyDMAATR.h"
 
 class Strategy : public QDialog
 {

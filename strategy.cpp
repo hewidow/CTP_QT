@@ -23,6 +23,7 @@ Strategy::Strategy(QWidget* parent)
 	strategies.push_back(new StrategyDoubleMovingAverage());
 	strategies.push_back(new StrategyDMAEqualWeight());
 	strategies.push_back(new StrategyDMAHistoryVolatility());
+	strategies.push_back(new StrategyDMAATR());
 
 
 	model = new QStandardItemModel(this);

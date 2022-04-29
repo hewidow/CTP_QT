@@ -1,13 +1,14 @@
 ﻿#pragma once
 
-#include <QQueue>
 #include "StrategyBase.h"
+#include <QQueue>
+#include <algorithm>
 
-class StrategyDoubleMovingAverage : public StrategyBase
+class StrategyDMAATR : public StrategyBase
 {
 public:
-	StrategyDoubleMovingAverage();
-	~StrategyDoubleMovingAverage();
+	StrategyDMAATR();
+	~StrategyDMAATR();
 	QString name() override;
 	void onStart() override;
 	void onStop() override;
@@ -27,4 +28,6 @@ private:
 	int shortPeriod = 20; // 短均线周期
 
 	QVector<QString>instruments{ "ag2203","IC2203","fu2203" }; // 需要交易的合约品种名称
+	QMap<QString, double>weights; // 可使用资金的权重
+	QMap<QString, double>ATR; // 均幅指标
 };

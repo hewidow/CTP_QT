@@ -16,8 +16,8 @@ void TableBacktestResult::receiveBacktestResult(BacktestResult bResult)
 		"亏损交易次数",
 		"起始资金",
 		"结束资金",
-		"总收益率",
 		"年化收益率",
+		"总收益率",
 		"最大回撤率",
 		"总盈亏",
 		"总手续费"
@@ -30,8 +30,8 @@ void TableBacktestResult::receiveBacktestResult(BacktestResult bResult)
 		Util::convertNumberToQString(bResult.lossTransactions),
 		Util::convertNumberToQString(bResult.startFund,2),
 		Util::convertNumberToQString(bResult.endFund,2),
-		Util::convertNumberToQString(bResult.profitRate * 100,2) + "%",
 		Util::convertNumberToQString(bResult.annualizedProfitRate * 100,2) + "%",
+		Util::convertNumberToQString(bResult.profitRate * 100,2) + "%",
 		Util::convertNumberToQString(bResult.maximumDrawdownRate * 100,2) + "%",
 		Util::convertNumberToQString(bResult.totalProfitAndLoss,2),
 		Util::convertNumberToQString(bResult.totalHandlingFee,2)

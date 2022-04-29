@@ -1,33 +1,33 @@
-﻿#include "StrategyDMAHistoryVolatility.h"
+﻿#include "StrategyDMAATR.h"
 
-StrategyDMAHistoryVolatility::StrategyDMAHistoryVolatility()
+StrategyDMAATR::StrategyDMAATR()
 {
 	for (auto& i : instruments) {
-		weights[i] = HV[i] = 0;
+		weights[i] = ATR[i] = 0;
 	}
 }
 
-StrategyDMAHistoryVolatility::~StrategyDMAHistoryVolatility()
+StrategyDMAATR::~StrategyDMAATR()
 {
 
 }
 
-QString StrategyDMAHistoryVolatility::name()
+QString StrategyDMAATR::name()
 {
-	return "多品种双均线策略（波动率）";
+	return "多品种双均线策略（ATR）";
 }
 
-void StrategyDMAHistoryVolatility::onStart()
+void StrategyDMAATR::onStart()
 {
 	log("策略启动");
 }
 
-void StrategyDMAHistoryVolatility::onStop()
+void StrategyDMAATR::onStop()
 {
 	log("策略停止");
 }
 
-void StrategyDMAHistoryVolatility::onPositions(QVector<CThostFtdcInvestorPositionField> t)
+void StrategyDMAATR::onPositions(QVector<CThostFtdcInvestorPositionField> t)
 {
 	positions = t;
 	positionsMap.clear();
@@ -35,7 +35,7 @@ void StrategyDMAHistoryVolatility::onPositions(QVector<CThostFtdcInvestorPositio
 		positionsMap[it.InstrumentID] = it;
 	}
 }
-void StrategyDMAHistoryVolatility::onOrders(QVector<CThostFtdcOrderField> t)
+void StrategyDMAATR::onOrders(QVector<CThostFtdcOrderField> t)
 {
 	orders = t;
 	ordersMap.clear();
@@ -43,12 +43,12 @@ void StrategyDMAHistoryVolatility::onOrders(QVector<CThostFtdcOrderField> t)
 		ordersMap[it.OrderSysID] = it;
 	}
 }
-void StrategyDMAHistoryVolatility::onTick(QuoteField tick)
+void StrategyDMAATR::onTick(QuoteField tick)
 {
 
 }
 
-void StrategyDMAHistoryVolatility::onKLine(KLine kLine)
+void StrategyDMAATR::onKLine(KLine kLine)
 {
 	if (instruments.contains(kLine.InstrumentID)) {
 		auto& q = kLineMap[kLine.InstrumentID];
@@ -57,29 +57,23 @@ void StrategyDMAHistoryVolatility::onKLine(KLine kLine)
 
 		if (q.size() < period) return;
 
-		auto getHV = [](QQueue<KLine>& que, int len) {
+		auto getATR = [](QQueue<KLine>& que, int len) {
 			QVector<double>xs;
 			double sum = 0;
 			for (int i = len - 1; i < que.size(); ++i) {
-				xs.push_back(std::log(que[i - len + 1].closePrice / que[i].closePrice));
+				xs.push_back(std::max(que[i - len + 1].highPrice, que[i].closePrice) - std::min(que[i - len + 1].lowPrice, que[i].closePrice));
 				sum += xs.back();
 			}
-			double xb = sum / xs.size();
-			double xe = 0;
-			for (auto& x : xs) {
-				xe += (x - xb) * (x - xb);
-			}
-			xe = sqrt(xe / xs.size());
-			if (fabs(xe) <= 1e-15) return 0.0;
-			return 1.0 / xe;
+			return sum / xs.size();
 		};
-		HV[kLine.InstrumentID] = getHV(q, shortPeriod);
-		double sumHV = 0;
+		ATR[kLine.InstrumentID] = getATR(q, shortPeriod);
+		double sumATR = 0;
 		for (auto& it : instruments) {
-			sumHV += HV[it];
+			if (ATR[it] > 0) sumATR += ATR[it];
 		}
+		if (sumATR <= 0) return;
 		for (auto& it : instruments) {
-			weights[it] = HV[it] / sumHV;
+			weights[it] = std::max(0.0, ATR[it]) / sumATR;
 		}
 		auto getMA = [&](int len) {
 			QVector<double>MA;
