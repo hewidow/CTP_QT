@@ -81,6 +81,7 @@ void Strategy::on_start_clicked() {
 	connect(strategies[cur], &StrategyBase::sendReqOrderInsert, this, &Strategy::receiveReqOrderInsert);
 	connect(strategies[cur], &StrategyBase::sendReqOrderAction, this, &Strategy::receiveReqOrderAction);
 	connect(strategies[cur], &StrategyBase::sendReceivedKLine, &backtest, &Backtest::sendReceivedKLine);
+	qRegisterMetaType<FuturesPosWeightData>("FuturesPosWeightData");
 	connect(strategies[cur], &StrategyBase::sendFuturesPosWeightData, &backtest, &Backtest::receiveFuturesPosWeightData);
 	strategies[cur]->backtest = true;
 	strategies[cur]->_onStart();
