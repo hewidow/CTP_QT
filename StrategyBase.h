@@ -22,6 +22,10 @@ public:
 	virtual void onTick(QuoteField) = 0;
 	// k线回报
 	virtual void onKLine(KLine) = 0;
+	// 启动内部函数
+	void _onStart();
+	// 停止内部函数
+	void _onStop();
 	// k线回报内部函数
 	void _onKLine(KLine);
 	// 账户资金回报
@@ -44,8 +48,14 @@ signals:
 	void sendReqOrderInsert(CThostFtdcInputOrderField);
 	void sendReqOrderAction(CThostFtdcInputOrderActionField);
 	void sendReceivedKLine();
+	void sendFuturesPosWeightData(FuturesPosWeightData);
 public:
 	bool backtest = false;
 protected:
 	TradingAccount tradingAccount; // 交易账户资金信息
+	FuturesPosWeightData futuresPosWeightData; // 持仓权重数据
+	QVector<QString>instruments{ "ag2203","IC2203","fu2203" }; // 需要交易的合约品种名称
+	QMap<QString, double>weights; // 可使用资金的权重
+	long long startTimeStamp = 0; // 之前记录数据时的时间戳
+	long long befTimeStamp = 0; // 上一个时间戳
 };

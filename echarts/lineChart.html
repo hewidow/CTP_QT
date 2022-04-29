@@ -9,9 +9,10 @@
 </head>
 
 <body style="height: 100%; margin: 0">
-  <div style="height: 90%;top: 5%;position: relative;">
-    <div id="container" style="height: 50%"></div>
-    <div id="rateContainer" style="height: 50%"></div>
+  <div style="height: 90%;width: 90%;top: 5%;left: 5%;position: relative;display: flex;flex-wrap: wrap;">
+    <div id="container" style="height: 50%;width: 50%;"></div>
+    <div id="rateContainer" style="height: 50%;width: 50%;"></div>
+    <div id="weightContainer" style="height: 50%;width: 100%;"></div>
   </div>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@5.3.2/dist/echarts.min.js"></script>
   <!-- Uncomment this line if you want to dataTool extension
@@ -71,7 +72,11 @@
       },
       yAxis: {
         scale: true,
-        type: 'value'
+        type: 'value',
+        name: '金额',
+        axisLabel: {
+              formatter: '{value}￥'
+          }
       },
       dataZoom: [
         {
@@ -179,10 +184,57 @@
       myRateChart.setOption(rateOption);
     }
 
-    // window.onresize = function () {
-    //   myChart.resize();
-    //   myRateChart.resize();
-    // }
+    // 持仓权重和实际持仓折线图
+    var weightDom = document.getElementById("weightContainer");
+    var myWeightChart = echarts.init(weightDom);
+    var weightOption = {
+      title: {
+        text: '持仓权重和实际持仓',
+        left: 'center'
+      },
+      tooltip: {
+        trigger: 'axis'
+      },
+      xAxis: {
+        type: 'time'
+      },
+      yAxis: [
+        {
+          scale: true,
+          type: 'value',
+          name: '应持仓权重',
+          axisLabel: {
+            formatter: function (value, index) {
+                return value * 100 + '%';
+            }
+          }
+        },
+        {
+          scale: true,
+          type: 'value',
+          name: '实际持仓金额',
+          axisLabel: {
+              formatter: '{value}￥'
+          }
+        }
+    ],
+      dataZoom: [
+        {
+          type: 'slider'
+        },
+        {
+          type: 'inside'
+        }
+      ],
+      legend: {
+        data: [],
+        left: 'right'
+      },
+      series: []
+    };
+    if (weightOption && typeof weightOption === 'object') {
+      myWeightChart.setOption(weightOption);
+    }
 
     function setData(obj) {
       option.series[0].data = obj.floatingProfitLossData;
@@ -194,6 +246,31 @@
       rateOption.series[0].data = obj.floatingProfitLossRateData;
       rateOption.series[1].data = obj.futuresPriceRateData;
       myRateChart.setOption(rateOption);
+
+      for (let key in obj.futuresPosData) {
+        weightOption.series.push({
+          name: key,
+          data: obj.futuresPosData[key],
+          type: 'line',
+          showSymbol: false,
+          yAxisIndex: 1
+        });
+        weightOption.legend.data.push(key);
+      }
+      myWeightChart.setOption(weightOption);
+    }
+    function setFuturesPosWeightData(obj) {
+      for (let key in obj) {
+        weightOption.series.push({
+          name: key + '_weight',
+          data: obj[key],
+          type: 'line',
+          showSymbol: false,
+          yAxisIndex: 0
+        })
+        weightOption.legend.data.push(key+'_weight');
+      }
+      myWeightChart.setOption(weightOption);
     }
   </script>
 </body>

@@ -213,7 +213,9 @@ void BacktestEngine::solveOrders() {
 }
 void BacktestEngine::receiveReceivedKLine() {
 	// 先解决上一确认时刻的数据
-	if (receivedKLinesP >= 0 && receivedKLinesP < kLines.size()) solveOrders();
+	if (receivedKLinesP >= 0 && receivedKLinesP < kLines.size()) {
+		solveOrders();
+	}
 	// 应用当前确认时刻的数据
 	++receivedKLinesP;
 	if (receivedKLinesP >= 0 && receivedKLinesP < kLines.size()) {
@@ -236,7 +238,7 @@ void BacktestEngine::receiveReceivedKLine() {
 		account.Available = result.endFund;
 		account.totalAssets = account.FrozenMargin + account.Available + account.PositionProfit;
 		// 最后一条数据 或 这个时刻最后一条数据并且间隔大于等于十二小时 记录一次浮动盈亏数据
-		if (sendKLinesP + 1 >= kLines.size() || kLines[sendKLinesP].dateTime != kLines[sendKLinesP + 1].dateTime && kLines[sendKLinesP].dateTime.toMSecsSinceEpoch() - startTimeStamp >= (long long)1000 * 60 * 60 * 12) {
+		if (sendKLinesP + 1 >= kLines.size() || kLines[sendKLinesP].dateTime != kLines[sendKLinesP + 1].dateTime && kLines[sendKLinesP].dateTime.toMSecsSinceEpoch() - startTimeStamp >= DOT_INTERVAL) {
 			startTimeStamp = kLines[sendKLinesP].dateTime.toMSecsSinceEpoch();
 			chartData.floatingProfitLossData.push_back({ startTimeStamp ,Util::formatDoubleTwoDecimal(nowFund) });
 			chartData.floatingProfitLossRateData.push_back({ startTimeStamp ,Util::formatDoubleTwoDecimal((nowFund - result.startFund) / result.startFund * 100) });
@@ -245,10 +247,14 @@ void BacktestEngine::receiveReceivedKLine() {
 				if (firstRecord) startFuturesPrice = nowFuturesPrice, firstRecord = false;
 				chartData.futuresPriceRateData.push_back({ startTimeStamp ,Util::formatDoubleTwoDecimal((nowFuturesPrice - startFuturesPrice) / startFuturesPrice * 100) });
 			}
+			for (auto& it : pos) {
+				chartData.futuresPosData[it.InstrumentID].push_back({ startTimeStamp, Util::formatDoubleTwoDecimal(it.PositionCost) });
+			}
 		}
 		// 恢复数据
 		instruments[kLines[sendKLinesP].InstrumentID].Price = temp;
 		// 发送未来k线时先发送未来的盈亏数据
+		emit sendInvestorPositions(pos);
 		emit sendTradingAccount(account);
 		sendKLine(kLines[sendKLinesP]);
 	}
@@ -279,6 +285,7 @@ void BacktestEngine::calcResult() {
 	result.annualizedProfitRate = (result.endFund - result.startFund) / result.startFund * totalDays / 365;
 	result.maximumDrawdownRate = result.maximumDrawdown / result.startFund;
 	result.totalProfitAndLoss = result.endFund - result.startFund;
+
 }
 
 double BacktestEngine::calcFuturesPrice()

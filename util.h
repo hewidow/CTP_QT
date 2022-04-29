@@ -2,6 +2,7 @@
 #define UTIL_H
 
 #include <QString>
+#include <QJSonArray>
 #include "global.h"
 
 class Util
@@ -18,6 +19,7 @@ public:
 	static QString convertPosiDirectionToText(TThostFtdcPosiDirectionType);
 	static QString convertCombOffsetFlagToText(TThostFtdcCombOffsetFlagType);
 	static double formatDoubleTwoDecimal(double);
+	static QJsonArray convertVectorToQJsonArray(QVector<QPair<long long, double>>&);
 };
 
 #endif // UTIL_H

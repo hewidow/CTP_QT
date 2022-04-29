@@ -28,6 +28,9 @@ public:
 	void showBacktest();
 	// 显示可选数据库
 	void showDatabase();
+public slots:
+	// 接收持仓权重数据
+	void receiveFuturesPosWeightData(FuturesPosWeightData);
 protected:
 	// 重写关闭事件
 	void closeEvent(QCloseEvent* event) override;

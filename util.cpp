@@ -126,3 +126,12 @@ double Util::formatDoubleTwoDecimal(double x)
 {
 	return qRound64(x * 100) / 100.0;
 }
+
+QJsonArray Util::convertVectorToQJsonArray(QVector<QPair<long long, double>>& v)
+{
+	QJsonArray r;
+	for (auto& it : v) {
+		r.append(QJsonArray{ it.first,it.second });
+	}
+	return r;
+}

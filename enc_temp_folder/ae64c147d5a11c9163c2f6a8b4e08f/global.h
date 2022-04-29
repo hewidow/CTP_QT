@@ -19,7 +19,7 @@
 #define TICK_HISTORY_LENGTH 60 // 每个合约的历史tick最大长度
 #define LOG_MAX_ROW_COUNT 60 // 记录log的最大行数
 #define DATABASE_PATH "database/" // 数据存放地址
-#define DOT_INTERVAL (long long)1000 * 60 * 60 * 24 // 统计图打点采样间隔（毫秒）
+#define DOT_INTERVAL (long long)1000 * 60 * 60 * 24 // 统计图打点采样间隔
 
 struct LoginForm // 登录表单
 {

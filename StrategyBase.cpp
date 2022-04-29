@@ -3,6 +3,18 @@ StrategyBase::StrategyBase()
 {
 	tradingAccount = TradingAccount{ 0 };
 }
+void StrategyBase::_onStart()
+{
+	futuresPosWeightData.futuresPosWeightData.clear();
+	startTimeStamp = 0;
+	befTimeStamp = 0;
+	onStart();
+}
+void StrategyBase::_onStop()
+{
+	onStop();
+	emit sendFuturesPosWeightData(futuresPosWeightData);
+}
 void StrategyBase::_onKLine(KLine kLine)
 {
 	emit sendReceivedKLine();

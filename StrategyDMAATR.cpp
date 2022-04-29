@@ -51,6 +51,15 @@ void StrategyDMAATR::onTick(QuoteField tick)
 void StrategyDMAATR::onKLine(KLine kLine)
 {
 	if (instruments.contains(kLine.InstrumentID)) {
+		long long nowTimeStamp = kLine.dateTime.toMSecsSinceEpoch();
+		if (nowTimeStamp != befTimeStamp && nowTimeStamp - startTimeStamp >= DOT_INTERVAL) {
+			startTimeStamp = nowTimeStamp;
+			for (auto it = weights.begin(); it != weights.end(); ++it) {
+				futuresPosWeightData.futuresPosWeightData[it.key()].push_back({ startTimeStamp, Util::formatDoubleTwoDecimal(it.value()) });
+			}
+		}
+		befTimeStamp = nowTimeStamp;
+
 		auto& q = kLineMap[kLine.InstrumentID];
 		q.push_front(kLine);
 		while (q.size() > period) q.pop_back();

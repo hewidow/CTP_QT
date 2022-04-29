@@ -130,22 +130,28 @@ void Backtest::on_stop_clicked()
 }
 void Backtest::receiveBacktestChartData(BacktestChartData d)
 {
+	QJsonObject futuresPosData;
+	for (auto it = d.futuresPosData.begin(); it != d.futuresPosData.end(); ++it) {
+		futuresPosData.insert(it.key(), Util::convertVectorToQJsonArray(it.value()));
+	}
 	QJsonObject series;
-	auto convertVectorToQJsonArray = [](std::vector<QPair<long long, double>>& v) {
-		QJsonArray r;
-		for (auto& it : v) {
-			r.append(QJsonArray{ it.first,it.second });
-		}
-		return r;
-	};
-	QJsonArray floatingProfitLossData = convertVectorToQJsonArray(d.floatingProfitLossData);
-	QJsonArray floatingProfitLossRateData = convertVectorToQJsonArray(d.floatingProfitLossRateData);
-	QJsonArray futuresPriceRateData = convertVectorToQJsonArray(d.futuresPriceRateData);
-	series.insert("floatingProfitLossData", floatingProfitLossData);
-	series.insert("floatingProfitLossRateData", floatingProfitLossRateData);
-	series.insert("futuresPriceRateData", futuresPriceRateData);
+	series.insert("floatingProfitLossData", Util::convertVectorToQJsonArray(d.floatingProfitLossData));
+	series.insert("floatingProfitLossRateData", Util::convertVectorToQJsonArray(d.floatingProfitLossRateData));
+	series.insert("futuresPriceRateData", Util::convertVectorToQJsonArray(d.futuresPriceRateData));
 	series.insert("startFund", ui.bStartFund->value());
+	series.insert("futuresPosData", futuresPosData);
 	QString option = QJsonDocument(series).toJson();
 	QString js = QString("setData(%1)").arg(option);
+	ui.webEngineView->page()->runJavaScript(js);
+}
+
+void Backtest::receiveFuturesPosWeightData(FuturesPosWeightData d)
+{
+	QJsonObject futuresPosWeightData;
+	for (auto it = d.futuresPosWeightData.begin(); it != d.futuresPosWeightData.end(); ++it) {
+		futuresPosWeightData.insert(it.key(), Util::convertVectorToQJsonArray(it.value()));
+	}
+	QString option = QJsonDocument(futuresPosWeightData).toJson();
+	QString js = QString("setFuturesPosWeightData(%1)").arg(option);
 	ui.webEngineView->page()->runJavaScript(js);
 }

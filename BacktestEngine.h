@@ -57,7 +57,7 @@ public slots:
 	void receiveReqOrderInsert(CThostFtdcInputOrderField);
 	// 修改报单
 	void receiveReqOrderAction(CThostFtdcInputOrderActionField);
-	// 策略收到的k线数据
+	// 策略收到了k线数据
 	void receiveReceivedKLine();
 private:
 	QSqlDatabase db; // 回测数据库

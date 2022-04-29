@@ -81,8 +81,9 @@ void Strategy::on_start_clicked() {
 	connect(strategies[cur], &StrategyBase::sendReqOrderInsert, this, &Strategy::receiveReqOrderInsert);
 	connect(strategies[cur], &StrategyBase::sendReqOrderAction, this, &Strategy::receiveReqOrderAction);
 	connect(strategies[cur], &StrategyBase::sendReceivedKLine, &backtest, &Backtest::sendReceivedKLine);
+	connect(strategies[cur], &StrategyBase::sendFuturesPosWeightData, &backtest, &Backtest::receiveFuturesPosWeightData);
 	strategies[cur]->backtest = true;
-	strategies[cur]->onStart();
+	strategies[cur]->_onStart();
 	ui.start->setVisible(false);
 	ui.pause->setVisible(true);
 	strategyRunning = true;
@@ -94,7 +95,7 @@ void Strategy::on_pause_clicked()
 	if (!strategyRunning) return;
 	strategyRunning = false;
 	strategyBacktest = false;
-	strategies[cur]->onStop();
+	strategies[cur]->_onStop();
 	strategies[cur]->disconnect(); // 断开所有信号槽
 	strategies[cur]->backtest = false;
 	cur = -1;

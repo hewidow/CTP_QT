@@ -27,7 +27,5 @@ private:
 	int longPeriod = 60; // 长均线周期
 	int shortPeriod = 20; // 短均线周期
 
-	QVector<QString>instruments{ "ag2203","IC2203","fu2203" }; // 需要交易的合约品种名称
-	QMap<QString, double>weights; // 可使用资金的权重
 	QMap<QString, double>ATR; // 均幅指标
 };
