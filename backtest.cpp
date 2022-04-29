@@ -88,6 +88,7 @@ void Backtest::on_start_clicked()
 	connect(engine, &BacktestEngine::sendKLine, this, &Backtest::sendKLine);
 	connect(this, &Backtest::sendReqOrderInsert, engine, &BacktestEngine::receiveReqOrderInsert);
 	connect(this, &Backtest::sendReqOrderAction, engine, &BacktestEngine::receiveReqOrderAction);
+	connect(this, &Backtest::sendReceivedKLine, engine, &BacktestEngine::receiveReceivedKLine);
 	qRegisterMetaType<BacktestForm>("BacktestForm");
 	connect(engine, &BacktestEngine::sendError, this, &Backtest::receiveError);
 	connect(engine, &BacktestEngine::sendBacktestProgress, this, &Backtest::receiveBacktestProgress);

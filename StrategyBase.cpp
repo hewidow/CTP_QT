@@ -3,6 +3,11 @@ StrategyBase::StrategyBase()
 {
 	tradingAccount = TradingAccount{ 0 };
 }
+void StrategyBase::_onKLine(KLine kLine)
+{
+	emit sendReceivedKLine();
+	onKLine(kLine);
+}
 void StrategyBase::onAccount(TradingAccount t)
 {
 	tradingAccount = t;
@@ -14,6 +19,7 @@ void StrategyBase::log(QString s)
 }
 void StrategyBase::buy(QString InstrumentID, double LastPrice, int VolumeTotalOriginal)
 {
+	if (VolumeTotalOriginal <= 0) return;
 	CThostFtdcInputOrderField ord = { 0 };
 	strcpy_s(ord.InstrumentID, InstrumentID.toStdString().c_str());
 	ord.LimitPrice = LastPrice;
@@ -34,6 +40,7 @@ void StrategyBase::buy(QString InstrumentID, double LastPrice, int VolumeTotalOr
 }
 void StrategyBase::sell(QString InstrumentID, double LastPrice, int VolumeTotalOriginal)
 {
+	if (VolumeTotalOriginal <= 0) return;
 	CThostFtdcInputOrderField ord = { 0 };
 	strcpy_s(ord.InstrumentID, InstrumentID.toStdString().c_str());
 	ord.LimitPrice = LastPrice;

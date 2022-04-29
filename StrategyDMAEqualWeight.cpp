@@ -1,31 +1,33 @@
-﻿#include "StrategyDoubleMovingAverage.h"
+﻿#include "StrategyDMAEqualWeight.h"
 
-StrategyDoubleMovingAverage::StrategyDoubleMovingAverage()
+StrategyDMAEqualWeight::StrategyDMAEqualWeight()
+{
+	for (auto& i : instruments) {
+		weights[i] = 1.0 / instruments.size();
+	}
+}
+
+StrategyDMAEqualWeight::~StrategyDMAEqualWeight()
 {
 
 }
 
-StrategyDoubleMovingAverage::~StrategyDoubleMovingAverage()
+QString StrategyDMAEqualWeight::name()
 {
-
+	return "多品种双均线策略（等权）";
 }
 
-QString StrategyDoubleMovingAverage::name()
-{
-	return "多品种双均线策略（随机）";
-}
-
-void StrategyDoubleMovingAverage::onStart()
+void StrategyDMAEqualWeight::onStart()
 {
 	log("策略启动");
 }
 
-void StrategyDoubleMovingAverage::onStop()
+void StrategyDMAEqualWeight::onStop()
 {
 	log("策略停止");
 }
 
-void StrategyDoubleMovingAverage::onPositions(QVector<CThostFtdcInvestorPositionField> t)
+void StrategyDMAEqualWeight::onPositions(QVector<CThostFtdcInvestorPositionField> t)
 {
 	positions = t;
 	positionsMap.clear();
@@ -33,7 +35,7 @@ void StrategyDoubleMovingAverage::onPositions(QVector<CThostFtdcInvestorPosition
 		positionsMap[it.InstrumentID] = it;
 	}
 }
-void StrategyDoubleMovingAverage::onOrders(QVector<CThostFtdcOrderField> t)
+void StrategyDMAEqualWeight::onOrders(QVector<CThostFtdcOrderField> t)
 {
 	orders = t;
 	ordersMap.clear();
@@ -41,12 +43,12 @@ void StrategyDoubleMovingAverage::onOrders(QVector<CThostFtdcOrderField> t)
 		ordersMap[it.OrderSysID] = it;
 	}
 }
-void StrategyDoubleMovingAverage::onTick(QuoteField tick)
+void StrategyDMAEqualWeight::onTick(QuoteField tick)
 {
 
 }
 
-void StrategyDoubleMovingAverage::onKLine(KLine kLine)
+void StrategyDMAEqualWeight::onKLine(KLine kLine)
 {
 	if (instruments.contains(kLine.InstrumentID)) {
 		auto& q = kLineMap[kLine.InstrumentID];
@@ -68,7 +70,10 @@ void StrategyDoubleMovingAverage::onKLine(KLine kLine)
 		auto longMA = getMA(longPeriod);
 		// 短均线上穿长均线，做多（买）
 		if (shortMA[0] >= longMA[0] && shortMA[1] < longMA[1]) {
-			buy(kLine.InstrumentID, q[0].closePrice + 3, std::min(100, int(tradingAccount.Available / q[0].closePrice / 2)));
+			double money = tradingAccount.totalAssets * weights[kLine.InstrumentID] - positionsMap[kLine.InstrumentID].PositionCost;
+			// 分配到能用的钱小于0直接退出
+			if (money <= 0) return;
+			buy(kLine.InstrumentID, q[0].closePrice + 3, std::min(100, int(money / q[0].closePrice / 2)));
 		}
 		// 短均线下穿长均线，平多（卖）
 		if (longMA[0] >= shortMA[0] && longMA[1] < shortMA[1]) {

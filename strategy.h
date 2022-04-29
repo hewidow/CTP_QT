@@ -13,6 +13,8 @@
 #include "StrategyBase.h"
 #include "StrategyExample.h"
 #include "StrategyDoubleMovingAverage.h"
+#include "StrategyDMAEqualWeight.h"
+#include "StrategyDMAHistoryVolatility.h"
 
 class Strategy : public QDialog
 {

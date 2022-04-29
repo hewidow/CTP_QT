@@ -22,6 +22,8 @@ public:
 	virtual void onTick(QuoteField) = 0;
 	// k线回报
 	virtual void onKLine(KLine) = 0;
+	// k线回报内部函数
+	void _onKLine(KLine);
 	// 账户资金回报
 	void onAccount(TradingAccount);
 	// 打印日志接口
@@ -41,6 +43,7 @@ public:
 signals:
 	void sendReqOrderInsert(CThostFtdcInputOrderField);
 	void sendReqOrderAction(CThostFtdcInputOrderActionField);
+	void sendReceivedKLine();
 public:
 	bool backtest = false;
 protected:

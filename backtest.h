@@ -64,4 +64,5 @@ signals:
 	void sendKLine(KLine);
 	void sendReqOrderInsert(CThostFtdcInputOrderField);
 	void sendReqOrderAction(CThostFtdcInputOrderActionField);
+	void sendReceivedKLine();
 };

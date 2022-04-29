@@ -12,7 +12,7 @@ StrategyExample::~StrategyExample()
 
 QString StrategyExample::name()
 {
-	return "示例策略";
+	return "多品种示例策略";
 }
 
 void StrategyExample::onStart()
@@ -38,7 +38,7 @@ void StrategyExample::onOrders(QVector<CThostFtdcOrderField> t)
 	orders = t;
 	ordersMap.clear();
 	for (auto& it : orders) {
-		ordersMap[it.ExchangeID] = it;
+		ordersMap[it.OrderSysID] = it;
 	}
 }
 void StrategyExample::onTick(QuoteField tick)
@@ -69,12 +69,12 @@ void StrategyExample::onKLine(KLine kLine)
 	if (trend == 0) return;
 	if (trend == 1) {
 		// 连续5个上涨信号，每次买入可用资金的一半
-		buy(InstrumentID, q[0].closePrice, std::max(1, int(tradingAccount.Available / q[0].closePrice / 2)));
+		buy(InstrumentID, q[0].closePrice + 3, std::max(1, int(tradingAccount.Available / q[0].closePrice / 2)));
 	}
 	else {
 		if (positionsMap.count(InstrumentID) && positionsMap[InstrumentID].OpenVolume - positionsMap[InstrumentID].CloseVolume > 0) {
 			// 连续5个下跌信号，每次卖出持仓的一半
-			sell(InstrumentID, q[0].closePrice, std::max(1, (positionsMap[InstrumentID].OpenVolume - positionsMap[InstrumentID].CloseVolume) / 2));
+			sell(InstrumentID, q[0].closePrice - 3, std::max(1, (positionsMap[InstrumentID].OpenVolume - positionsMap[InstrumentID].CloseVolume) / 2));
 		}
 	}
 	// 清空上涨信号

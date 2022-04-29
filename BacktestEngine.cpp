@@ -3,8 +3,6 @@
 BacktestEngine::BacktestEngine(QObject* parent)
 	: QObject(parent)
 {
-	// 以消息队列的形式推送行情数据，这样可以不阻塞策略发回来的信号
-	connect(this, &BacktestEngine::sendData, this, &BacktestEngine::receiveData, Qt::QueuedConnection);
 	if (QSqlDatabase::contains("QSQLITE_CONNECTION")) db = QSqlDatabase::database("QSQLITE_CONNECTION");
 	else db = QSqlDatabase::addDatabase("QSQLITE", "QSQLITE_CONNECTION");
 }
@@ -75,7 +73,7 @@ void BacktestEngine::receiveStartBacktestEngine(BacktestForm t)
 		return a.dateTime < b.dateTime;
 		});
 	// 发送行情
-	emit sendData();
+	receiveReceivedKLine();
 }
 void BacktestEngine::receiveReqOrderInsert(CThostFtdcInputOrderField t)
 {
@@ -95,6 +93,7 @@ void BacktestEngine::receiveReqOrderInsert(CThostFtdcInputOrderField t)
 	emit sendOrders(orders);
 	cleanPos();
 	cleanOrders();
+	solveOrders();
 }
 
 void BacktestEngine::receiveReqOrderAction(CThostFtdcInputOrderActionField t)
@@ -118,6 +117,7 @@ void BacktestEngine::receiveReqOrderAction(CThostFtdcInputOrderActionField t)
 	emit sendOrders(orders);
 	cleanPos();
 	cleanOrders();
+	solveOrders();
 }
 void BacktestEngine::cleanPos() {
 	QVector<CThostFtdcInvestorPositionField>newPos;
@@ -218,38 +218,35 @@ void BacktestEngine::solveOrders() {
 		cleanOrders();
 	}
 }
-void BacktestEngine::receiveData()
-{
-	solveOrders();
-	if (kLinesP < kLines.size()) {
-		instruments[kLines[kLinesP].InstrumentID].Price = kLines[kLinesP].closePrice;
-		emit sendKLine(kLines[kLinesP]);
-		// 当是这个时刻最后一条数据时
-		if (kLinesP + 1 >= kLines.size() || kLines[kLinesP].dateTime != kLines[kLinesP + 1].dateTime) {
-			double nowFund = result.endFund;
-			for (auto& p : pos) {
-				nowFund += instruments[p.InstrumentID].Price * (p.OpenVolume - p.CloseVolume) * (1 - result.handlingFeeRate);
-			}
-			result.maximumDrawdown = std::min(result.maximumDrawdown, nowFund - result.startFund);
-			account.PositionProfit = nowFund - result.startFund;
-			account.Available = result.endFund;
-			account.totalAssets = account.FrozenMargin + account.Available + account.PositionProfit;
-			// 最后一条数据 或 每十二小时记录一次浮动盈亏数据
-			if (kLinesP + 1 >= kLines.size() || kLines[kLinesP].dateTime.toMSecsSinceEpoch() - startTimeStamp >= (long long)1000 * 60 * 60 * 12) {
-				startTimeStamp = kLines[kLinesP].dateTime.toMSecsSinceEpoch();
-				chartData.floatingProfitLossData.push_back({ startTimeStamp ,Util::formatDoubleTwoDecimal(nowFund) });
-				chartData.floatingProfitLossRateData.push_back({ startTimeStamp ,Util::formatDoubleTwoDecimal((nowFund - result.startFund) / result.startFund * 100) });
-				double nowFuturesPrice = calcFuturesPrice();
-				if (startRecord) {
-					if (firstRecord) startFuturesPrice = nowFuturesPrice, firstRecord = false;
-					chartData.futuresPriceRateData.push_back({ startTimeStamp ,Util::formatDoubleTwoDecimal((nowFuturesPrice - startFuturesPrice) / startFuturesPrice * 100) });
-				}
-			}
-			emit sendTradingAccount(account);
+void BacktestEngine::receiveReceivedKLine() {
+	++receivedKLinesP;
+	if (receivedKLinesP + 1 < kLines.size()) {
+		emit sendBacktestProgress(10 + 90ll * (receivedKLinesP + 1) / kLines.size());
+		int sendKLinesP = receivedKLinesP + 1;
+		instruments[kLines[sendKLinesP].InstrumentID].Price = kLines[sendKLinesP].closePrice;
+		solveOrders();
+		double nowFund = result.endFund;
+		for (auto& p : pos) {
+			p.PositionCost = instruments[p.InstrumentID].Price * (p.OpenVolume - p.CloseVolume) * (1 - result.handlingFeeRate);
+			nowFund += p.PositionCost;
 		}
-		++kLinesP;
-		emit sendBacktestProgress(10 + 90ll * kLinesP / kLines.size());
-		emit sendData();
+		result.maximumDrawdown = std::min(result.maximumDrawdown, nowFund - result.startFund);
+		account.PositionProfit = nowFund - result.startFund;
+		account.Available = result.endFund;
+		account.totalAssets = account.FrozenMargin + account.Available + account.PositionProfit;
+		// 最后一条数据 或 这个时刻最后一条数据并且间隔大于等于十二小时 记录一次浮动盈亏数据
+		if (sendKLinesP + 1 >= kLines.size() || kLines[sendKLinesP].dateTime != kLines[sendKLinesP + 1].dateTime && kLines[sendKLinesP].dateTime.toMSecsSinceEpoch() - startTimeStamp >= (long long)1000 * 60 * 60 * 12) {
+			startTimeStamp = kLines[sendKLinesP].dateTime.toMSecsSinceEpoch();
+			chartData.floatingProfitLossData.push_back({ startTimeStamp ,Util::formatDoubleTwoDecimal(nowFund) });
+			chartData.floatingProfitLossRateData.push_back({ startTimeStamp ,Util::formatDoubleTwoDecimal((nowFund - result.startFund) / result.startFund * 100) });
+			double nowFuturesPrice = calcFuturesPrice();
+			if (startRecord) {
+				if (firstRecord) startFuturesPrice = nowFuturesPrice, firstRecord = false;
+				chartData.futuresPriceRateData.push_back({ startTimeStamp ,Util::formatDoubleTwoDecimal((nowFuturesPrice - startFuturesPrice) / startFuturesPrice * 100) });
+			}
+		}
+		emit sendTradingAccount(account);
+		sendKLine(kLines[sendKLinesP]);
 	}
 	else {
 		// 数据全过完了，强平持仓

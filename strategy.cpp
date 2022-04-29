@@ -21,6 +21,10 @@ Strategy::Strategy(QWidget* parent)
 	// 创建策略类对象，未来改进为自编译
 	strategies.push_back(new StrategyExample());
 	strategies.push_back(new StrategyDoubleMovingAverage());
+	strategies.push_back(new StrategyDMAEqualWeight());
+	strategies.push_back(new StrategyDMAHistoryVolatility());
+
+
 	model = new QStandardItemModel(this);
 	for (auto& it : strategies) {
 		model->appendRow(new QStandardItem(it->name()));
@@ -75,6 +79,7 @@ void Strategy::on_start_clicked() {
 	emit sendStrategyStatus(strategies[cur]->name());
 	connect(strategies[cur], &StrategyBase::sendReqOrderInsert, this, &Strategy::receiveReqOrderInsert);
 	connect(strategies[cur], &StrategyBase::sendReqOrderAction, this, &Strategy::receiveReqOrderAction);
+	connect(strategies[cur], &StrategyBase::sendReceivedKLine, &backtest, &Backtest::sendReceivedKLine);
 	strategies[cur]->backtest = true;
 	strategies[cur]->onStart();
 	ui.start->setVisible(false);
@@ -137,7 +142,7 @@ void Strategy::receiveOrders(QVector<CThostFtdcOrderField> t)
 void Strategy::receiveKLine(KLine t)
 {
 	if (!checkEnvironment()) return;
-	strategies[cur]->onKLine(t);
+	strategies[cur]->_onKLine(t);
 }
 void Strategy::receiveReqOrderInsert(CThostFtdcInputOrderField t)
 {
@@ -148,7 +153,7 @@ void Strategy::receiveReqOrderInsert(CThostFtdcInputOrderField t)
 void Strategy::receiveReqOrderAction(CThostFtdcInputOrderActionField t)
 {
 	if (!strategyRunning) return;
-	if (strategyBacktest)emit sendReqOrderActionBacktest(t);
+	if (strategyBacktest) emit sendReqOrderActionBacktest(t);
 	else emit sendReqOrderAction(t);
 }
 

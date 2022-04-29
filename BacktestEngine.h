@@ -46,8 +46,6 @@ signals:
 	void sendRtnDepthMarketData(QuoteField);
 	// 发送一分钟k线行情
 	void sendKLine(KLine);
-	// 发送行情数据
-	void sendData();
 	// 发送合约盈亏情况
 	void sendBacktestResultPos(QMap<QString, BacktestResultPos>);
 	// 发送图表数据
@@ -59,8 +57,8 @@ public slots:
 	void receiveReqOrderInsert(CThostFtdcInputOrderField);
 	// 修改报单
 	void receiveReqOrderAction(CThostFtdcInputOrderActionField);
-	// 接收行情数据
-	void receiveData();
+	// 策略收到的k线数据
+	void receiveReceivedKLine();
 private:
 	QSqlDatabase db; // 回测数据库
 	BacktestForm form; // 回测初始参数表单
@@ -70,12 +68,12 @@ private:
 	TradingAccount account; // 账户信息
 	QMap<QString, BacktestInstrumentForm>instruments; // 回测数据里的全部合约信息
 	QVector<KLine>kLines; // k线数据
-	int kLinesP = 0; // 当前待发送的k线数据下标
+	int receivedKLinesP = -2; // 当前待发送的k线数据下标
 	QVector<CThostFtdcInvestorPositionField>pos; // 当前持仓
 	QVector<CThostFtdcOrderField>orders; // 当前报单
 	int orderSysID = 0; // 报单全局唯一标识
 	bool firstRecord = true; // 记录首次期货均价
 	bool startRecord = false; // 开始记录期货均价
 	long long startTimeStamp = 0; // 开始记录时的毫秒时间戳
-	double startFuturesPrice; // 开始时的期货均价
+	double startFuturesPrice = 0; // 开始时的期货均价
 };

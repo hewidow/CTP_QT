@@ -1,31 +1,33 @@
-﻿#include "StrategyDoubleMovingAverage.h"
+﻿#include "StrategyDMAHistoryVolatility.h"
 
-StrategyDoubleMovingAverage::StrategyDoubleMovingAverage()
+StrategyDMAHistoryVolatility::StrategyDMAHistoryVolatility()
+{
+	for (auto& i : instruments) {
+		weights[i] = 1.0 / instruments.size();
+	}
+}
+
+StrategyDMAHistoryVolatility::~StrategyDMAHistoryVolatility()
 {
 
 }
 
-StrategyDoubleMovingAverage::~StrategyDoubleMovingAverage()
+QString StrategyDMAHistoryVolatility::name()
 {
-
+	return "多品种双均线策略（波动率）";
 }
 
-QString StrategyDoubleMovingAverage::name()
-{
-	return "多品种双均线策略（随机）";
-}
-
-void StrategyDoubleMovingAverage::onStart()
+void StrategyDMAHistoryVolatility::onStart()
 {
 	log("策略启动");
 }
 
-void StrategyDoubleMovingAverage::onStop()
+void StrategyDMAHistoryVolatility::onStop()
 {
 	log("策略停止");
 }
 
-void StrategyDoubleMovingAverage::onPositions(QVector<CThostFtdcInvestorPositionField> t)
+void StrategyDMAHistoryVolatility::onPositions(QVector<CThostFtdcInvestorPositionField> t)
 {
 	positions = t;
 	positionsMap.clear();
@@ -33,7 +35,7 @@ void StrategyDoubleMovingAverage::onPositions(QVector<CThostFtdcInvestorPosition
 		positionsMap[it.InstrumentID] = it;
 	}
 }
-void StrategyDoubleMovingAverage::onOrders(QVector<CThostFtdcOrderField> t)
+void StrategyDMAHistoryVolatility::onOrders(QVector<CThostFtdcOrderField> t)
 {
 	orders = t;
 	ordersMap.clear();
@@ -41,12 +43,12 @@ void StrategyDoubleMovingAverage::onOrders(QVector<CThostFtdcOrderField> t)
 		ordersMap[it.OrderSysID] = it;
 	}
 }
-void StrategyDoubleMovingAverage::onTick(QuoteField tick)
+void StrategyDMAHistoryVolatility::onTick(QuoteField tick)
 {
 
 }
 
-void StrategyDoubleMovingAverage::onKLine(KLine kLine)
+void StrategyDMAHistoryVolatility::onKLine(KLine kLine)
 {
 	if (instruments.contains(kLine.InstrumentID)) {
 		auto& q = kLineMap[kLine.InstrumentID];
