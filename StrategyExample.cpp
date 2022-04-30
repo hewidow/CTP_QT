@@ -12,7 +12,7 @@ StrategyExample::~StrategyExample()
 
 QString StrategyExample::name()
 {
-	return "多品种示例策略";
+	return "多品种简单策略";
 }
 
 void StrategyExample::onStart()
