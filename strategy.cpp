@@ -135,12 +135,12 @@ void Strategy::receiveTradingAccount(TradingAccount t)
 void Strategy::receiveInvestorPositions(QVector<CThostFtdcInvestorPositionField> t)
 {
 	if (!checkEnvironment()) return;
-	strategies[cur]->onPositions(t);
+	strategies[cur]->_onPositions(t);
 }
 void Strategy::receiveOrders(QVector<CThostFtdcOrderField> t)
 {
 	if (!checkEnvironment()) return;
-	strategies[cur]->onOrders(t);
+	strategies[cur]->_onOrders(t);
 }
 void Strategy::receiveKLine(KLine t)
 {

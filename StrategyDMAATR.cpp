@@ -2,9 +2,7 @@
 
 StrategyDMAATR::StrategyDMAATR()
 {
-	for (auto& i : instruments) {
-		weights[i] = ATR[i] = 0;
-	}
+
 }
 
 StrategyDMAATR::~StrategyDMAATR()
@@ -20,6 +18,14 @@ QString StrategyDMAATR::name()
 void StrategyDMAATR::onStart()
 {
 	log("策略启动");
+	period = 600;
+	ATR.clear();
+	TRMap.clear();
+	SumTR.clear();
+	positiveSumATR = 0;
+	for (auto& i : instruments) {
+		weights[i] = ATR[i] = SumTR[i] = 0;
+	}
 }
 
 void StrategyDMAATR::onStop()
@@ -29,19 +35,11 @@ void StrategyDMAATR::onStop()
 
 void StrategyDMAATR::onPositions(QVector<CThostFtdcInvestorPositionField> t)
 {
-	positions = t;
-	positionsMap.clear();
-	for (auto& it : positions) {
-		positionsMap[it.InstrumentID] = it;
-	}
+
 }
 void StrategyDMAATR::onOrders(QVector<CThostFtdcOrderField> t)
 {
-	orders = t;
-	ordersMap.clear();
-	for (auto& it : orders) {
-		ordersMap[it.OrderSysID] = it;
-	}
+
 }
 void StrategyDMAATR::onTick(QuoteField tick)
 {
@@ -50,60 +48,33 @@ void StrategyDMAATR::onTick(QuoteField tick)
 
 void StrategyDMAATR::onKLine(KLine kLine)
 {
-	if (instruments.contains(kLine.InstrumentID)) {
-		long long nowTimeStamp = kLine.dateTime.toMSecsSinceEpoch();
-		if (nowTimeStamp != befTimeStamp && nowTimeStamp - startTimeStamp >= DOT_INTERVAL) {
-			startTimeStamp = nowTimeStamp;
-			for (auto it = weights.begin(); it != weights.end(); ++it) {
-				futuresPosWeightData.futuresPosWeightData[it.key()].push_back({ startTimeStamp, Util::formatDoubleTwoDecimal(it.value()) });
-			}
-		}
-		befTimeStamp = nowTimeStamp;
+	QString InstrumentID = kLine.InstrumentID;
+	auto& q = kLineMap[InstrumentID];
+	auto& que = TRMap[InstrumentID];
+	if (q.size() >= TRPeriod) {
+		que.push_front(std::max(q[0].highPrice, q[TRPeriod - 1].closePrice) - std::min(q[0].lowPrice, q[TRPeriod - 1].closePrice));
+		SumTR[InstrumentID] += que.front();
+	}
+	while (que.size() > period - TRPeriod + 1) SumTR[InstrumentID] -= que.back(), que.pop_back();
 
-		auto& q = kLineMap[kLine.InstrumentID];
-		q.push_front(kLine);
-		while (q.size() > period) q.pop_back();
+	if (q.size() < period) return;
 
-		if (q.size() < period) return;
-
-		auto getATR = [](QQueue<KLine>& que, int len) {
-			QVector<double>xs;
-			double sum = 0;
-			for (int i = len - 1; i < que.size(); ++i) {
-				xs.push_back(std::max(que[i - len + 1].highPrice, que[i].closePrice) - std::min(que[i - len + 1].lowPrice, que[i].closePrice));
-				sum += xs.back();
-			}
-			return sum / xs.size();
-		};
-		ATR[kLine.InstrumentID] = getATR(q, shortPeriod);
-		double sumATR = 0;
-		for (auto& it : instruments) {
-			if (ATR[it] > 0) sumATR += ATR[it];
-		}
-		if (sumATR <= 0) return;
-		for (auto& it : instruments) {
-			weights[it] = std::max(0.0, ATR[it]) / sumATR;
-		}
-		auto getMA = [&](int len) {
-			QVector<double>MA;
-			double sum = 0;
-			for (int i = 0; i < q.size(); ++i) {
-				sum += q[i].closePrice;
-				if (i >= len) sum -= q[i - len].closePrice;
-				if (i >= len - 1) MA.push_back(sum / len);
-			}
-			return MA;
-		};
-		auto shortMA = getMA(shortPeriod);
-		auto longMA = getMA(longPeriod);
-		// 短均线上穿长均线，做多（买）
-		if (shortMA[0] >= longMA[0] && shortMA[1] < longMA[1]) {
-			double money = tradingAccount.totalAssets * weights[kLine.InstrumentID] - positionsMap[kLine.InstrumentID].PositionCost;
-			buy(kLine.InstrumentID, q[0].closePrice + 3, std::max(0, int(money / q[0].closePrice / 2)));
-		}
-		// 短均线下穿长均线，平多（卖）
-		if (longMA[0] >= shortMA[0] && longMA[1] < shortMA[1]) {
-			sell(kLine.InstrumentID, q[0].closePrice - 3, positionsMap[kLine.InstrumentID].OpenVolume - positionsMap[kLine.InstrumentID].CloseVolume);
-		}
+	positiveSumATR -= std::max(0.0, ATR[InstrumentID]);
+	ATR[InstrumentID] = SumTR[InstrumentID] / que.size();
+	positiveSumATR += std::max(0.0, ATR[InstrumentID]);
+	if (positiveSumATR <= 0) return;
+	for (auto& it : instruments) {
+		weights[it] = std::max(0.0, ATR[it]) / positiveSumATR;
+	}
+	auto shortMA = getMA(q, shortPeriod);
+	auto longMA = getMA(q, longPeriod);
+	// 短均线上穿长均线，做多（买）
+	if (shortMA[0] >= longMA[0] && shortMA[1] < longMA[1]) {
+		double money = tradingAccount.totalAssets * weights[InstrumentID] - positionsMap[InstrumentID].PositionCost;
+		buy(InstrumentID, q[0].closePrice + 3, std::max(0, int(money / q[0].closePrice / 2)));
+	}
+	// 短均线下穿长均线，平多（卖）
+	if (longMA[0] >= shortMA[0] && longMA[1] < shortMA[1]) {
+		sell(InstrumentID, q[0].closePrice - 3, positionsMap[InstrumentID].OpenVolume - positionsMap[InstrumentID].CloseVolume);
 	}
 }

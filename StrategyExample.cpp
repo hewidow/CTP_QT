@@ -18,6 +18,7 @@ QString StrategyExample::name()
 void StrategyExample::onStart()
 {
 	log("策略启动");
+	instruments.clear();
 }
 
 void StrategyExample::onStop()
@@ -27,19 +28,11 @@ void StrategyExample::onStop()
 
 void StrategyExample::onPositions(QVector<CThostFtdcInvestorPositionField> t)
 {
-	positions = t;
-	positionsMap.clear();
-	for (auto& it : positions) {
-		positionsMap[it.InstrumentID] = it;
-	}
+
 }
 void StrategyExample::onOrders(QVector<CThostFtdcOrderField> t)
 {
-	orders = t;
-	ordersMap.clear();
-	for (auto& it : orders) {
-		ordersMap[it.OrderSysID] = it;
-	}
+
 }
 void StrategyExample::onTick(QuoteField tick)
 {
@@ -48,11 +41,7 @@ void StrategyExample::onTick(QuoteField tick)
 
 void StrategyExample::onKLine(KLine kLine)
 {
-	QString InstrumentID = kLine.InstrumentID;
-
-	auto& q = kLineMap[InstrumentID];
-	q.push_front(kLine);
-	while (q.size() > TICK_HISTORY_LENGTH) q.pop_back();
+	auto& q = kLineMap[kLine.InstrumentID];
 
 	auto getPriceTrend = [&](int len) -> int {
 		if (q.size() <= len) return 0; // 无趋势
@@ -69,14 +58,14 @@ void StrategyExample::onKLine(KLine kLine)
 	if (trend == 0) return;
 	if (trend == 1) {
 		// 连续5个上涨信号，每次买入可用资金的一半
-		buy(InstrumentID, q[0].closePrice + 3, std::max(1, int(tradingAccount.Available / q[0].closePrice / 2)));
+		buy(kLine.InstrumentID, q[0].closePrice + 3, std::max(1, int(tradingAccount.Available / q[0].closePrice / 2)));
 	}
 	else {
-		if (positionsMap.count(InstrumentID) && positionsMap[InstrumentID].OpenVolume - positionsMap[InstrumentID].CloseVolume > 0) {
+		if (positionsMap.count(kLine.InstrumentID) && positionsMap[kLine.InstrumentID].OpenVolume - positionsMap[kLine.InstrumentID].CloseVolume > 0) {
 			// 连续5个下跌信号，每次卖出持仓的一半
-			sell(InstrumentID, q[0].closePrice - 3, std::max(1, (positionsMap[InstrumentID].OpenVolume - positionsMap[InstrumentID].CloseVolume) / 2));
+			sell(kLine.InstrumentID, q[0].closePrice - 3, std::max(1, (positionsMap[kLine.InstrumentID].OpenVolume - positionsMap[kLine.InstrumentID].CloseVolume) / 2));
 		}
 	}
-	// 清空上涨信号
-	while (q.size() > 0) q.pop_back();
+	// 清空历史数据
+	q.clear();
 }

@@ -1,13 +1,22 @@
 ﻿#include "StrategyBase.h"
 StrategyBase::StrategyBase()
 {
-	tradingAccount = TradingAccount{ 0 };
+	
 }
 void StrategyBase::_onStart()
 {
+	period = 600;
+	instruments = { "ag2203","IC2203","fu2203" };
+	tradingAccount = TradingAccount{ 0 };
+	kLineMap.clear();
+	positions.clear();
+	positionsMap.clear();
+	orders.clear();
+	ordersMap.clear();
 	futuresPosWeightData.futuresPosWeightData.clear();
 	startTimeStamp = 0;
 	befTimeStamp = 0;
+	weights.clear();
 	onStart();
 }
 void StrategyBase::_onStop()
@@ -15,10 +24,34 @@ void StrategyBase::_onStop()
 	onStop();
 	emit sendFuturesPosWeightData(futuresPosWeightData);
 }
+void StrategyBase::_onPositions(QVector<CThostFtdcInvestorPositionField>p)
+{
+	positions = p;
+	positionsMap.clear();
+	for (auto& it : positions) {
+		positionsMap[it.InstrumentID] = it;
+	}
+	onPositions(p);
+}
+void StrategyBase::_onOrders(QVector<CThostFtdcOrderField>o)
+{
+	orders = o;
+	ordersMap.clear();
+	for (auto& it : orders) {
+		ordersMap[it.OrderSysID] = it;
+	}
+	onOrders(o);
+}
 void StrategyBase::_onKLine(KLine kLine)
 {
 	emit sendReceivedKLine();
-	onKLine(kLine);
+	if (instruments.size() == 0 || instruments.contains(kLine.InstrumentID)) {
+		recordPosWeight(kLine.dateTime.toMSecsSinceEpoch());
+		auto& q = kLineMap[kLine.InstrumentID];
+		q.push_front(kLine);
+		while (q.size() > period) q.pop_back();
+		onKLine(kLine);
+	}
 }
 void StrategyBase::onAccount(TradingAccount t)
 {
@@ -81,3 +114,26 @@ void StrategyBase::cancel(TThostFtdcOrderSysIDType OrderSysID)
 	emit sendReqOrderAction(a);
 }
 
+QVector<double> StrategyBase::getMA(QQueue<KLine>&q,int len) {
+	QVector<double>MA;
+	if (q.size() <= len) {
+		iDebug << "getMA error: the queue is not long enough";
+		return QVector<double>{0,0};
+	}
+	double sum = 0;
+	for (int i = 0; i <= len; ++i) {
+		sum += q[i].closePrice;
+		if (i >= len) sum -= q[i - len].closePrice;
+		if (i >= len - 1) MA.push_back(sum / len);
+	}
+	return MA;
+};
+void StrategyBase::recordPosWeight(long long nowTimeStamp) {
+	if (nowTimeStamp != befTimeStamp && nowTimeStamp - startTimeStamp >= DOT_INTERVAL) {
+		startTimeStamp = nowTimeStamp;
+		for (auto it = weights.begin(); it != weights.end(); ++it) {
+			futuresPosWeightData.futuresPosWeightData[it.key()].push_back({ startTimeStamp, Util::formatDoubleTwoDecimal(it.value()) });
+		}
+	}
+	befTimeStamp = nowTimeStamp;
+}
