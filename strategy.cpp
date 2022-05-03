@@ -83,12 +83,11 @@ void Strategy::on_start_clicked() {
 	connect(strategies[cur], &StrategyBase::sendReceivedKLine, &backtest, &Backtest::sendReceivedKLine);
 	qRegisterMetaType<FuturesPosWeightData>("FuturesPosWeightData");
 	connect(strategies[cur], &StrategyBase::sendFuturesPosWeightData, &backtest, &Backtest::receiveFuturesPosWeightData);
-	strategies[cur]->backtest = true;
+	strategies[cur]->backtest = strategyBacktest;
 	strategies[cur]->_onStart();
 	ui.start->setVisible(false);
 	ui.pause->setVisible(true);
 	strategyRunning = true;
-	strategyBacktest = true;
 }
 
 void Strategy::on_pause_clicked()
@@ -112,8 +111,13 @@ void Strategy::on_backtest_clicked()
 }
 void Strategy::receiveBacktestStatus(bool status)
 {
-	if (status) on_start_clicked();
-	else on_pause_clicked();
+	if (status) {
+		strategyBacktest = true;
+		on_start_clicked();
+	}
+	else {
+		on_pause_clicked();
+	}
 }
 bool Strategy::checkEnvironment()
 {

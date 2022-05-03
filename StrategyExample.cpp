@@ -17,13 +17,11 @@ QString StrategyExample::name()
 
 void StrategyExample::onStart()
 {
-	log("策略启动");
 	instruments.clear();
 }
 
 void StrategyExample::onStop()
 {
-	log("策略停止");
 }
 
 void StrategyExample::onPositions(QVector<CThostFtdcInvestorPositionField> t)

@@ -17,7 +17,6 @@ QString StrategyDMAHistoryVolatility::name()
 
 void StrategyDMAHistoryVolatility::onStart()
 {
-	log("策略启动");
 	period = 600;
 	for (auto& i : instruments) {
 		weights[i] = HV[i] = 0;
@@ -26,7 +25,7 @@ void StrategyDMAHistoryVolatility::onStart()
 
 void StrategyDMAHistoryVolatility::onStop()
 {
-	log("策略停止");
+
 }
 
 void StrategyDMAHistoryVolatility::onPositions(QVector<CThostFtdcInvestorPositionField> t)

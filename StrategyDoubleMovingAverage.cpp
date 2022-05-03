@@ -17,13 +17,12 @@ QString StrategyDoubleMovingAverage::name()
 
 void StrategyDoubleMovingAverage::onStart()
 {
-	log("策略启动");
 	period = 61;
 }
 
 void StrategyDoubleMovingAverage::onStop()
 {
-	log("策略停止");
+
 }
 
 void StrategyDoubleMovingAverage::onPositions(QVector<CThostFtdcInvestorPositionField> t)

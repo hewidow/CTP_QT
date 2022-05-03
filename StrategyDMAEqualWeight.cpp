@@ -17,7 +17,6 @@ QString StrategyDMAEqualWeight::name()
 
 void StrategyDMAEqualWeight::onStart()
 {
-	log("策略启动");
 	period = 61;
 	for (auto& i : instruments) {
 		weights[i] = 1.0 / instruments.size();
@@ -26,7 +25,7 @@ void StrategyDMAEqualWeight::onStart()
 
 void StrategyDMAEqualWeight::onStop()
 {
-	log("策略停止");
+
 }
 
 void StrategyDMAEqualWeight::onPositions(QVector<CThostFtdcInvestorPositionField> t)

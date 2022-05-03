@@ -1,6 +1,6 @@
 ﻿#include "TableEntrust.h"
 
-TableEntrust::TableEntrust(QWidget* parent) : TableBase(parent, { "报单编号","代码","方向","开平","价格","总数量","剩余数量","状态","时间" })
+TableEntrust::TableEntrust(QWidget* parent) : TableBase(parent, { "编号","代码","方向","开平","价格","总数量","剩余数量","状态","时间" })
 {
 	horizontalHeader()->setSectionResizeMode(7, QHeaderView::ResizeToContents); // 设置第6列根据内容调整宽度
 	horizontalHeader()->setSectionResizeMode(8, QHeaderView::ResizeToContents); // 设置第6列根据内容调整宽度

@@ -17,7 +17,6 @@ QString StrategyDMAATR::name()
 
 void StrategyDMAATR::onStart()
 {
-	log("策略启动");
 	period = 600;
 	ATR.clear();
 	TRMap.clear();
@@ -30,7 +29,7 @@ void StrategyDMAATR::onStart()
 
 void StrategyDMAATR::onStop()
 {
-	log("策略停止");
+
 }
 
 void StrategyDMAATR::onPositions(QVector<CThostFtdcInvestorPositionField> t)

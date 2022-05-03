@@ -5,6 +5,7 @@ StrategyBase::StrategyBase()
 }
 void StrategyBase::_onStart()
 {
+	log("策略启动");
 	period = 600;
 	instruments = { "ag2203","IC2203","fu2203" };
 	tradingAccount = TradingAccount{ 0 };
@@ -23,6 +24,7 @@ void StrategyBase::_onStop()
 {
 	onStop();
 	emit sendFuturesPosWeightData(futuresPosWeightData);
+	log("策略停止");
 }
 void StrategyBase::_onPositions(QVector<CThostFtdcInvestorPositionField>p)
 {
