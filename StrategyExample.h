@@ -14,4 +14,6 @@ public:
 	void onOrders(QVector<CThostFtdcOrderField>) override;
 	void onTick(QuoteField) override;
 	void onKLine(KLine) override;
+private:
+	int signalLimit = 3;
 };

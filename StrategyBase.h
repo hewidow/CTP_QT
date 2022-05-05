@@ -17,49 +17,55 @@ public:
 	virtual void onStart() = 0;
 	// 策略停止
 	virtual void onStop() = 0;
-	// 持仓回报
+	// 查询持仓回调
 	virtual void onPositions(QVector<CThostFtdcInvestorPositionField>) = 0;
-	// 委托回报
+	// 查询委托回调
 	virtual void onOrders(QVector<CThostFtdcOrderField>) = 0;
-	// tick回报
+	// 接收Tick数据
 	virtual void onTick(QuoteField) = 0;
-	// k线回报
+	// 接收K线数据
 	virtual void onKLine(KLine) = 0;
-	// 启动内部函数
+	// 内部函数
 	void _onStart();
-	// 停止内部函数
+	// 内部函数
 	void _onStop();
-	// 持仓回报内部函数
+	// 内部函数
 	void _onPositions(QVector<CThostFtdcInvestorPositionField>);
-	// 委托回报内部函数
+	// 内部函数
 	void _onOrders(QVector<CThostFtdcOrderField>);
-	// k线回报内部函数
+	// 内部函数
 	void _onKLine(KLine);
-	// 账户资金回报
+	// 查询账户资金回调
 	void onAccount(TradingAccount);
 	// 打印日志接口
 	void log(QString);
-	// 买入开仓
+	// 做多
 	void buy(QString, double, int);
-	// 买入平仓
+	// 平多
 	void sell(QString, double, int);
-	// 取消订单
+	// 取消报单
 	void cancel(TThostFtdcOrderSysIDType);
 	/*
-	// 卖出开仓
+	// 做空
 	void short(QString, double, int);
-	// 卖出平仓
+	// 平空
 	void cover(QString, double, int);
 	*/
+	// 获取均线
 	QVector<double> getMA(QQueue<KLine>&, int);
+	// 记录持仓权重信息
 	void recordPosWeight(long long);
 signals:
+	// 新建报单
 	void sendReqOrderInsert(CThostFtdcInputOrderField);
+	// 操作报单
 	void sendReqOrderAction(CThostFtdcInputOrderActionField);
+	// 告诉回测系统收到K线的信号
 	void sendReceivedKLine();
+	// 发送记录的持仓权重数据给折线图
 	void sendFuturesPosWeightData(FuturesPosWeightData);
 public:
-	bool backtest = false;
+	bool backtest = false; // 是否处于回测
 protected:
 	QVector<QString>instruments; // 需要交易的合约品种名称
 	int period; // 历史数据保留长度

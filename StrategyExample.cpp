@@ -1,42 +1,13 @@
 ﻿#include "StrategyExample.h"
 
-StrategyExample::StrategyExample()
-{
-
-}
-
-StrategyExample::~StrategyExample()
-{
-
-}
-
-QString StrategyExample::name()
-{
-	return "多品种简单策略";
-}
-
-void StrategyExample::onStart()
-{
-	instruments.clear();
-}
-
-void StrategyExample::onStop()
-{
-}
-
-void StrategyExample::onPositions(QVector<CThostFtdcInvestorPositionField> t)
-{
-
-}
-void StrategyExample::onOrders(QVector<CThostFtdcOrderField> t)
-{
-
-}
-void StrategyExample::onTick(QuoteField tick)
-{
-
-}
-
+StrategyExample::StrategyExample() {}
+StrategyExample::~StrategyExample() {}
+QString StrategyExample::name() { return "多品种简单Tick策略"; }
+void StrategyExample::onStart() {}
+void StrategyExample::onStop() {}
+void StrategyExample::onPositions(QVector<CThostFtdcInvestorPositionField> t) {}
+void StrategyExample::onOrders(QVector<CThostFtdcOrderField> t) {}
+void StrategyExample::onTick(QuoteField tick) {}
 void StrategyExample::onKLine(KLine kLine)
 {
 	auto& q = kLineMap[kLine.InstrumentID];
@@ -52,16 +23,16 @@ void StrategyExample::onKLine(KLine kLine)
 		if (down) return -1; // 下跌
 		return 0;
 	};
-	int trend = getPriceTrend(5);
+	int trend = getPriceTrend(signalLimit);
 	if (trend == 0) return;
 	if (trend == 1) {
-		// 连续5个上涨信号，每次买入可用资金的一半
+		// 连续signalLimit个上涨信号，每次买入可用资金的一半
 		buy(kLine.InstrumentID, q[0].closePrice + 3, std::max(1, int(tradingAccount.Available / q[0].closePrice / 2)));
 	}
 	else {
 		if (positionsMap.count(kLine.InstrumentID) && positionsMap[kLine.InstrumentID].OpenVolume - positionsMap[kLine.InstrumentID].CloseVolume > 0) {
-			// 连续5个下跌信号，每次卖出持仓的一半
-			sell(kLine.InstrumentID, q[0].closePrice - 3, std::max(1, (positionsMap[kLine.InstrumentID].OpenVolume - positionsMap[kLine.InstrumentID].CloseVolume) / 2));
+			// 连续signalLimit个下跌信号，卖出该合约全部持仓
+			sell(kLine.InstrumentID, q[0].closePrice - 3, positionsMap[kLine.InstrumentID].OpenVolume - positionsMap[kLine.InstrumentID].CloseVolume);
 		}
 	}
 	// 清空历史数据

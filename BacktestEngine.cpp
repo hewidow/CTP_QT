@@ -30,8 +30,8 @@ void BacktestEngine::receiveStartBacktestEngine(BacktestForm t)
 	query.exec();
 	while (query.next()) {
 		instruments[query.value(0).toString()] = BacktestInstrumentForm{
-			query.value(0).toString(),
 			query.value(1).toString(),
+			query.value(0).toString(),
 			0
 		};
 	}
@@ -242,13 +242,11 @@ void BacktestEngine::receiveReceivedKLine() {
 			startTimeStamp = kLines[sendKLinesP].dateTime.toMSecsSinceEpoch();
 			chartData.floatingProfitLossData.push_back({ startTimeStamp ,Util::formatDoubleTwoDecimal(nowFund) });
 			chartData.floatingProfitLossRateData.push_back({ startTimeStamp ,Util::formatDoubleTwoDecimal((nowFund - result.startFund) / result.startFund * 100) });
-			double nowFuturesPrice = calcFuturesPrice();
-			if (startRecord) {
-				if (firstRecord) startFuturesPrice = nowFuturesPrice, firstRecord = false;
-				chartData.futuresPriceRateData.push_back({ startTimeStamp ,Util::formatDoubleTwoDecimal((nowFuturesPrice - startFuturesPrice) / startFuturesPrice * 100) });
-			}
-			for (auto& it : pos) {
-				chartData.futuresPosData[it.InstrumentID].push_back({ startTimeStamp, Util::formatDoubleTwoDecimal(it.PositionCost) });
+			chartData.futuresPriceRateData.push_back({ startTimeStamp ,Util::formatDoubleTwoDecimal(calcFuturesPrice() * 100) });
+			for (auto& it : requiredInstruments) it = 0;
+			for (auto& it : pos) requiredInstruments[it.InstrumentID] = it.PositionCost;
+			for (auto it = requiredInstruments.begin(); it != requiredInstruments.end(); ++it) {
+				chartData.futuresPosData[it.key()].push_back({ startTimeStamp, Util::formatDoubleTwoDecimal(it.value()) });
 			}
 		}
 		// 恢复数据
@@ -264,7 +262,7 @@ void BacktestEngine::receiveReceivedKLine() {
 		for (auto& p : pos) {
 			CThostFtdcOrderField o = { 0 };
 			strcpy_s(o.InstrumentID, p.InstrumentID);
-			o.Direction = THOST_FTDC_D_Buy;
+			o.Direction = THOST_FTDC_D_Sell;
 			o.CombOffsetFlag[0] = THOST_FTDC_OF_Close;
 			o.LimitPrice = instruments[p.InstrumentID].Price;
 			o.VolumeTotalOriginal = p.OpenVolume - p.CloseVolume;
@@ -293,10 +291,19 @@ double BacktestEngine::calcFuturesPrice()
 	int count = 0;
 	double sum = 0;
 	for (auto& it : instruments) {
-		if (it.Price <= 0) return 0;
-		sum += it.Price;
-		++count;
+		if (requiredInstruments.contains(it.InstrumentID)&&it.Price>0) {
+			sum += it.Price;
+			++count;
+		}
 	}
-	startRecord = true;
-	return sum / count;
+	if (count == 0) return 0;
+	if (count != startCount) {
+		startCount = count;
+		startAvg = sum / count;
+		return startRate;
+	}
+	startRate = (sum / count - startAvg) / startAvg;
+	startCount = count;
+	startAvg = sum / count;
+	return startRate;
 }

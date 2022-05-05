@@ -20,10 +20,10 @@ void StrategyDMAATR::onStart()
 	period = 600;
 	ATR.clear();
 	TRMap.clear();
-	SumTR.clear();
-	positiveSumATR = 0;
+	sumTR.clear();
+	sumATR = 0;
 	for (auto& i : instruments) {
-		weights[i] = ATR[i] = SumTR[i] = 0;
+		weights[i] = ATR[i] = sumTR[i] = 0;
 	}
 }
 
@@ -50,20 +50,20 @@ void StrategyDMAATR::onKLine(KLine kLine)
 	QString InstrumentID = kLine.InstrumentID;
 	auto& q = kLineMap[InstrumentID];
 	auto& que = TRMap[InstrumentID];
-	if (q.size() >= TRPeriod) {
-		que.push_front(std::max(q[0].highPrice, q[TRPeriod - 1].closePrice) - std::min(q[0].lowPrice, q[TRPeriod - 1].closePrice));
-		SumTR[InstrumentID] += que.front();
+	if (q.size() >= 2) {
+		que.push_front(std::max({ fabs(q[0].highPrice - q[0].lowPrice),fabs(q[0].highPrice - q[1].closePrice),fabs(q[0].lowPrice - q[1].closePrice) }));
+		sumTR[InstrumentID] += que.front();
 	}
-	while (que.size() > period - TRPeriod + 1) SumTR[InstrumentID] -= que.back(), que.pop_back();
+	while (que.size() > period - 1) sumTR[InstrumentID] -= que.back(), que.pop_back();
 
 	if (q.size() < period) return;
-
-	positiveSumATR -= std::max(0.0, ATR[InstrumentID]);
-	ATR[InstrumentID] = SumTR[InstrumentID] / que.size();
-	positiveSumATR += std::max(0.0, ATR[InstrumentID]);
-	if (positiveSumATR <= 0) return;
+	sumATR -= ATR[InstrumentID];
+	if (fabs(sumTR[InstrumentID]) <= 1e-15) ATR[InstrumentID] = 0;
+	else ATR[InstrumentID] = (period - 1) / sumTR[InstrumentID];
+	sumATR += ATR[InstrumentID];
+	if (sumATR <= 0) return;
 	for (auto& it : instruments) {
-		weights[it] = std::max(0.0, ATR[it]) / positiveSumATR;
+		weights[it] = ATR[it] / sumATR;
 	}
 	auto shortMA = getMA(q, shortPeriod);
 	auto longMA = getMA(q, longPeriod);

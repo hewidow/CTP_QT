@@ -51,8 +51,8 @@ void StrategyDMAHistoryVolatility::onKLine(KLine kLine)
 	auto getHV = [](QQueue<KLine>& que, int len) {
 		QVector<double>xs;
 		double sum = 0;
-		for (int i = len - 1; i < que.size(); ++i) {
-			xs.push_back(std::log(que[i - len + 1].closePrice / que[i].closePrice));
+		for (int i = 0; i < len; ++i) {
+			xs.push_back(std::log(que[i].closePrice / que[i + 1].closePrice));
 			sum += xs.back();
 		}
 		double xb = sum / xs.size();
@@ -64,7 +64,7 @@ void StrategyDMAHistoryVolatility::onKLine(KLine kLine)
 		if (fabs(xe) <= 1e-15) return 0.0;
 		return 1.0 / xe;
 	};
-	HV[InstrumentID] = getHV(q, shortPeriod);
+	HV[InstrumentID] = getHV(q, period - 1);
 	double sumHV = 0;
 	for (auto& it : instruments) {
 		sumHV += HV[it];
@@ -72,18 +72,8 @@ void StrategyDMAHistoryVolatility::onKLine(KLine kLine)
 	for (auto& it : instruments) {
 		weights[it] = HV[it] / sumHV;
 	}
-	auto getMA = [&](int len) {
-		QVector<double>MA;
-		double sum = 0;
-		for (int i = 0; i < q.size(); ++i) {
-			sum += q[i].closePrice;
-			if (i >= len) sum -= q[i - len].closePrice;
-			if (i >= len - 1) MA.push_back(sum / len);
-		}
-		return MA;
-	};
-	auto shortMA = getMA(shortPeriod);
-	auto longMA = getMA(longPeriod);
+	auto shortMA = getMA(q, shortPeriod);
+	auto longMA = getMA(q, longPeriod);
 	// 短均线上穿长均线，做多（买）
 	if (shortMA[0] >= longMA[0] && shortMA[1] < longMA[1]) {
 		double money = tradingAccount.totalAssets * weights[InstrumentID] - positionsMap[InstrumentID].PositionCost;

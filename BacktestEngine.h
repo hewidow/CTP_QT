@@ -72,8 +72,11 @@ private:
 	QVector<CThostFtdcInvestorPositionField>pos; // 当前持仓
 	QVector<CThostFtdcOrderField>orders; // 当前报单
 	int orderSysID = 0; // 报单全局唯一标识
-	bool firstRecord = true; // 记录首次期货均价
-	bool startRecord = false; // 开始记录期货均价
 	long long startTimeStamp = 0; // 开始记录时的毫秒时间戳
 	double startFuturesPrice = 0; // 开始时的期货均价
+	int startCount = 0; // 上一次打点时期货的个数
+	double startAvg = 0; // 上一次打点时期货的均价
+	double startRate = 0; // 上一次打点时期货均价的变化率
+
+	QMap<QString, double>requiredInstruments = { {"ag2203",0},{"IC2203",0},{"fu2203",0} }; // 需要统计的合约（暂时这么搞）
 };

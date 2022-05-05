@@ -71,7 +71,7 @@ void StrategyBase::buy(QString InstrumentID, double LastPrice, int VolumeTotalOr
 	strcpy_s(ord.InstrumentID, InstrumentID.toStdString().c_str());
 	ord.LimitPrice = LastPrice;
 	ord.VolumeTotalOriginal = VolumeTotalOriginal;
-	ord.Direction = THOST_FTDC_D_Buy;
+	ord.Direction = THOST_FTDC_D_Buy; // 做多
 	ord.OrderPriceType = THOST_FTDC_OPT_LimitPrice; // 限价单
 	ord.CombOffsetFlag[0] = THOST_FTDC_OF_Open; // 开仓
 	ord.CombHedgeFlag[0] = THOST_FTDC_HF_Speculation; // 投机
@@ -92,7 +92,7 @@ void StrategyBase::sell(QString InstrumentID, double LastPrice, int VolumeTotalO
 	strcpy_s(ord.InstrumentID, InstrumentID.toStdString().c_str());
 	ord.LimitPrice = LastPrice;
 	ord.VolumeTotalOriginal = VolumeTotalOriginal;
-	ord.Direction = THOST_FTDC_D_Buy;
+	ord.Direction = THOST_FTDC_D_Sell; // 平多，需方向相反
 	ord.OrderPriceType = THOST_FTDC_OPT_LimitPrice; // 限价单
 	ord.CombOffsetFlag[0] = THOST_FTDC_OF_Close; // 平仓
 	ord.CombHedgeFlag[0] = THOST_FTDC_HF_Speculation; // 投机
