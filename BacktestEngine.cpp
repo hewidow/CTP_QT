@@ -196,7 +196,7 @@ void BacktestEngine::solveOrders() {
 					result.totalHandlingFee += nowPrice * order.VolumeTotalOriginal * result.handlingFeeRate;
 					order.OrderStatus = THOST_FTDC_OST_AllTraded;
 					++result.totalTransactions;
-					if (nowPrice * pos[posIndex].OpenVolume >= pos[posIndex].OpenAmount) ++result.profitTransactions;
+					if (nowPrice * (1 - result.handlingFeeRate) * pos[posIndex].OpenVolume >= pos[posIndex].OpenAmount) ++result.profitTransactions;
 					else ++result.lossTransactions;
 				}
 			}
@@ -291,7 +291,7 @@ double BacktestEngine::calcFuturesPrice()
 	int count = 0;
 	double sum = 0;
 	for (auto& it : instruments) {
-		if (requiredInstruments.contains(it.InstrumentID)&&it.Price>0) {
+		if (requiredInstruments.contains(it.InstrumentID) && it.Price > 0) {
 			sum += it.Price;
 			++count;
 		}
